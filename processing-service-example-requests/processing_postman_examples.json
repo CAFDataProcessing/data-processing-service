@@ -1,0 +1,910 @@
+{
+	"variables": [],
+	"info": {
+		"name": "data-processing-service",
+		"_postman_id": "e92582aa-0690-f655-93c0-efd8f33b4af5",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ActionTypes",
+			"description": "",
+			"item": [
+				{
+					"name": "CreateActionType",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/actiontype",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"My Test Action\",\n\t\"description\": \"Test Action description.\",\n\t\"internal_name\": \"TestHandler12\",\n\t\"definition\": {\n\t\t\"description\": \"My test type.\",\n\t\t\"properties\": {\n\t\t\t\"queueName\": {\n\t\t\t\t\"description\": \"Optional. A queue name.\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t\"title\": \"Test Type\",\n\t\t\"type\": \"object\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteActionType",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/actiontype/21",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"My Test Action\",\n\t\"description\": \"Test Action description.\",\n\t\"internal_name\": \"TestHandler\",\n\t\"definition\": {\n\t\t\"description\": \"My test type.\",\n\t\t\"properties\": {\n\t\t\t\"queueName\": {\n\t\t\t\t\"description\": \"Optional. A queue name.\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t\"title\": \"Test Type\",\n\t\t\"type\": \"object\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetActionType",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/actiontype/8",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"My Test Action\",\n\t\"description\": \"Test Action description.\",\n\t\"internal_name\": \"TestHandler\",\n\t\"definition\": {\n\t\t\"description\": \"My test type.\",\n\t\t\"properties\": {\n\t\t\t\"queueName\": {\n\t\t\t\t\"description\": \"Optional. A queue name.\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t\"title\": \"Test Type\",\n\t\t\"type\": \"object\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetActionTypes",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/actiontypes?pageSize=10&pageNum=1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"My Test Action\",\n\t\"description\": \"Test Action description.\",\n\t\"internal_name\": \"TestHandler\",\n\t\"definition\": {\n\t\t\"description\": \"My test type.\",\n\t\t\"properties\": {\n\t\t\t\"queueName\": {\n\t\t\t\t\"description\": \"Optional. A queue name.\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t\"title\": \"Test Type\",\n\t\t\"type\": \"object\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateActionType",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/actiontype/34",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"My Test Action updated\",\n\t\"description\": \"Test Action description updated.\",\n\t\"internal_name\": \"TestHandlerUpdated18\",\n\t\"definition\": {\n\t\t\"description\": \"My test type updated.\",\n\t\t\"properties\": {\n\t\t\t\"queueName\": {\n\t\t\t\t\"description\": \"Optional. A queue name updated.\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t\"title\": \"Test Type\",\n\t\t\"type\": \"object\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Actions",
+			"description": "",
+			"item": [
+				{
+					"name": "CreateAction",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/42/rules/189/actions",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Action to test Conditions\",\n    \"description\": \"Another Action to test conditions with\",\n    \"order\": 100,\n    \"settings\": {\n        \"queueName\": \"test-queue\"\n    },\n    \"typeId\": 9\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAction",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/42/rules/189/actions/217",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"My Test Action updated\",\n    \"description\": \"Test Action description updated.\",\n    \"settings\": {\n        \"queueName\": \"test-queue-updated\"\n    },\n    \"typeId\": 11\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetAction",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/42/rules/189/actions/2073",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"workflowId\": 6,\n    \"name\": \"My new sequence 2\",\n    \"description\": \"A description for the new sequence 2.\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetActions",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/6/rules/178/actions?pageSize=10&pageNum=1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"workflowId\": 6,\n    \"name\": \"My new sequence 2\",\n    \"description\": \"A description for the new sequence 2.\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateAction",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/42/rules/189/actions/217",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n      \"order\": 100,\n      \"name\": \"Action to test Conditions updated September\",\n      \"description\": \"Another Action to test conditions with\",\n      \"settings\": {\n        \"queueName\": \"test-queue\"\n      },\n      \"typeId\": 9,\n      \"typeInternalName\": \"UniqueIdGeneratorPolicyType\"\n    }"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Conditions",
+			"description": "",
+			"item": [
+				{
+					"name": "CreateActionCondition",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/42/rules/203/actions/218/conditions",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test Action Condition\",\r\n  \"additional\": {\r\n    \"type\": \"boolean\",\r\n    \"operator\": \"and\",\r\n    \"children\": [\r\n      {\r\n        \"name\": \"Cat Condition\",\r\n        \"description\": \"Condition to find cat.\",\r\n        \"additional\": {\r\n          \"type\": \"string\",\r\n          \"field\": \"CONTENT\",\r\n          \"value\": \"cat\",\r\n          \"operator\": \"contains\",\r\n          \"notes\": \"CAT_CONDITION\"\r\n        }\r\n      },\r\n      {\r\n        \"name\": \"Count Condition\",\r\n        \"description\": \"Checks the count.\",\r\n        \"additional\": {\r\n          \"type\": \"number\",\r\n          \"field\": \"COUNT\",\r\n          \"value\": 2,\r\n          \"operator\": \"eq\"\r\n        }\r\n      }\r\n    ]\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "CreateRuleCondition",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/42/rules/189/conditions",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test Rule Condition\",\r\n  \"additional\": {\r\n    \"type\": \"boolean\",\r\n    \"operator\": \"and\",\r\n    \"children\": [\r\n      {\r\n        \"name\": \"Rule Dog Condition\",\r\n        \"additional\": {\r\n          \"type\": \"string\",\r\n          \"field\": \"CONTENT\",\r\n          \"value\": \"dog\",\r\n          \"operator\": \"contains\",\r\n          \"notes\": \"DOG_CONDITION\"\r\n        }\r\n      },\r\n      {\r\n        \"name\": \"Rule Count Condition\",\r\n        \"additional\": {\r\n          \"type\": \"number\",\r\n          \"field\": \"RULE_COUNT\",\r\n          \"value\": 4,\r\n          \"operator\": \"eq\"\r\n        }\r\n      }\r\n    ]\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "CreateRuleCondition_Int64",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/1/rules/1/conditions",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test Rule Condition\",\r\n  \"additional\": {\r\n    \"type\": \"boolean\",\r\n    \"operator\": \"and\",\r\n    \"children\": [\r\n      {\r\n        \"name\": \"Rule Dog Condition\",\r\n        \"additional\": {\r\n          \"type\": \"string\",\r\n          \"field\": \"CONTENT\",\r\n          \"value\": \"dog\",\r\n          \"operator\": \"contains\",\r\n          \"notes\": \"DOG_CONDITION\"\r\n        }\r\n      },\r\n      {\r\n        \"name\": \"Rule Count Condition\",\r\n        \"additional\": {\r\n          \"type\": \"number\",\r\n          \"field\": \"RULE_COUNT\",\r\n          \"value\": 1234567890123456789,\r\n          \"operator\": \"eq\"\r\n        }\r\n      }\r\n    ]\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteActionCondition",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/33/rules/175/actions/198/conditions/362",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test Rule Condition\",\r\n  \"description\": \"Test description for Rule Condition.\",\r\n  \"additional\": {\r\n    \"type\": \"boolean\",\r\n    \"operator\": \"and\",\r\n    \"children\": [\r\n      {\r\n        \"name\": \"Rule Dog Condition\",\r\n        \"description\": \"Condition to find Dog.\",\r\n        \"additional\": {\r\n          \"type\": \"string\",\r\n          \"field\": \"CONTENT\",\r\n          \"value\": \"dog\",\r\n          \"operator\": \"contains\",\r\n          \"notes\": \"DOG_CONDITION\"\r\n        }\r\n      },\r\n      {\r\n        \"name\": \"Rule Count Condition\",\r\n        \"description\": \"Checks the rule count.\",\r\n        \"additional\": {\r\n          \"type\": \"number\",\r\n          \"field\": \"RULE_COUNT\",\r\n          \"value\": 4,\r\n          \"operator\": \"eq\"\r\n        }\r\n      }\r\n    ]\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteRuleCondition",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/33/rules/175/conditions/374",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test Rule Condition\",\r\n  \"description\": \"Test description for Rule Condition.\",\r\n  \"additional\": {\r\n    \"type\": \"boolean\",\r\n    \"operator\": \"and\",\r\n    \"children\": [\r\n      {\r\n        \"name\": \"Rule Dog Condition\",\r\n        \"description\": \"Condition to find Dog.\",\r\n        \"additional\": {\r\n          \"type\": \"string\",\r\n          \"field\": \"CONTENT\",\r\n          \"value\": \"dog\",\r\n          \"operator\": \"contains\",\r\n          \"notes\": \"DOG_CONDITION\"\r\n        }\r\n      },\r\n      {\r\n        \"name\": \"Rule Count Condition\",\r\n        \"description\": \"Checks the rule count.\",\r\n        \"additional\": {\r\n          \"type\": \"number\",\r\n          \"field\": \"RULE_COUNT\",\r\n          \"value\": 4,\r\n          \"operator\": \"eq\"\r\n        }\r\n      }\r\n    ]\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetRuleCondition",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/33/rules/175/conditions/386",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test Rule Condition\",\r\n  \"description\": \"Test description for Rule Condition.\",\r\n  \"additional\": {\r\n    \"type\": \"boolean\",\r\n    \"operator\": \"and\",\r\n    \"children\": [\r\n      {\r\n        \"name\": \"Rule Dog Condition\",\r\n        \"description\": \"Condition to find Dog.\",\r\n        \"additional\": {\r\n          \"type\": \"string\",\r\n          \"field\": \"CONTENT\",\r\n          \"value\": \"dog\",\r\n          \"operator\": \"contains\",\r\n          \"notes\": \"DOG_CONDITION\"\r\n        }\r\n      },\r\n      {\r\n        \"name\": \"Rule Count Condition\",\r\n        \"description\": \"Checks the rule count.\",\r\n        \"additional\": {\r\n          \"type\": \"number\",\r\n          \"field\": \"RULE_COUNT\",\r\n          \"value\": 4,\r\n          \"operator\": \"eq\"\r\n        }\r\n      }\r\n    ]\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetRuleConditions",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/42/rules/189/conditions?pageSize=10&pageNum=1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test Rule Condition\",\r\n  \"description\": \"Test description for Rule Condition.\",\r\n  \"additional\": {\r\n    \"type\": \"boolean\",\r\n    \"operator\": \"and\",\r\n    \"children\": [\r\n      {\r\n        \"name\": \"Rule Dog Condition\",\r\n        \"description\": \"Condition to find Dog.\",\r\n        \"additional\": {\r\n          \"type\": \"string\",\r\n          \"field\": \"CONTENT\",\r\n          \"value\": \"dog\",\r\n          \"operator\": \"contains\",\r\n          \"notes\": \"DOG_CONDITION\"\r\n        }\r\n      },\r\n      {\r\n        \"name\": \"Rule Count Condition\",\r\n        \"description\": \"Checks the rule count.\",\r\n        \"additional\": {\r\n          \"type\": \"number\",\r\n          \"field\": \"RULE_COUNT\",\r\n          \"value\": 4,\r\n          \"operator\": \"eq\"\r\n        }\r\n      }\r\n    ]\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetActionCondition",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/42/rules/203/actions/218/conditions/523",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test Rule Condition\",\r\n  \"description\": \"Test description for Rule Condition.\",\r\n  \"additional\": {\r\n    \"type\": \"boolean\",\r\n    \"operator\": \"and\",\r\n    \"children\": [\r\n      {\r\n        \"name\": \"Rule Dog Condition\",\r\n        \"description\": \"Condition to find Dog.\",\r\n        \"additional\": {\r\n          \"type\": \"string\",\r\n          \"field\": \"CONTENT\",\r\n          \"value\": \"dog\",\r\n          \"operator\": \"contains\",\r\n          \"notes\": \"DOG_CONDITION\"\r\n        }\r\n      },\r\n      {\r\n        \"name\": \"Rule Count Condition\",\r\n        \"description\": \"Checks the rule count.\",\r\n        \"additional\": {\r\n          \"type\": \"number\",\r\n          \"field\": \"RULE_COUNT\",\r\n          \"value\": 4,\r\n          \"operator\": \"eq\"\r\n        }\r\n      }\r\n    ]\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetActionConditions",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/41/rules/188/actions/213/conditions?pageSize=10&pageNum=1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Test Rule Condition\",\r\n  \"description\": \"Test description for Rule Condition.\",\r\n  \"additional\": {\r\n    \"type\": \"boolean\",\r\n    \"operator\": \"and\",\r\n    \"children\": [\r\n      {\r\n        \"name\": \"Rule Dog Condition\",\r\n        \"description\": \"Condition to find Dog.\",\r\n        \"additional\": {\r\n          \"type\": \"string\",\r\n          \"field\": \"CONTENT\",\r\n          \"value\": \"dog\",\r\n          \"operator\": \"contains\",\r\n          \"notes\": \"DOG_CONDITION\"\r\n        }\r\n      },\r\n      {\r\n        \"name\": \"Rule Count Condition\",\r\n        \"description\": \"Checks the rule count.\",\r\n        \"additional\": {\r\n          \"type\": \"number\",\r\n          \"field\": \"RULE_COUNT\",\r\n          \"value\": 4,\r\n          \"operator\": \"eq\"\r\n        }\r\n      }\r\n    ]\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateActionCondition",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/33/rules/175/actions/198/conditions/381",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Cat Condition updated\",\n    \"additional\": {\n        \"type\": \"string\",\n        \"value\": \"cat\",\n        \"operator\": \"contains\",\n        \"field\": \"ANIMAL\",\n        \"notes\": \"TEST UPDATE\",\n        \"order\": 100\n    }\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateRuleCondition",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/33/rules/175/conditions/387",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Updated Rule Condition\",\r\n    \"description\": \"Condition to find Dog updated.\",\r\n    \"additional\": {\r\n      \"type\": \"string\",\r\n      \"field\": \"DOG\",\r\n      \"value\": \"doggy\",\r\n      \"operator\": \"contains\",\r\n      \"notes\": \"DOG_CONDITION_UPDATED\",\r\n      \"order\": 100\r\n    }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rules",
+			"description": "",
+			"item": [
+				{
+					"name": "CreateRule",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/42/rules/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Rule for Testing Action Conditions\",\n    \"description\": \"A description for Rule created 06/09/2016.\",\n    \"enabled\": true\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteRule",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/36/rules/183",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetRule",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/42/rules/189",
+						"method": "GET",
+						"header": [
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetRule Error Test",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/6/rules/125565655",
+						"method": "GET",
+						"header": [
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetRules",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/6/rules?pageSize=3&pageNum=1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"My new sequence\",\n    \"description\": \"A description for the new sequence.\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateRule",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/43/rules/1981",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Rule for Testing Conditions updated\",\n  \"description\": \"A description for Rule created 06/09/2016.\",\n  \"enabled\": false,\n  \"priority\": 1\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Workflow",
+			"description": "",
+			"item": [
+				{
+					"name": "CreateWorkflow",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Action conditions test\",\n    \"description\": \"A description for workflow created 06/09/2016.\",\n    \"notes\": \"CONDITIONS_TEST\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteWorkflow",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/24",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Z Workflow today\",\n    \"description\": \"A description for workflow created 05/08/2016.\",\n    \"notes\": \"SERVICE_TEST\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetWorkflow",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/1234567890123456789",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Z Workflow today\",\n    \"description\": \"A description for workflow created 03/08/2016.\",\n    \"notes\": \"SERVICE_TEST\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetWorkflow_Int64",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/1234567890123456789",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Z Workflow today\",\n    \"description\": \"A description for workflow created 03/08/2016.\",\n    \"notes\": \"SERVICE_TEST\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "GetWorkflows",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/?pageSize=10&pageNum=1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Z Workflow today\",\n    \"description\": \"A description for workflow created 03/08/2016.\",\n    \"notes\": \"SERVICE_TEST\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateWorkflow",
+					"request": {
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/36",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "project_id",
+								"value": "DefaultProjectId",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated testing Workflow\",\n    \"description\": \"A description for workflow created 22/08/2016.\",\n    \"notes\": \"SERVICE_TEST_UPDATED\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "HealthCheck",
+			"request": {
+				"url": "http://127.0.0.1:8080/data-processing-service/v1/healthcheck",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"workflowId\": 6,\n    \"name\": \"My new sequence 2\",\n    \"description\": \"A description for the new sequence 2.\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "SwaggerContract",
+			"request": {
+				"url": "http://127.0.0.1:8080/data-processing-service/v1/swagger.yaml",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"workflowId\": 6,\n    \"name\": \"My new sequence 2\",\n    \"description\": \"A description for the new sequence 2.\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "SwaggerUI",
+			"request": {
+				"url": "http://127.0.0.1:8080/data-processing-ui",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"workflowId\": 6,\n    \"name\": \"My new sequence 2\",\n    \"description\": \"A description for the new sequence 2.\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

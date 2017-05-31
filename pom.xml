@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.cafapi</groupId>
+        <artifactId>caf-common</artifactId>
+        <version>1.11.0-218</version>
+        <relativePath />
+    </parent>
+
+    <groupId>com.github.cafdataprocessing</groupId>
+    <artifactId>processing-service-aggregator</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Data Processing Service</name>
+    <description>An API to allow creation and management of processing concepts against a Core Policy backend.</description>
+    <url>https://cafdataprocessing.github.io/data-processing-service</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>andyreidz</id>
+            <name>Andy Reid</name>
+            <email>andrew.reid@hpe.com</email>
+        </developer>
+        <developer>
+            <id>dermot-hardy</id>
+            <name>Dermot Hardy</name>
+            <email>dermot.hardy@hpe.com</email>
+        </developer>
+        <developer>
+            <id>krzysztof-ploch</id>
+            <name>Krzysztof Ploch</name>
+            <email>krzysztof.ploch@hpe.com</email>
+        </developer>
+        <developer>
+            <id>michael-mcalynn</id>
+            <name>Michael McAlynn</name>
+            <email>michael.mcalynn@hpe.com</email>
+        </developer>
+        <developer>
+            <id>pcrookshpe</id>
+            <name>Philip Crooks</name>
+            <email>philip.crooks@hpe.com</email>
+        </developer>
+        <developer>
+            <id>tony-mcveigh</id>
+            <name>Anthony McVeigh</name>
+            <email>tony.mcveigh@hpe.com</email>
+        </developer>
+        <developer>
+            <id>trevorgetty</id>
+            <name>Trevor Getty</name>
+            <email>trevor.getty@hpe.com</email>
+        </developer>
+    </developers>
+
+    <properties>
+        <caf.boilerplate.service.version>2.0.1-7</caf.boilerplate.service.version>
+        <caf.classification.service.version>1.0.0-SNAPSHOT</caf.classification.service.version>
+        <caf.corepolicy.version>1.0.0-SNAPSHOT</caf.corepolicy.version>
+        <caf.worker.policy.version>1.0.0-SNAPSHOT</caf.worker.policy.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>boilerplate-db</artifactId>
+                <version>${caf.boilerplate.service.version}</version>
+                <classifier>jar-with-dependencies</classifier>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>classification-service-client</artifactId>
+                <version>${caf.classification.service.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>classification-service-creation-util</artifactId>
+                <version>${caf.classification.service.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>corepolicy-database</artifactId>
+                <version>${caf.corepolicy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>processing-service-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>util-boilerplate-creation</artifactId>
+                <version>${caf.boilerplate.service.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>worker-policy</artifactId>
+                <version>${caf.worker.policy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>worker-policy-handlers-shared-document</artifactId>
+                <version>${caf.worker.policy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>worker-policy-shared</artifactId>
+                <version>${caf.worker.policy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>worker-policy-type-registrant</artifactId>
+                <version>${caf.worker.policy.version}</version>
+            </dependency>
+            <!-- Dependency manager for all CAF components -->
+            <dependency>
+                <groupId>com.github.workerframework</groupId>
+                <artifactId>worker-framework</artifactId>
+                <version>1.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>processing-service-ui</module>        
+        <module>processing-service-contract</module>
+        <module>processing-service-client</module>
+        <module>processing-service-container</module>
+        <module>utils</module>
+        <module>docs</module>
+    </modules>
+
+    <scm>
+        <connection>scm:git:https://github.com/CAFDataProcessing/data-processing-service.git</connection>
+        <developerConnection>scm:git:https://github.com/CAFDataProcessing/data-processing-service.git</developerConnection>
+        <url>https://github.com/CAFDataProcessing/data-processing-service.git</url>
+    </scm>
+</project>

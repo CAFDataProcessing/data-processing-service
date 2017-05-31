@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.cafdataprocessing</groupId>
+        <artifactId>processing-service-aggregator</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>processing-service-ui</artifactId>
+    <packaging>war</packaging>
+
+    <properties>
+        <swagger.contract.artifactId>processing-service-contract</swagger.contract.artifactId>
+        <swagger.contract.path>/com/github/cafdataprocessing/processing/service/contract</swagger.contract.path>
+        <processing.ui.outputdirectory>${project.basedir}/../processing-service-core/ui</processing.ui.outputdirectory>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${swagger.contract.artifactId}</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafapi</groupId>
+            <artifactId>swagger-ui</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.github.cafapi</groupId>
+                                    <artifactId>swagger-ui</artifactId>
+                                    <outputDirectory>${project.build.directory}/swagger-ui</outputDirectory>
+                                    <excludes>**/META-INF/**</excludes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>${swagger.contract.artifactId}</artifactId>
+                                    <version>${project.version}</version>
+                                    <outputDirectory>${project.build.directory}/swagger-contract</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <webResources>
+                        <resource>
+                            <directory>${project.build.directory}/swagger-ui</directory>
+                        </resource>
+                        <resource>
+                            <directory>${project.build.directory}/swagger-contract${swagger.contract.path}</directory>
+                            <targetPath>api-docs</targetPath>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+
+            <!-- modify the ui index html to load the JavaScript files to handle large numbers -->
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>include large number scripts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <!-- Specifying as property here since Maven filtering won't escape the '\' on Windows environment resulting in
+                                  Groovy compilation error once substituted -->
+                                <property>
+                                    <name>sourceFileDirectory</name>
+                                    <value>${project.build.directory}/${project.artifactId}-${project.version}</value>
+                                </property>
+                            </properties>
+                            <scripts>
+                                <script>
+                                    <![CDATA[
+                                        def sourceFile = new File(sourceFileDirectory+"/index.html")
+                                        def sourceText = sourceFile.text;
+                                        if(sourceText==null){
+                                            return;
+                                        }
+                                        def scriptsStr = "<script src='lib/bignumber.js' type='text/javascript'></script>\n<script src='lib/custom_bignumber_json.js' type='text/javascript'></script>\n"
+                                        def updatedText = new StringBuilder(sourceText).insert(sourceText.indexOf("</head>"), scriptsStr).toString();
+                                        sourceFile.write(updatedText);
+                                    ]]>
+                                </script>
+                            </scripts>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-all</artifactId>
+                        <version>2.4.7</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- copy the built UI to the swagger application -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven.resources.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy extracted swagger-ui</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${processing.ui.outputdirectory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/${project.artifactId}-${project.version}</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <!--copy the specialised JavaScript to handle large numbers -->
+                    <execution>
+                        <id>copy large number scripts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${processing.ui.outputdirectory}/lib</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/scripts</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+        </plugins>
+    </build>
+
+</project>

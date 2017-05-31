@@ -1,0 +1,640 @@
+/*
+    General Site Styling
+*/
+@import url('https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300');
+
+body {
+    background-color: #1a1e23;
+}
+
+h3 {
+    color: #E9E9E9;
+	bold: #b113d6
+}
+
+p {
+    color: #dddddd;
+}
+
+a {
+    color: #b113d6;
+    transition: color 0.3s ease-in-out;
+}
+
+a:hover,
+a:visited {
+    color: #fff;
+}
+
+
+/*
+    Page Layout
+*/
+
+.wrapper-content {
+    padding: 35px 20px 40px;
+}
+
+.sidebar {
+    top: 114px;
+}
+
+/*
+    Top Navigation Bar
+*/
+
+.top-header {
+    background-color: #13161a;
+    height: 54px;
+    border-bottom: 2px solid #b113d6;
+}
+
+.top-header.base-shadow {
+    box-shadow: 0px 2px 5px 0px #000000;
+}
+
+.top-header .container .logo {
+    height: 52px;
+}
+
+.top-header .container .logo .image {
+    max-height: 30px;
+	width: 180px;
+}
+
+.top-header .container .menu .menu-item {
+    padding: 4px 20px;
+    color: #a6a8ab;
+	highlight: #b113d6;
+}
+
+.top-header .container .menu .menu-item.active {
+    background-color: #b113d6;
+}
+
+.top-header .container .menu .menu-item.active a {
+    color: #fff;
+}
+
+.top-header .container .menu .menu-item a {
+    font-size: 16px;
+    opacity: 1;
+    color: #A6A8AB;
+    transition: color 0.3s ease-in-out;
+    margin: 0;
+    height: 44px;
+    line-height: 44px;
+}
+
+.top-header .container .menu .menu-item a:hover {
+    color: #fff;
+}
+
+.top-header .menu-toggle {
+    top: 10px;
+}
+
+@media (max-width: 992px) {
+    .top-header .container .menu {
+        top: 52px;
+        background-color: #192023;
+    }
+}
+
+/*
+    Splash Page
+*/
+
+.splash-page .splash-header {
+    padding-top: 54px;
+    background: #73c7bd;
+    background: url(../img/header.png), linear-gradient(to bottom,  #153344 0%,#1e4753 100%);
+	height:500px;
+	border-bottom: 1px solid #0a0f15;
+    box-shadow: none;
+	background-size: cover;
+}
+
+.splash-page .splash-header .caf-brand {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.splash-page .splash-header .caf-brand .title {
+    font-size: 50px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    font-family: 'Open Sans Condensed', sans-serif;
+    letter-spacing: 2px;
+}
+
+.splash-page .splash-header .caf-brand .slogan {
+    font-family: Metric;
+}
+
+@media (min-width: 768px) {
+    .splash-page .splash-header .caf-brand {
+        width: 750px;
+    }
+}
+
+@media (min-width: 992px) {
+    .splash-page .splash-header .caf-brand {
+        width: 970px;     
+    }
+}
+
+@media (min-width: 1200px) {
+    .splash-page .splash-header .caf-brand {
+        width: 1400px;
+        justify-content: flex-start;
+        margin-left: 200px;
+        }
+}
+
+@media (min-width: 1900px) {
+    .splash-page .splash-header .caf-brand {
+        width: 1400px;
+        justify-content: flex-start;
+        margin-left: 300px;
+        }
+}
+
+
+.splash-page .splash-header .caf-brand .download-caf {
+    background-color: #b113d6;
+    color: #fff;
+    padding: 15px 65px;
+    height: auto;
+    margin-top: 0;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.splash-page .splash-header .caf-brand .download-caf:hover {
+    background-color: #72088b;
+}
+
+.splash-page hr {
+    border-top: 1px solid #323d43;
+    max-width: 1170px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.splash-page .social-card .icon {
+    color: #B113D6;
+}
+
+.splash-page .social-card .title {
+    color: #fff;
+}
+
+.splash-page .social-card .subtitle {
+    color: #E9E9E9;
+}
+
+.splash-page .social-card .link {
+    color: #B113D6;
+}
+
+.splash-page .social-card .link:hover {
+    color: #fff;
+}
+
+.splash-page .section-title {
+    color: #fff;
+}
+
+.splash-page .section-subtitle {
+    font-size: 20px;
+}
+
+.feature-list .feature .title {
+    color: #fff;
+}
+
+.feature-list .feature .subtitle {
+    color: #E9E9E9;
+}
+
+/*
+    Default Layout
+*/
+
+.content-container {
+    padding-top: 54px;
+}
+
+.content-container .docs-content h1, 
+.content-container .docs-content h2,
+.content-container .docs-content h3 {
+    font-family: Metric;
+    color: #dddddd
+;
+    border-color: #323d43;
+    margin-top: 2em;
+}
+
+.content-container .docs-content .footer {
+    border-color: #323d43; 
+}
+
+.content-container .docs-content .footer a {
+    color: #74E291;
+}
+
+/*
+    Side Navigation
+*/
+.sidebar .nav > li > a {
+    color: #fff;
+}
+
+.sidebar .nav .nav > li > a {
+    color: #E9E9E9;
+}
+
+.sidebar .nav .nav > li > a:focus {
+    background-color: transparent;
+}
+
+.sidebar .nav .nav > li.active > a {
+    color: #fff;
+    border-color: #b113d6;
+}
+
+.sidebar .nav .nav > li > a:hover {
+    border-color: #b113d6;
+    color: #b113d6;
+}
+
+.sidebar .nav .nav .nav > li.active > a {
+    border-left: 2px solid #b113d6;
+    padding-left: 38px;
+    color: #767676;
+}
+
+.sidebar .nav .nav .nav > li > a:hover {
+    border-color: #b113d6;
+    color: #b113d6;
+}
+
+/*
+    Language Selection Modal
+*/
+.language-modal {
+    background-color: #1b282e;
+}
+
+/*
+    Footer Localize Button
+*/
+localize-button .btn.inline-dropdown.dropdown-toggle:focus {
+    border-color: transparent;
+}
+
+localize-button .btn.inline-dropdown.dropdown-toggle:hover {
+    background-color: transparent !important;
+}
+
+localize-button .inline-dropdown i,
+localize-button .btn.inline-dropdown.dropdown-toggle > span {
+    color: #A6A8AB;
+    border-bottom-color: #A6A8AB;
+    transition: all 0.3s ease-in-out;
+}
+
+localize-button .inline-dropdown:hover i,
+localize-button .btn.inline-dropdown.dropdown-toggle:hover > span {
+    color: #fff;
+    border-bottom-color: #fff;    
+}
+
+/*
+    Responsive Side Menu Button
+*/
+.side-nav-expand-btn {
+    background-color: #74E291;
+    box-shadow: 1px 1px 3px #000;
+}
+
+.side-nav-expand-btn:hover {
+    background-color: #5BC978;
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        background-color: #1b282e;
+    }
+}
+
+/*
+    Team Page
+*/
+.business-card .social .social-link .hpe-icon,
+.business-card .social .social-link .platform {
+    color: #E9E9E9;
+    opacity: 1;
+}
+
+.business-card .social .social-link:hover .hpe-icon,
+.business-card .social .social-link:hover .platform {
+    color: #fff;
+}
+
+/*
+    Page footer
+*/
+
+.footer-banner {
+    background-color: #11100f;
+}
+
+.footer-banner .footer-title {
+    color: #B113D6;
+	transition: opacity 0.3s ease-in-out;
+}
+
+.footer-banner .copyright,
+.footer-banner .feedback {
+    opacity: 1;
+    color: #B113D6;
+    display: block;
+    transition: color 0.3s ease-in-out;
+}
+
+.footer-banner .feedback:hover {
+    color: #fff;
+}
+
+/*
+    Blog Page
+*/
+.ebox-title,
+.ebox-content {
+    background-color: transparent;
+}
+
+.ebox-content {
+    border-color: #323d43;
+}
+
+.content-container .docs-content h1, 
+.content-container .docs-content h2, 
+.content-container .docs-content h3, 
+.content-container .docs-content h4, 
+.content-container .docs-content h5, 
+.content-container .docs-content h6
+{
+    font-family: Metric;
+    color: #dddddd;
+}
+
+.content-container .docs-content .no-posts {
+    margin-top: 20px;
+}
+
+.blog-post .blog-header {
+    padding-top: 0;
+}
+
+.blog-post .blog-header .blog-title h3 {
+    margin-top: 0;
+}
+
+/*
+    Code Snippets
+*/
+
+.highlighter-rouge pre.highlight {
+    background-color: #354247;
+    border-color: #192023;
+}
+
+code {
+    background-color: #354247;
+    border-color: #192023;
+    color: #5eb4ff;
+}
+
+.highlight .k,
+.highlight .p,
+.highlight .n {
+    color: #eee;
+}
+
+.highlight .m {
+    margin: 0;
+}
+
+.highlight .nt {
+    color: #5eb4ff;
+}
+
+.highlight .na {
+    color: #00caca;
+}
+
+.highlight .s {
+    color: #11dd48;
+}
+
+/*
+    Pagination Controls
+*/
+.pagination-container .btn-group .button-secondary {
+    background-color: #354247;
+    border-color: #192023;
+    box-shadow: none;
+    color: #E9E9E9;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.pagination-container .btn-group .button-secondary.active {
+    background-color: #24524E;
+}
+
+.pagination-container .btn-group .button-secondary.active:hover {
+    background-color: #0B3935;
+}
+
+.pagination-container .btn-group .button-secondary:hover {
+    background-color: #1B282D;
+}
+
+/*
+    Team Page
+*/
+.flip-container .front,
+.flip-container .back {
+    background-color: #354247;
+    box-shadow: none;
+    border: 1px solid #192023;
+}
+
+/*
+    Getting Started Page
+*/
+.docs-content ul li,
+.docs-content ol li {
+    color: #E9E9E9;
+}
+
+.docs-content pre {
+    background-color: #354247;
+    border-color: #192023;
+    color: #E9E9E9;    
+}
+
+.docs-content .table {
+    color: #E9E9E9;
+}
+
+
+.docs-content .table tr th,
+.docs-content .table tr td {
+	
+    border-color: #323d43 ;
+}
+
+/*
+    Page Banner
+*/
+.content-container .docs-content .page-banner .page-banner-contents .page-banner-tagline {
+    color: #A6A8AB;
+}
+
+.content-container .docs-content .page-banner .page-banner-contents .page-banner-links .page-banner-link {
+    border: 2px solid #b113d6;
+    color: #b113d6;
+}
+
+/*
+    Containers
+*/
+.tag-container .tag {
+	font-family: Metric-Semibold;
+    position: relative;
+    padding: 6px 22px;
+    background-color: transparent;
+    border: 2px solid rgba(177, 19, 214, 0.6);
+    border-radius: 0;
+    color: #fff;
+    font-size: 19px;
+    line-height: 24px;
+    cursor: pointer;
+    min-width: 120px;
+    max-width: 384px;
+    margin: 0 12px 12px 0;
+    opacity: .7;
+    text-align: center;
+    outline: 0;
+    transition: .1s ease-in-out;
+}
+
+.tag-container .tag.active {
+	border: 2px solid #b113d6;
+    box-shadow: 0 0 0 2px #b113d6;
+    color: #fff;
+    opacity: 1;
+}
+
+.tag-container .tag:hover {
+    border: 2px solid rgba(177, 19, 214, 0.8);
+    box-shadow: 0 0 0 2px rgba(177, 19, 214, 0.8);
+    opacity: .8;
+}
+
+/*
+    Swagger related
+*/
+.swagger-container .model-name {
+    font-size: 21px;
+    color: #fff;
+    font-family: Metric-Light;
+    margin-top: 15px;
+}
+
+.swagger-container .panel {
+    border-radius: 0;
+    border-width: 2px;
+    background-color: transparent;
+}
+
+.indicator {
+    font-size: 0.2em;
+    position: relative;
+    text-indent: -9999em;
+    border-top: 1.1em solid #b113d6;
+    border-right: 1.1em solid #b113d6;
+    border-bottom: 1.1em solid #b113d6;
+    border-left: 1.1em solid rgba(0, 0, 0, 0);
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation: load8 1.1s infinite linear;
+    animation: load8 1.1s infinite linear;
+}
+
+.swagger-container .table-hover>tbody>tr:hover {
+    background-color: #1a1e23;
+}
+
+/*
+    Schema Views
+*/
+
+.text-black {
+    color: #fff !important;
+}
+
+.swagger-container .json-schema-view .brace,
+.swagger-container .json-schema-view .title,
+.swagger-container .json-schema-view .toggle-handle {
+    color: #dddddd;
+}
+
+.swagger-container a {
+    color: #01a982 !important;
+    text-decoration: none;
+}
+
+a.toggler-link .json-formatter-row a {
+    color: #01a982;
+    text-decoration: none;
+}
+
+.swagger-container .json-formatter-row .key {
+    color: #dddddd;
+    cursor: pointer;
+}
+
+.swagger-container .json-formatter-row .number,
+.swagger-container .json-formatter-row .bracket {
+    color: #01a982;
+}
+
+/*
+    logos and images
+*/
+.page-banner .page-banner-icon img {
+    width: 120px;
+    max-width: 100%
+}
+
+/*
+    Footer
+*/
+.footer-banner .footer-logo {
+    max-height: 36px;
+    display: block;
+    margin: 0 auto;
+    width: 180px;
+}

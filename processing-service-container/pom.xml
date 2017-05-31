@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.cafdataprocessing</groupId>
+        <artifactId>processing-service-aggregator</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>processing-service-container</artifactId>
+    <packaging>pom</packaging>
+    
+    <properties>
+        <caf.container.processing.service.name>cafinternal/prereleases:processing-service-${project.version}</caf.container.processing.service.name>
+        <caf.container.policy.admin.name>cafinternal/prereleases:policy-admin-elasticsearch-${caf.corepolicy.version}</caf.container.policy.admin.name>
+
+        <internal.hibernate.connectionstring>jdbc:postgresql://corepolicydb-postgres:5432/&lt;dbname&gt;</internal.hibernate.connectionstring>
+        <hibernate.user>postgres</hibernate.user>
+        <hibernate.password>root</hibernate.password>
+        <hibernate.databasename>corepolicy</hibernate.databasename>
+
+        <processing.service.url>http://${docker.host.address}:${processing.service.port}/data-processing-service/v1</processing.service.url>
+        <processing.service.cacheduration>600</processing.service.cacheduration>
+        <processing.service.policyapi.entrypath>/corepolicy/</processing.service.policyapi.entrypath>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>use-default-fixed-ports</id>
+            <properties>
+                <policyapi.service.port>9000</policyapi.service.port>
+                <postgres.db.port>5432</postgres.db.port>
+                <processing.service.port>9280</processing.service.port>
+            </properties>
+        </profile>
+        <!-- profile to optionally disable build of a container, you can enable this profile, and run your tests against
+        a fixed container without rebuilding each time. -->
+        <profile>
+            <id>skip-build-docker-container</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>${fabric8.docker.maven.version}</version>
+                        <executions>
+                            <execution>
+                                <id>build-docker-container</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>true</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>skip-start-docker-container</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>${fabric8.docker.maven.version}</version>
+                        <executions>
+                            <execution>
+                                <id>start</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>true</skip>
+                                </configuration>
+                            </execution>
+                            <!-- Stop the containers in post-integration-test phase. -->
+                            <execution>
+                                <id>stop</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>true</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <!-- only needed for db installer container for testing -->
+        <dependency>
+            <groupId>com.github.cafdataprocessing</groupId>
+            <artifactId>corepolicy-database</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafdataprocessing</groupId>
+            <artifactId>processing-service-client</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Compile test sources. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+                <executions>
+                    <execution>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven.failsafe.version}</version>
+                <configuration>
+                    <!-- use debugForkedProcess to enable debugging of tests during a run -->
+                    <!--<debugForkedProcess>true</debugForkedProcess>-->
+                    <systemPropertyVariables>
+                        <processing.service.port>${processing.service.port}</processing.service.port>
+                    </systemPropertyVariables>
+                    <environmentVariables>
+                        <processing.webservice.host>http://${docker.host.address}:${processing.service.port}</processing.webservice.host>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+
+            <!-- configure Docker image build and test -->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${fabric8.docker.maven.version}</version>
+                <executions>
+                    <!-- Build the container in compile phase. -->
+                    <execution>
+                        <id>build-docker-container</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <!-- Start the containers in pre-integration-test phase. -->
+                    <execution>
+                        <id>start</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <!-- Stop the containers in post-integration-test phase. -->
+                    <execution>
+                        <id>stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                    <!-- Push the docker image for the worker in deploy phase -->
+                    <execution>
+                        <id>upload-docker-container</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                        <configuration>
+                            <filter>processing-service</filter>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <verbose>true</verbose>
+                    <autoPull>always</autoPull>
+                    <images>
+                        <!-- Start of Policy API Containers, to facilitate testing built processing service container -->
+                        <!-- PostGres Database for Policy API -->
+                        <image>
+                            <alias>corepolicydb-postgres</alias>
+                            <name>postgres:9.4</name>
+                            <run>
+                                <ports>
+                                    <port>${postgres.db.port}:5432</port>
+                                </ports>
+                                <env>
+                                    <POSTGRES_PASSWORD>${hibernate.password}</POSTGRES_PASSWORD>
+                                    <POSTGRES_USER>${hibernate.user}</POSTGRES_USER>
+                                    <POSTGRES_DB>${hibernate.databasename}</POSTGRES_DB>
+                                </env>
+                                <wait>
+                                    <log>PostgreSQL init process complete</log>
+                                    <time>20000</time>
+                                    <shutdown>500</shutdown>
+                                </wait>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+                        <!-- Installs policy database to PostGres Container -->
+                        <image>
+                            <alias>corepolicy-dbinstaller</alias>
+                            <name>policy/dbinstaller</name>
+                            <build>
+                                <from>java:8</from>
+                                <tags>
+                                    <tag>temporary-item-please-remove</tag>
+                                </tags>
+                                <assembly>
+                                    <basedir>/</basedir>
+                                    <inline>
+                                        <dependencySets>
+                                            <dependencySet>
+                                                <fileMode>0755</fileMode>
+                                                <useProjectArtifact>true</useProjectArtifact>
+                                                <includes>
+                                                    <include>com.github.cafdataprocessing:corepolicy-database</include>
+                                                </includes>
+                                                <outputFileNameMapping>corepolicy-database.jar</outputFileNameMapping>
+                                            </dependencySet>
+                                        </dependencySets>
+                                    </inline>
+                                </assembly>
+                            </build>
+                            <run>
+                                <links>
+                                    <link>corepolicydb-postgres</link>
+                                </links>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                                <cmd>java
+                                    -Dapi.mode=direct
+                                    -Dapi.direct.repository=hibernate
+                                    -Dhibernate.connectionstring=${internal.hibernate.connectionstring}
+                                    -Dhibernate.user=${hibernate.user}
+                                    -Dhibernate.password=${hibernate.password}
+                                    -Dhibernate.databasename=${hibernate.databasename}
+                                    -jar /corepolicy-database.jar -c
+                                </cmd>
+                                <wait>
+                                    <log>DB update finished.</log>
+                                    <time>50000</time>
+                                    <shutdown>500</shutdown>
+                                </wait>
+                            </run>
+                        </image>
+                        <!-- Policy API Container -->
+                        <image>
+                            <alias>policy-admin</alias>
+                            <name>${caf.container.policy.admin.name}</name>
+                            <run>
+                                <hostname>policyadmin</hostname>
+                                <ports>
+                                    <!-- Expose port for tomcat -->
+                                    <port>${policyapi.service.port}:8080</port>
+                                </ports>
+                                <env>
+                                    <POLICY_ELASTICSEARCH_DISABLED>true</POLICY_ELASTICSEARCH_DISABLED>
+                                    <api.mode>direct</api.mode>
+                                    <api.direct.repository>hibernate</api.direct.repository>
+                                    <hibernate.connectionstring>${internal.hibernate.connectionstring}</hibernate.connectionstring>
+                                    <hibernate.user>${hibernate.user}</hibernate.user>
+                                    <hibernate.password>${hibernate.password}</hibernate.password>
+                                    <hibernate.databasename>${hibernate.databasename}</hibernate.databasename>
+                                </env>
+                                <wait>
+                                    <http>
+                                        <!-- note health check uses external port exposed on docker VM, it may be in bridged mode, or running
+                                        in its own machine, in which case, this can be the same as the container.run.tomcat.service.port -->
+                                        <url>http://${docker.host.address}:${policyapi.service.port}/corepolicy/healthcheck?project_id=1</url>
+                                        <method>GET</method>
+                                    </http>
+                                    <time>400000</time>
+                                    <shutdown>500</shutdown>
+                                </wait>
+                                <links>
+                                    <link>corepolicydb-postgres</link>
+                                </links>
+                                <log>
+                                    <!-- enable logs from the container, they will show with policyadmin> prefix
+                                    and in the colour yellow -->
+                                    <color>yellow</color>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+                        <!-- End of Policy API Containers -->
+
+                        <image>
+                            <alias>processing-service</alias>
+                            <name>${caf.container.processing.service.name}</name>
+                            <build>
+                                <from>node:4.4.7</from>
+                                <labels>
+                                    <Build.Number>${project.version}</Build.Number>
+                                    <Build.Date>${maven.build.timestamp}</Build.Date>
+                                    <Git.Branch>${git.branch}</Git.Branch>
+                                    <Git.Commit>${git.revision}</Git.Commit>
+                                </labels>
+                                <optimise>true</optimise>
+                                <ports>
+                                    <port>8080</port>
+                                </ports>
+                                <env>
+                                    <NODE_ENV>production</NODE_ENV>
+                                </env>
+                                <assembly>
+                                    <inline>
+                                        <fileSets>
+                                            <fileSet>
+                                                <directory>${project.basedir}/../processing-service-core</directory>
+                                                <outputDirectory>/processing-service</outputDirectory>
+                                                <excludes>
+                                                    <exclude>node_modules/**</exclude>
+                                                    <exclude>test/**</exclude>
+                                                </excludes>
+                                            </fileSet>
+                                        </fileSets>
+                                    </inline>
+                                </assembly>
+                                <workdir>/maven/processing-service</workdir>
+                                <runCmds>
+                                    <runCmd>npm install</runCmd>
+                                </runCmds>
+                                <cmd>node app.js</cmd>
+                            </build>
+                            <run>
+                                <ports>
+                                    <port>${processing.service.port}:8080</port>
+                                </ports>
+                                <env>
+                                    <CAF_PROCESSING_SERVICE_PORT>8080</CAF_PROCESSING_SERVICE_PORT>
+                                    <CAF_PROCESSING_SERVICE_CACHE_DURATION>${processing.service.cacheduration}</CAF_PROCESSING_SERVICE_CACHE_DURATION>
+                                    
+                                    <CAF_PROCESSING_SERVICE_POLICY_API_HOST>policy-admin</CAF_PROCESSING_SERVICE_POLICY_API_HOST>
+                                    <CAF_PROCESSING_SERVICE_POLICY_API_PORT>8080</CAF_PROCESSING_SERVICE_POLICY_API_PORT>
+                                    <CAF_PROCESSING_SERVICE_POLICY_API_ENTRY_PATH>${processing.service.policyapi.entrypath}</CAF_PROCESSING_SERVICE_POLICY_API_ENTRY_PATH>
+                                </env>
+                                <wait>
+                                    <http>
+                                        <url>${processing.service.url}/healthcheck</url>
+                                        <method>GET</method>
+                                    </http>
+                                    <time>40000</time>
+                                    <shutdown>500</shutdown>
+                                </wait>
+                                <links>
+                                    <link>policy-admin</link>
+                                </links>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

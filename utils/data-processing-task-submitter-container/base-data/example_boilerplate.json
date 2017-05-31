@@ -1,0 +1,67 @@
+{
+    "projectId": "Default",
+    "expressions": [
+        {
+            "tempId": 1,
+            "name": "HP old",
+            "description": "HP old",
+            "expression": "HP Ltd"
+        },
+        {
+            "tempId": 2,
+            "name": "Generic Disclaimer",
+            "description": "Generic Disclaimer",
+            "expression": "Disclaimer : This message contains confidential information and is intended only for the individual named. If you are not the named addressee, you are hereby notified that disclosing, copying, distributing or taking any action in reliance on the contents of this e-mail is strictly prohibited. Please notify the sender immediately by e-mail if you have received this e-mail by mistake, and delete this material from any computer. Hewlett Packard accepts no liability for errors or omissions in the contents of this message, which arise as a result of e-mail transmission."
+        },
+        {
+            "tempId": 3,
+            "name": "HPE short",
+            "description": "HPE short",
+            "expression": "HPE"
+        },
+        {
+            "tempId": 4,
+            "name": "HPE long",
+            "description": "HPE long",
+            "expression": "Hewlett Packard Enterprise"
+        },
+        {
+            "tempId": 5,
+            "name": "HP",
+            "description": "HP",
+            "expression": "HP"
+        },
+        {
+            "tempId": 6,
+            "name": "Hewlett Packard",
+            "description": "Hewlett Packard",
+            "expression": "Hewlett Packard"
+        },
+        {
+            "tempId": 7,
+            "name": "HPE Disclaimer",
+            "description": "HPE Disclaimer",
+            "expression": "For those countries that require consultation with works councils or other employee representatives, this is not intended to provide country-specific complete information and in no way reflects that final decisions have been made at a country level. With respect to such countries, final decisions are subject to prior consultation with works councils and other employee representatives, as required, and in compliance with local laws."
+        }
+    ],
+    "tags": [
+        {
+            "name": "Disclaimers",
+            "description": "Disclaimers Tag",
+            "defaultReplacementText": "<redacted disclaimer>",
+            "boilerplateExpressions": [2, 7]
+        },
+        {
+            "name": "HPE Company Names",
+            "description": "HPE Company Name Tags",
+            "defaultReplacementText": "<redacted company names>",
+            "boilerplateExpressions": [1, 3, 4, 5, 6]
+        },
+        {
+            "name": "HPE long",
+            "description": "HPE Company Name long",
+            "defaultReplacementText": "<redacted long company name>",
+            "boilerplateExpressions": [4]
+        }
+    ]
+}

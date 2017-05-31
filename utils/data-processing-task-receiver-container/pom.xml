@@ -1,0 +1,234 @@
+<!--
+
+    Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.cafdataprocessing</groupId>
+        <artifactId>processing-utilities-aggregator</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>data-processing-task-receiver-container</artifactId>
+    <packaging>pom</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.cafdataprocessing</groupId>
+            <artifactId>data-processing-task-receiver</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <CAF_RABBITMQ_CONSUME_QUEUES>dataprocessing-fs-workflow-in</CAF_RABBITMQ_CONSUME_QUEUES>
+        <CAF_RABBITMQ_PASSWORD>root</CAF_RABBITMQ_PASSWORD>
+        <CAF_RABBITMQ_USERNAME>root</CAF_RABBITMQ_USERNAME>
+
+        <caf.container.taskreceiver.name>cafinternal/prereleases:data-processing-task-receiver-${project.version}</caf.container.taskreceiver.name>
+
+        <test.webdav.directory>/srv/common/webdav</test.webdav.directory>
+
+        <CAF_STORAGE_DATA_DIRECTORY>${test.webdav.directory}</CAF_STORAGE_DATA_DIRECTORY>
+
+        <CAF_TASKRECEIVER_OUTPUT_DIRECTORY>${test.webdav.directory}/output</CAF_TASKRECEIVER_OUTPUT_DIRECTORY>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${fabric8.docker.maven.version}</version>
+                <executions>
+                    <execution>
+                        <id>docker-build</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <skip>false</skip>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>docker-start</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>docker-stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>docker-push</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                        <configuration>
+                            <!-- only upload the task-receiver image, other images are built as part of testing -->
+                            <filter>data-processing-task-receiver</filter>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <watchInterval>500</watchInterval>
+                    <autoPull>always</autoPull>
+                    <images>
+                        <!-- RabbitMQ image for for testing Task Receiver image starts -->
+                        <image>
+                            <alias>rabbitmq</alias>
+                            <name>rabbitmq:3-management</name>
+                            <run>
+                                <ports>
+                                    <port>${rabbitmq.ctrl.port}:15672</port>
+                                    <port>${rabbitmq.node.port}:5672</port>
+                                </ports>
+                                <env>
+                                    <RABBITMQ_DEFAULT_PASS>${CAF_RABBITMQ_PASSWORD}</RABBITMQ_DEFAULT_PASS>
+                                    <RABBITMQ_DEFAULT_USER>${CAF_RABBITMQ_USERNAME}</RABBITMQ_DEFAULT_USER>
+                                </env>
+                                <wait>
+                                    <log>Server startup complete</log>
+                                    <http>
+                                        <url>http://${docker.host.address}:${rabbitmq.ctrl.port}</url>
+                                    </http>
+                                    <time>120000</time>
+                                    <shutdown>500</shutdown>
+                                </wait>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+
+                        <!-- webdav image used for storing files -->
+                        <image>
+                            <alias>webdav</alias>
+                            <name>cloudesire/webdav</name>
+                            <run>
+                                <volumes>
+                                    <bind>
+                                        <volume>${test.webdav.directory}</volume>
+                                    </bind>
+                                </volumes>
+                                <ports>
+                                    <port>${webdav.apache.port}:8080</port>
+                                </ports>
+                                <env>
+                                    <APACHE_PORT>8080</APACHE_PORT>
+                                </env>
+                                <wait>
+                                    <log>WebDAV Server startup complete</log>
+                                    <http>
+                                        <url>http://${docker.host.address}:${webdav.apache.port}</url>
+                                    </http>
+                                    <time>120000</time>
+                                    <shutdown>500</shutdown>
+                                </wait>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+
+                        <!-- Task Receiver Container Image -->
+                        <image>
+                            <alias>data-processing-task-receiver</alias>
+                            <name>${caf.container.taskreceiver.name}</name>
+                            <build>
+                                <from>java:8</from>
+                                <labels>
+                                    <Build.Number>${project.version}</Build.Number>
+                                    <Build.Date>${maven.build.timestamp}</Build.Date>
+                                    <Git.Branch>${git.branch}</Git.Branch>
+                                    <Git.Commit>${git.revision}</Git.Commit>
+                                </labels>
+                                <optimise>true</optimise>
+                                <assembly>
+                                    <basedir>/</basedir>
+                                    <inline>
+                                        <dependencySets>
+                                            <dependencySet>
+                                                <fileMode>0755</fileMode>
+                                                <useProjectArtifact>true</useProjectArtifact>
+                                                <includes>
+                                                    <include>com.github.cafdataprocessing:data-processing-task-receiver</include>
+                                                </includes>
+                                                <outputFileNameMapping>task-receiver.jar</outputFileNameMapping>
+                                            </dependencySet>
+                                        </dependencySets>
+                                    </inline>
+                                </assembly>
+                                <cmd>
+                                    java -jar task-receiver.jar
+                                </cmd>
+                            </build>
+                            <run>
+                                <links>
+                                    <link>rabbitmq</link>
+                                </links>
+                                <volumes>
+                                    <from>
+                                        <image>webdav</image>
+                                    </from>
+                                </volumes>
+                                <wait>
+                                    <log>Listening for messages to output.</log>
+                                    <time>50000</time>
+                                    <shutdown>500</shutdown>
+                                </wait>
+                                <env>
+                                    <CAF_RABBITMQ_CONSUME_QUEUES>${CAF_RABBITMQ_CONSUME_QUEUES}</CAF_RABBITMQ_CONSUME_QUEUES>
+                                    <CAF_RABBITMQ_HOST>rabbitmq</CAF_RABBITMQ_HOST>
+                                    <CAF_RABBITMQ_PASSWORD>${CAF_RABBITMQ_PASSWORD}</CAF_RABBITMQ_PASSWORD>
+                                    <CAF_RABBITMQ_PORT>5672</CAF_RABBITMQ_PORT>
+                                    <CAF_RABBITMQ_USERNAME>${CAF_RABBITMQ_USERNAME}</CAF_RABBITMQ_USERNAME>
+
+                                    <CAF_STORAGE_DATA_DIRECTORY>${CAF_STORAGE_DATA_DIRECTORY}</CAF_STORAGE_DATA_DIRECTORY>
+
+                                    <CAF_TASKRECEIVER_OUTPUT_DIRECTORY>${CAF_TASKRECEIVER_OUTPUT_DIRECTORY}</CAF_TASKRECEIVER_OUTPUT_DIRECTORY>
+                                </env>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>use-default-fixed-ports</id>
+            <properties>
+                <rabbitmq.node.port>5672</rabbitmq.node.port>
+                <rabbitmq.ctrl.port>15672</rabbitmq.ctrl.port>
+            </properties>
+        </profile>
+    </profiles>
+</project>

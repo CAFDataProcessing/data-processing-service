@@ -1,0 +1,274 @@
+{
+    "name": "Default Workflow",
+    "description": "",
+    "processingRules": [{
+            "name": "Metadata Processing",
+            "description": "Extracts document metadata.",
+            "priority": 100,
+            "actions": [{
+                    "name": "BinaryHash",
+                    "description": "Returns a SHA-1 digest of the input file.",
+                    "order": 100,
+                    "settings": {
+                    },
+                    "typeName": "BinaryHashPolicyType",
+                    "actionConditions": []
+                },
+                {
+                    "name": "MarkupEmails",
+                    "description": "Markup Emails.",
+                    "order": 200,
+                    "settings": {
+                        "fields": ["CONTENT",
+                            "internetmessageid",
+                            "conversationtopic",
+                            "caf-mail-conversation-index",
+                            "caf-in-reply-to"],
+                        "hashConfiguration": [{
+                                "name": "Normalized",
+                                "scope": "EMAIL_SPECIFIC",
+                                "fields": [{
+                                        "name": "To",
+                                        "normalizationType": "NAME_ONLY"
+                                    },
+                                    {
+                                        "name": "From",
+                                        "normalizationType": "NAME_ONLY"
+                                    },
+                                    {
+                                        "name": "Body",
+                                        "normalizationType": "REMOVE_WHITESPACE_AND_LINKS"
+                                    }],
+                                "hashFunctions": ["XXHASH64"]
+                            }],
+                        "outputFields": [{
+                                "field": "SECTION_ID",
+                                "xPathExpression": "/root/email[1]/hash/digest/@value"
+                            },
+                            {
+                                "field": "SECTION_SORT",
+                                "xPathExpression": "/root/email[1]/headers/Sent/@dateUtc"
+                            },
+                            {
+                                "field": "PARENT_ID",
+                                "xPathExpression": "/root/email[2]/hash/digest/@value"
+                            },
+                            {
+                                "field": "MESSAGE_ID",
+                                "xPathExpression": "/root/CAF_MAIL_MESSAGE_ID/text()"
+                            },
+                            {
+                                "field": "IN_REPLY_TO",
+                                "xPathExpression": "/root/CAF_MAIL_IN_REPLY_TO/text()"
+                            },
+                            {
+                                "field": "CONVERSATION_TOPIC",
+                                "xPathExpression": "/root/CAF_MAIL_CONVERSATION_TOPIC/text()"
+                            },
+                            {
+                                "field": "CONVERSATION_INDEX_JSON",
+                                "xPathExpression": "/root/CAF_MAIL_CONVERSATION_INDEX_PARSED/text()"
+                            },
+                            {
+                                "field": "CONVERSATION_INDEX",
+                                "xPathExpression": "/root/caf-mail-conversation-index/text()"
+                            },
+                            {
+                                "field": "THREAD_ID",
+                                "xPathExpression": "/root/email[last()]/hash/digest/@value"
+                            },
+                            {
+                                "field": "THREAD_DATE",
+                                "xPathExpression": "/root/email[last()]/headers/Sent/@dateUtc"
+                            }],
+                        "isEmail": true
+                    },
+                    "typeName": "MarkupPolicyType",
+                    "actionConditions": [{
+                            "name": "Mail message",
+                            "additional": {
+                                "type": "boolean",
+                                "operator": "or",
+                                "children": [{
+                                        "name": "Outlook",
+                                        "additional": {
+                                            "type": "string",
+                                            "value": "345",
+                                            "operator": "is",
+                                            "field": "DOC_FORMAT_CODE",
+                                            "notes": "DOC_FORMAT_CODE is 345: Outlook"
+                                        }
+                                    },
+                                    {
+                                        "name": "SMTP",
+                                        "additional": {
+                                            "type": "string",
+                                            "value": "232",
+                                            "operator": "is",
+                                            "field": "DOC_FORMAT_CODE",
+                                            "notes": "DOC_FORMAT_CODE is 232: SMTP"
+                                        }
+                                    },
+                                    {
+                                        "name": "MIME_Fmt",
+                                        "additional": {
+                                            "type": "string",
+                                            "value": "233",
+                                            "operator": "is",
+                                            "field": "DOC_FORMAT_CODE",
+                                            "notes": "DOC_FORMAT_CODE is 233: MIME_Fmt"
+                                        }
+                                    },
+                                    {
+                                        "name": "OODF_Text_Fmt",
+                                        "additional": {
+                                            "type": "string",
+                                            "value": "373",
+                                            "operator": "is",
+                                            "field": "DOC_FORMAT_CODE",
+                                            "notes": "DOC_FORMAT_CODE is 373: OODF_Text_Fmt"
+                                        }
+                                    }]
+                            }
+                        }]
+                },
+                {
+                    "name": "MarkupDocuments",
+                    "description": "Markup documents.",
+                    "order": 300,
+                    "settings": {
+                        "fields": ["CONTENT"],
+                        "hashConfiguration": [{
+                                "name": "Normalized",
+                                "scope": "EMAIL_THREAD",
+                                "fields": [{
+                                        "name": "CONTENT",
+                                        "normalizationType": "REMOVE_WHITESPACE_AND_LINKS"
+                                    }],
+                                "hashFunctions": ["XXHASH64"]
+                            }],
+                        "outputFields": [{
+                                "field": "XML",
+                                "xPathExpression": "."
+                            }],
+                        "isEmail": false
+                    },
+                    "typeName": "MarkupPolicyType",
+                    "actionConditions": [{
+                            "name": "Not a mail message",
+                            "additional": {
+                              "type": "not",
+                              "condition": {
+                                "name": "Mail message",
+                                "additional": {
+                                  "type": "boolean",
+                                  "operator": "or",
+                                  "children": [{
+                                    "name": "Outlook",
+                                    "additional": {
+                                        "type": "string",
+                                        "value": "345",
+                                        "operator": "is",
+                                        "field": "DOC_FORMAT_CODE",
+                                        "notes": "DOC_FORMAT_CODE is 345: Outlook"
+                                    }
+                                  },
+                                  {
+                                    "name": "SMTP",
+                                    "additional": {
+                                        "type": "string",
+                                        "value": "232",
+                                        "operator": "is",
+                                        "field": "DOC_FORMAT_CODE",
+                                        "notes": "DOC_FORMAT_CODE is 232: SMTP"
+                                    }
+                                  },
+                                  {
+                                    "name": "MIME_Fmt",
+                                    "additional": {
+                                        "type": "string",
+                                        "value": "233",
+                                        "operator": "is",
+                                        "field": "DOC_FORMAT_CODE",
+                                        "notes": "DOC_FORMAT_CODE is 233: MIME_Fmt"
+                                    }
+                                  },
+                                  {
+                                      "name": "OODF_Text_Fmt",
+                                      "additional": {
+                                          "type": "string",
+                                          "value": "373",
+                                          "operator": "is",
+                                          "field": "DOC_FORMAT_CODE",
+                                          "notes": "DOC_FORMAT_CODE is 373: OODF_Text_Fmt"
+                                      }
+                                  }]
+                                }
+                              }
+                            }
+                        }]
+                },
+                {
+                    "name": "LangDetect",
+                    "description": "Detects top 3 languages in an uploaded document.",
+                    "order": 400,
+                    "settings": {
+                        "workerName": "worker-languagedetection",
+                        "queueName": "dataprocessing-fs-langdetect-in"
+                    },
+                    "typeName": "DocumentWorkerHandler",
+                    "actionConditions": []
+                },
+                {
+                    "name": "Boilerplate",
+                    "description": "Detects Expressions in an uploaded document.",
+                    "order": 500,
+                    "settings": {
+                        "redactionType": "DO_NOTHING",
+                        "expressionIds": ["HP old",
+                            "Generic Disclaimer",
+                            "HPE short",
+                            "HPE long",
+                            "HP",
+                            "Hewlett Packard",
+                            "HPE Disclaimer"],
+                        "returnMatches": true
+                    },
+                    "typeName": "BoilerplatePolicyType",
+                    "actionConditions": []
+                }],
+            "ruleConditions": []
+        },
+        {
+            "name": "Classify",
+            "description": "Classify processed document.",
+            "priority": 200,
+            "actions": [{
+                    "name": "External Classification",
+                    "description": "Perform external classification on document.",
+                    "order": 100,
+                    "settings": {
+                        "workflowId": "Classification Workflow"
+                    },
+                    "typeName": "ElasticSearchClassificationPolicyType",
+                    "actionConditions": []
+                }],
+            "ruleConditions": []
+        },
+        {
+            "name": "Output",
+            "description": "Output processed document.",
+            "priority": 300,
+            "actions": [{
+                    "name": "Send to Output Queue",
+                    "description": "Send to Data Processing Output Queue.",
+                    "order": 100,
+                    "settings": {
+                        "messageType": "GenericClassifier"
+                    },
+                    "typeName": "GenericQueueHandler",
+                    "actionConditions": []
+                }],
+            "ruleConditions": []
+        }]
+}

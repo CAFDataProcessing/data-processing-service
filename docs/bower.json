@@ -1,0 +1,21 @@
+{
+  "name": "data-processing",
+  "authors": [
+    "Michael McAlynn <michael.mcalynn@hpe.com>"
+  ],
+  "description": "CAF data-processing Documentation Jekyll Project",
+  "main": "",
+  "license": "Apache License, Version 2.0",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    ".",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "caf-templates": "^2.0.5"
+  }
+}

@@ -1,0 +1,93 @@
+{
+	"navigation_items": [{
+		"title": {
+			"en-us": "Data Processing"
+		},
+		"children": [{
+			"title": {
+				"en-us": "Overview"
+			},
+			"url": {
+				"en-us": "pages/en-us/Overview"
+			}
+		},
+		{
+			"title": {
+				"en-us": "Features"
+			},
+			"url": {
+				"en-us": "pages/en-us/Features"
+			}
+		},
+		{
+			"title": {
+				"en-us": "Getting Started"
+			},
+      "children": [
+        {
+          "title": {
+            "en-us": "Processing API"
+          },
+          "url": {
+            "en-us": "pages/en-us/Getting-Started"
+          }
+        },
+        {
+          "title": {
+            "en-us": "Adding a Worker"
+          },
+          "url": {
+            "en-us": "pages/en-us/Adding_a_Worker/Main"
+          }
+        }
+      ]
+		},
+		{
+      "title": {
+        "en-us": "API"
+      },
+      "url": {
+        "en-us": "pages/en-us/Data_Processing/API"
+      }
+		},
+    {
+      "title": {
+        "en-us": "Actions"
+      },
+      "children": [
+        {
+          "title": { 
+            "en-us": "Classification"
+          },
+          "url": {
+            "en-us": "pages/en-us/Classification/Main"
+          }
+        },
+		{
+          "title": { 
+            "en-us": "Creating an Action"
+          },
+          "url": {
+            "en-us": "pages/en-us/Creating_an_Action/Main"
+          }
+        },
+        {
+          "title": { 
+            "en-us": "Text Extract"
+          },
+          "url": {
+            "en-us": "pages/en-us/Text_Extract/Main"
+          }
+        }
+      ]
+    },
+		{
+			"title": {
+				"en-us": "Architecture"
+			},
+			"url": {
+				"en-us": "pages/en-us/Architecture"
+			}
+		}]
+	}]
+}

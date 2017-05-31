@@ -1,0 +1,28 @@
+{
+  "name": "processing-service",
+  "version": "1.0.0",
+  "private": false,
+  "description": "An API that acts as a gateway onto components that make up data processing such as Policy API & Boilerplate API.",
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.12.3",
+    "json-bigint": "^0.2.3",
+    "node-cache": "^3.2.1",
+    "q": "^1.4.1",
+    "querystring": "^0.2.0",
+    "swagger-express-mw": "^0.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.5.3",
+    "should": "^7.1.0",
+    "sinon": "^1.17.4",
+    "supertest": "^1.0.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "swagger project test"
+  }
+}
