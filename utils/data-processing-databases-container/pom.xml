@@ -32,8 +32,7 @@
 
     <properties>
         <caf.container.databases.name>cafinternal/prereleases:data-processing-databases-${project.version}</caf.container.databases.name>
-        <!-- TODO update to open source java-postgres image when available -->
-        <caf.container.javapostgres.name>cafinternal/prereleases:java-postgres-1.0.0-SNAPSHOT</caf.container.javapostgres.name>
+        <caf.container.javapostgres.name>cafapi/java-postgres:1.11.0-218</caf.container.javapostgres.name>
     </properties>
 
     <dependencies>

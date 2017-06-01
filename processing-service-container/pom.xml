@@ -32,7 +32,6 @@
     
     <properties>
         <caf.container.processing.service.name>cafinternal/prereleases:processing-service-${project.version}</caf.container.processing.service.name>
-        <caf.container.policy.admin.name>cafinternal/prereleases:policy-admin-elasticsearch-${caf.corepolicy.version}</caf.container.policy.admin.name>
 
         <internal.hibernate.connectionstring>jdbc:postgresql://corepolicydb-postgres:5432/&lt;dbname&gt;</internal.hibernate.connectionstring>
         <hibernate.user>postgres</hibernate.user>

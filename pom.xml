@@ -83,9 +83,10 @@
 
     <properties>
         <caf.boilerplate.service.version>2.0.1-7</caf.boilerplate.service.version>
-        <caf.classification.service.version>1.0.0-SNAPSHOT</caf.classification.service.version>
-        <caf.corepolicy.version>1.0.0-SNAPSHOT</caf.corepolicy.version>
-        <caf.worker.policy.version>1.0.0-SNAPSHOT</caf.worker.policy.version>
+        <caf.classification.service.version>1.0.0-2</caf.classification.service.version>
+        <caf.container.policy.admin.name>cafdataprocessing/policy-admin-elasticsearch:1.0.0</caf.container.policy.admin.name>
+        <caf.corepolicy.version>1.0.0-4</caf.corepolicy.version>
+        <caf.worker.policy.version>1.0.0-3</caf.worker.policy.version>
     </properties>
 
     <dependencyManagement>

@@ -19,7 +19,7 @@ The recommended method for deploying data processing components is through a [Do
 
 * The open source Data Processing compose file [here](https://github.com/CAFDataProcessing/data-processing-service-deploy) uses the open source data processing components e.g. Binary Hash, Markup, Boilerplate, Language Detection.
 
-* A compose file for Enterprise Edition to deploy the full suite of data processing services is available [here](https://github.hpe.com/caf/data-processing-service-deploy). This includes actions that require a license such as Metadata Extraction, Speech to Text, Entity Extraction and more. Details on obtaining a license for Enterprise Edition can be found on the [Overview](./Overview) page.
+* A compose file for Enterprise Edition to deploy the full suite of data processing services is available [here](https://github.hpe.com/caf/data-processing-service-internal-deploy). This includes actions that require a license such as Metadata Extraction, Speech to Text, Entity Extraction and more. Details on obtaining a license for Enterprise Edition can be found on the [Overview](./Overview) page.
 
 ### Prerequisites
 
