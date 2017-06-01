@@ -37,7 +37,7 @@ This guide describes using processing workers only available with the Enterprise
 2. The expected license filenames are a single license file 'licensekey.dat' for Speech To Text, OCR and Entity Extract and a license file 'kv.lic' for Keyview.
 3. Copy each of these license files into the directory used for licenses by the compose file. This defaults to a folder 'licenses' in the same directory as the compose file. Another folder may be used by setting the `LICENSES_LOCAL_FOLDER` environment variable to the folder containing the licenses.
 
-Licenses can be requested by raising an issue on the data-processing-service repository, [here](https://github.hpe.com/caf-staging/data-processing-service/issues).
+For license enquiries please raise an issue on the data-processing-service repository, [here](https://github.com/CAFDataProcessing/data-processing-service/issues).
 
 ### Images
 
@@ -265,7 +265,7 @@ An action to perform OCR against image files will extract text from images onto 
 ![Create Action OCR in Data Processing API Swagger UI](../../assets/img/Getting_Started/5_createaction_ocr.png)
 
 ##### Add a Condition to the OCR Action
-To avoid OCR being unnecessarily performed on non-image based items like .txt files or audio files, we will add a condition specifying the file classes that the OCR action should execute against. The list of document classes as allocated by the extract operation is detailed [here](./Text_Extract/Copied/Document_Class_and_Format_Code). The OCR condition will be defined as below;
+To avoid OCR being unnecessarily performed on non-image based items like .txt files or audio files, we will add a condition specifying the file classes that the OCR action should execute against. The list of document classes as allocated by the extract operation is detailed [here](./Text_Extract/copied/Document_Class_and_Format_Code). The OCR condition will be defined as below;
 
 ```
 {
@@ -355,7 +355,7 @@ When passed as the WorkflowId on a task to the workflow worker, this workflow sp
 
 #### Message Format
 
-The format of the input task data is described in detail in the GitHub Repository for the policy worker library which is used in the classification and workflow workers [here](https://github.com/CAFDataProcessing/worker-policy/worker-policy-shared). In the context of data processing the key properties to highlight are;
+The format of the input task data is described in detail in the GitHub Repository for the policy worker library which is used in the classification and workflow workers [here](https://github.com/CAFDataProcessing/worker-policy) under 'worker-policy-shared'. In the context of data processing the key properties to highlight are;
 
 * workflowId, which should be set to the ID of the workflow that document should be processed against.
 * projectId, which should be set to the ID of the tenant that was used in creating the workflow.

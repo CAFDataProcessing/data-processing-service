@@ -40,7 +40,7 @@ module.exports = function(grunt) {
             },
             pages: {
                 options: {
-                    remote: 'git@github.hpe.com:caf-staging/data-processing-service.git',
+                    remote: 'git@github.com:CAFDataProcessing/data-processing-service.git',
                     login: '',
                     token: '',
                     branch: 'gh-pages'
