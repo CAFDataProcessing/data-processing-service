@@ -159,8 +159,8 @@
         <module>processing-service-contract</module>
         <module>processing-service-client</module>
         <module>processing-service-container</module>
-        <module>utils</module>
         <module>docs</module>
+        <module>utils</module>
     </modules>
 
     <scm>
