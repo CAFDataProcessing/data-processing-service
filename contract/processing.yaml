@@ -1,0 +1,1452 @@
+#THIS FILE SHOULD NOT BE EDITED. THIS FILE IS COPIED FROM THE ACTUAL CONTRACT LOCATION AND WILL BE OVERRIDEN ON DOCUMENTATION REBUILD. REFER TO GRUNTFILE FOR ORIGINAL CONTRACT LOCATION.
+#
+# Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+swagger: "2.0"
+info:
+  title: "Data Processing Service API"
+  version: "1.0.0"
+  description: |
+    The Data Processing API allows for the creation of Processing pipelines that describe the operations (Actions) to perform against data. The decision of which Actions to perform can be controlled by Conditions.
+# basePath prefixes all resource paths 
+basePath: /data-processing-service/v1
+# 
+tags:
+  - name: Actions
+    description: Action operations.
+  - name: Action Conditions
+    description: Operations for Conditions on Actions.
+  - name: Action Types
+    description: Action Type operations.
+  - name: Admin
+    description: Administrative operations.
+  - name: Processing Rules
+    description: Processing Rule operations.
+  - name: Processing Rules Conditions
+    description: Operations for Conditions on Processing Rules.
+  - name: Workflows
+    description: Workflow operations.
+schemes:
+  - http
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+#
+parameters:
+  project_id:
+    name: project_id
+    in: header
+    type: string
+    description: |
+      Identifies the tenant making the request.
+    required: true
+paths:
+  ##########################
+  ##  ADMIN
+  ##########################
+  /healthcheck/:
+    x-swagger-router-controller: admin
+    get:
+      tags:
+        - Admin
+      summary: Check if the service is healthy.
+      description: Returns the current health of the service.
+      operationId: healthCheck
+      responses:
+        200:
+          description: |
+            Returns a status of healthy if all components the service depends on are contactable. A 200 response also implies the service itself is running.
+          schema:
+            $ref: "#/definitions/healthStatus"
+  ##########################
+  ##  ACTION TYPES
+  ##########################
+  /actionTypes/:
+    x-swagger-router-controller: actionType
+    parameters:
+      - $ref: '#/parameters/project_id'
+      - name: pageNum
+        in: query
+        type: integer
+        default: 1
+        description: Optional. The page number to return results from. Defaults to 1.
+      - name: pageSize
+        in: query
+        type: integer
+        default: 100
+        description: Optional. The max number of results to return. Defaults to 100.
+    get:
+      tags:
+        - Action Types
+      summary: Get Actions Types.
+      description: Returns all Actions Types for the tenant.
+      operationId: getActionTypes
+      responses:
+        200:
+          description: |
+            Returns the list of Action Types for
+            the tenant identified by project_id.
+          schema:
+            $ref: "#/definitions/existingActionTypes"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  /actionType/:
+    x-swagger-router-controller: actionType
+    parameters:
+      - $ref: '#/parameters/project_id'
+    post:
+      tags:
+        - Action Types
+      summary: Create an Action Type.
+      description: Creates an Action Type with the provided information.
+      operationId: createActionType
+      parameters:
+        - name: newActionType
+          description: The definition of the Action Type to create.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/actionType'
+      responses:
+        201:
+          description: Indicates that the Action Type was successfully created.
+          schema:
+            $ref: '#/definitions/existingActionType'
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  /actionType/{id}:
+    x-swagger-router-controller: actionType
+    parameters:
+      - $ref: '#/parameters/project_id'
+      - name: id
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Action Type.
+        required: true
+    get:
+      tags:
+        - Action Types
+      summary: Get an Action Type.
+      description: Retrieves an Action Type with the matching ID.
+      operationId: getActionType
+      responses: 
+        200:
+          description: |
+            Returns the Action Type identified by the ID.
+          schema:
+            $ref: '#/definitions/existingActionType'
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    put:
+      tags:
+        - Action Types
+      summary: Update an Action Type.
+      description: Update an Action Type with the matching ID.
+      operationId: updateActionType
+      parameters:
+        - name: updatedActionType
+          in: body
+          description: The new definition for the Action Type.
+          required: true
+          schema:
+            $ref: '#/definitions/actionType'
+      responses:
+        204:
+          description: Indicates Action Type updated successfully.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    delete:
+      tags:
+        - Action Types
+      summary: Deletes an Action Type.
+      description: |
+        Delete the Action Type specified by the provided ID.
+      operationId: deleteActionType
+      responses:
+        204:
+          description: Indicates that the Action Type was successfully deleted.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  ##########################
+  ##  ACTIONS
+  ##########################
+  /workflows/{workflowId}/rules/{ruleId}/actions:
+    x-swagger-router-controller: action
+    parameters:
+      - $ref: '#/parameters/project_id'
+      - name: workflowId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Workflow the Rule is part of.
+        required: true
+      - name: ruleId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Rule to retrieve Actions from.
+        required: true
+    post:
+      tags:
+        - Actions
+      summary: Create an Action.
+      description: Creates an Action with the provided information on the specified Rule.
+      operationId: createAction
+      parameters:
+        - name: newAction
+          description: The definition of the Action to create.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/action'
+      responses:
+        201:
+          description: Indicates that the Action was successfully created and added to the Rule.
+          schema:
+            $ref: '#/definitions/existingAction'
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"        
+    get:
+      tags:
+        - Actions
+      parameters:
+        - name: pageNum
+          in: query
+          type: integer
+          default: 1
+          description: Optional. The page number to return results from. Defaults to 1.
+        - name: pageSize
+          in: query
+          type: integer
+          default: 100
+          description: Optional. The max number of results to return. Defaults to 100.
+      summary: Get Actions.
+      description: Returns all Actions for the Rule.
+      operationId: getActions
+      responses:
+        200:
+          description: |
+            Returns the list of Actions for the specified Rule.
+          schema:
+            $ref: "#/definitions/existingActions"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  #
+  /workflows/{workflowId}/rules/{ruleId}/actions/{id}:
+    x-swagger-router-controller: action
+    parameters:
+      - $ref: '#/parameters/project_id'
+      - name: workflowId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Workflow the Rule is part of.
+        required: true
+      - name: ruleId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Rule the Action is assigned to.
+        required: true  
+      - name: id
+        in: path
+        type: integer
+        description: The ID of the Action.
+        required: true
+        format: int64
+    get:
+      tags:
+        - Actions
+      summary: Get an Action.
+      description: Retrieves an Action with the matching ID.
+      operationId: getAction
+      responses: 
+        200:
+          description: |
+            Returns the Action identified by the ID.
+          schema:
+            $ref: '#/definitions/existingAction'
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Action could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    put:
+      tags:
+        - Actions
+      summary: Update an Action.
+      description: Update an Action with the matching ID.
+      operationId: updateAction
+      parameters:
+        - name: updatedAction
+          in: body
+          description: The new definition for the Action.
+          required: true
+          schema:
+            $ref: '#/definitions/action'
+      responses:
+        204:
+          description: Action was successfully updated.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Action could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    delete:
+      tags:
+        - Actions
+      summary: Deletes an Action.
+      description: |
+        Delete the Action specified by the provided ID.
+      operationId: deleteAction
+      responses:
+        204:
+          description: Indicates that the Action was successfully deleted.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Action could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  ##########################
+  ##  CONDITIONS
+  ##########################
+  
+  ##########################
+  ##  RULE CONDITIONS
+  ##########################
+  /workflows/{workflowId}/rules/{ruleId}/conditions:
+    x-swagger-router-controller: ruleConditions
+    parameters:
+      - $ref: '#/parameters/project_id'
+      - name: workflowId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Workflow the Rule is part of.
+        required: true
+      - name: ruleId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Rule to use in operations.
+        required: true
+    get:
+      tags:
+        - Processing Rules Conditions
+      parameters:
+        - name: pageNum
+          in: query
+          type: integer
+          default: 1
+          description: Optional. The page number to return results from. Defaults to 1.
+        - name: pageSize
+          in: query
+          type: integer
+          default: 100
+          description: Optional. The max number of results to return. Defaults to 100.
+      summary: Get Rule Conditions.
+      description: Returns all Conditions on a Rule.
+      operationId: getRuleConditions
+      responses:
+        200:
+          description: |
+            Returns the list of Conditions for the specified Rule.
+          schema:
+            $ref: "#/definitions/existingConditions"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    post:
+      tags:
+        - Processing Rules Conditions
+      summary: Create a Rule Condition.
+      description: Creates a Condition with the provided information under the specified Rule.
+      operationId: createRuleCondition
+      parameters:
+        - name: newCondition
+          description: The definition of the Condition to create.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/condition'
+      responses:
+        201:
+          description: Indicates that the Condition was successfully created and added to the Rule.
+          schema:
+            $ref: '#/definitions/existingCondition'
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  #
+  /workflows/{workflowId}/rules/{ruleId}/conditions/{conditionId}:
+    x-swagger-router-controller: ruleConditions
+    parameters:
+      - $ref: '#/parameters/project_id'
+      - name: workflowId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Workflow the Rule is part of.
+        required: true
+      - name: ruleId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Rule the condition is on.
+        required: true
+      - name: conditionId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Condition to perform operation on.
+        required: true
+    get:
+      tags:
+        - Processing Rules Conditions
+      summary: Get a Rule Condition.
+      description: Retrieves a Rule Condition with the matching ID.
+      operationId: getRuleCondition
+      responses: 
+        200:
+          description: |
+            Returns the Rule Condition identified by the ID.
+          schema:
+            $ref: '#/definitions/existingCondition'
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Rule Condition could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    delete:
+      tags:
+        - Processing Rules Conditions
+      summary: Deletes the specified Rule Condition. 
+      description: |
+        Delete a Rule Condition.
+      operationId: deleteRuleCondition
+      responses:
+        204:
+          description: Indicates that the Rule Condition was successfully deleted.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Rule Condition could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    put:
+      tags:
+        - Processing Rules Conditions
+      summary: Update a Rule Condition.
+      description: Update a Rule Condition with the matching ID.
+      operationId: updateRuleCondition
+      parameters:
+        - name: updatedRuleCondition
+          in: body
+          description: The new definition for the Rule Condition.
+          required: true
+          schema:
+            $ref: '#/definitions/condition'
+      responses:
+        204:
+          description: Indicates Rule Condition updated successfully.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Rule Condition could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  ##########################
+  ##  ACTION CONDITIONS
+  ##########################
+  /workflows/{workflowId}/rules/{ruleId}/actions/{actionId}/conditions:
+    x-swagger-router-controller: actionConditions
+    parameters:
+      - $ref: '#/parameters/project_id'
+      - name: workflowId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Workflow the Rule is part of.
+        required: true
+      - name: ruleId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Rule the Action is assigned to.
+        required: true  
+      - name: actionId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Action the Conditions are part of.
+        required: true
+    get:
+      tags:
+        - Action Conditions
+      parameters:
+        - name: pageNum
+          in: query
+          type: integer
+          default: 1
+          description: Optional. The page number to return results from. Defaults to 1.
+        - name: pageSize
+          in: query
+          type: integer
+          default: 100
+          description: Optional. The max number of results to return. Defaults to 100.
+      summary: Get Action Conditions.
+      description: Returns all Conditions on an Action.
+      operationId: getActionConditions
+      responses:
+        200:
+          description: |
+            Returns the list of Conditions for the specified Action.
+          schema:
+            $ref: "#/definitions/existingConditions"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    post:
+      tags:
+        - Action Conditions
+      summary: Create an Action Condition.
+      description: Creates a Condition with the provided information under the specified Action.
+      operationId: createActionCondition
+      parameters:
+        - name: newCondition
+          description: The definition of the Condition to create.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/condition'
+      responses:
+        201:
+          description: Indicates that the Condition was successfully created and added to the Action.
+          schema:
+            $ref: '#/definitions/existingCondition'
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  #
+  /workflows/{workflowId}/rules/{ruleId}/actions/{actionId}/conditions/{conditionId}:
+    x-swagger-router-controller: actionConditions
+    parameters:
+      - $ref: '#/parameters/project_id'
+      - name: workflowId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Workflow the Rule is part of.
+        required: true
+      - name: ruleId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Rule the Action is assigned to.
+        required: true  
+      - name: actionId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Action the Condition is part of.
+        required: true
+      - name: conditionId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Condition to perform operation on.
+        required: true
+    get:
+      tags:
+        - Action Conditions
+      summary: Get an Action Condition.
+      description: Retrieves an Action Condition with the matching ID.
+      operationId: getActionCondition
+      responses: 
+        200:
+          description: |
+            Returns the Action Condition identified by the ID.
+          schema:
+            $ref: '#/definitions/existingCondition'
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Action Condition could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    delete:
+      tags:
+        - Action Conditions
+      summary: Deletes the specified Action Condition. 
+      description: |
+        Delete an Action Condition.
+      operationId: deleteActionCondition
+      responses:
+        204:
+          description: Indicates that the Action Condition was successfully deleted.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Action Condition could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    put:
+      tags:
+        - Action Conditions
+      summary: Update an Action Condition.
+      description: Update an Action Condition with the matching ID.
+      operationId: updateActionCondition
+      parameters:
+        - name: updatedActionCondition
+          in: body
+          description: The new definition for the Action Condition.
+          required: true
+          schema:
+            $ref: '#/definitions/condition'
+      responses:
+        204:
+          description: Indicates Action Condition updated successfully.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Action Condition could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  ##########################
+  ##  RULES
+  ##########################
+  /workflows/{workflowId}/rules/:
+    x-swagger-router-controller: processing_rules
+    parameters:
+      - $ref: '#/parameters/project_id'
+      - name: workflowId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Workflow to use.
+        required: true      
+    get:
+      tags:
+        - Processing Rules
+      summary: Get Processing Rules.
+      description: Returns all Processing Rules in the specified Workflow for the tenant.
+      operationId: getRules
+      parameters:
+        - name: pageNum
+          in: query
+          type: integer
+          default: 1
+          description: Optional. The page number to return results from. Defaults to 1.
+        - name: pageSize
+          in: query
+          type: integer
+          default: 100
+          description: Optional. The max number of results to return. Defaults to 100.
+      responses:
+        200:
+          description: |
+            Returns the list of processing rules for
+            the tenant identified by project_id.
+          schema:
+            $ref: "#/definitions/processingRules"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Workflow could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    post:
+      tags: 
+        - Processing Rules
+      summary: Creates a Processing Rule.
+      description: |
+        Creates a Processing Rule using the Rule definition passed under the specified Workflow.
+      operationId: createRule
+      parameters:
+        - name: newRule
+          description: The definition of the Rule to create. If no priority is provided it will default to one more than the highest priority Rule in the Workflow.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/baseProcessingRule'
+      responses:
+        201:
+          description: Indiciates that the Rule was successfully created.
+          schema:
+            $ref: '#/definitions/existingProcessingRule'
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  #
+  /workflows/{workflowId}/rules/{id}:
+    x-swagger-router-controller: processing_rules
+    parameters:
+      - $ref: '#/parameters/project_id'
+      - name: workflowId
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Workflow the Rule is part of.
+        required: true
+      - name: id
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Rule to perform operation on.
+        required: true    
+    get:
+      tags:
+        - Processing Rules
+      summary: Get the specified Processing Rule.
+      description: |
+        Returns the Processing Rule with the matching ID that was passed in for the tenant identified by project_id.
+      operationId: getRule
+      responses:
+        200:
+          description: |
+            Returns the detail of the processing rule requested.
+          schema:
+            $ref: "#/definitions/existingProcessingRule"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Rule is not found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    #
+    put:
+      tags:
+        - Processing Rules
+      summary: Update a Processing Rule
+      description: |
+        Updates the specified Processing Rule using the data passed in the request.
+      operationId: updateRule
+      parameters:
+        - name: rule
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/baseProcessingRule'
+      responses:
+        204:
+          description: Rule was successfully updated.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Rule is not found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    delete:
+      tags:
+        - Processing Rules
+      summary: Deletes the specified Processing Rule 
+      description: |
+        Delete a Processing Rule and remove it from any Workflows it is part of.
+      operationId: deleteRule
+      responses:
+        204:
+          description: Indicates that the Rule was successfully deleted.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Rule could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    #
+  #
+  ##########################
+  ##  WORKFLOWS
+  ##########################
+  /workflows:
+    x-swagger-router-controller: workflow
+    parameters:
+      - $ref: '#/parameters/project_id'
+    get:
+      tags:
+        - Workflows
+      summary: Get Workflows.
+      description: Returns all Workflows for the tenant.
+      operationId: getWorkflows
+      parameters:
+      - name: pageNum
+        in: query
+        type: integer
+        default: 1
+        description: Optional. The page number to return results from. Defaults to 1.
+      - name: pageSize
+        in: query
+        type: integer
+        default: 100
+        description: Optional. The max number of results to return. Defaults to 100.
+      responses:
+        200:
+          description: |
+            Returns the list of Workflows for
+            the tenant identified by project_id.
+          schema:
+            $ref: "#/definitions/existingWorkflows"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    #
+    post:
+      tags:
+        - Workflows
+      summary: Creates a Workflow.
+      description: |
+        Creates a Workflow which can contain Rules.
+      operationId: createWorkflow
+      parameters:
+        - name: newWorkflow
+          description: The definition of the new Workflow to create.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/baseWorkflow'
+      responses:
+        201:
+          description: Indiciates that the Workflow was successfully created.
+          schema:
+            $ref: '#/definitions/existingWorkflow'
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  /workflows/{id}:
+    x-swagger-router-controller: workflow
+    parameters:
+      - $ref: '#/parameters/project_id'
+      - name: id
+        in: path
+        type: integer
+        format: int64
+        description: The ID of the Workflow to perform action on.
+        required: true    
+    get:
+      tags:
+        - Workflows
+      summary: Get a Workflow.
+      description: |
+        Retrieves a Workflow based on ID passed.
+      operationId: getWorkflow
+      responses:
+        200:
+          description: |
+            Returns the detail of the Workflow requested.
+          schema:
+            $ref: "#/definitions/existingWorkflow"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Workflow is not found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    delete:
+      tags:
+        - Workflows
+      summary: Deletes a Workflow.
+      description: |
+        Deletes the specified Workflow.
+      operationId: deleteWorkflow
+      responses:
+        204:
+          description: Indicates that the Workflow was successfully deleted.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Workflow could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    put:
+      tags:
+        - Workflows
+      summary: Updates a Workflow.
+      description: |
+        Updates the specified Workflow.
+      operationId: updateWorkflow
+      parameters:
+        - name: updatedWorkflow
+          description: The definition of the updated Workflow.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/baseWorkflow'
+      responses:
+        204:
+          description: Indicates that the Workflow was successfully updated.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: The specified Workflow could not be found.
+          schema:
+            $ref: "#/definitions/errorMessage"    
+definitions:
+  existingWorkflows:
+    type: object
+    required:
+      - workflows
+    properties:
+      totalHits:
+        type: integer
+        format: int32
+        description: |
+          The total number of Workflows matching the request. Not all items may be returned due to paging options.
+      workflows:
+        type: array
+        items:
+          $ref: "#/definitions/existingWorkflow"
+  existingWorkflow:
+    type: object
+    allOf:
+    - $ref: "#/definitions/baseWorkflow"
+    - type: object
+      required:
+        - id
+      properties:
+        id:
+          title: ID
+          type: integer
+          description: The identifier for the Workflow.
+          example: 1
+          format: int64
+  baseWorkflow:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: The name of the Workflow.
+      description:
+        type: [string, "null"]
+        description: A description giving context as to the purpose of the Workflow.
+        default: ""
+      notes:
+        type: [string, "null"]
+        default: ""
+        description: Can be used to record additional information about the Workflow.
+  processingRules:
+    type: object
+    required:
+      - rules
+    properties:
+      totalHits:
+        type: integer
+        format: int64
+        description: |
+          The total number of rules matching the request. Not all items may be returned due to paging options.
+      rules:
+        type: array
+        items:
+          $ref: "#/definitions/existingProcessingRule"
+  existingProcessingRule:
+    type: object
+    allOf:
+      - $ref: "#/definitions/baseProcessingRule"
+      - type: object
+        required:
+          - id
+        properties:
+          id:
+            title: ID
+            type: integer
+            description: The identifier for the Processing Rule.
+            example: 1
+            format: int64            
+  baseProcessingRule:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: The name of the processing rule.       
+      description:
+        type: [string, "null"]
+        description: The description of the processing rule.
+        default: ""
+      enabled:
+        type: boolean
+        description: Whether documents will be processed using this Rule.
+        default: true
+      priority:
+        type: integer
+        description: Indicates the priority in the Workflow for this rule.
+        format: int32
+  errorMessage:
+    type: object
+    properties:
+      error:
+        type: integer
+        description: Specific error code.
+      message:
+        type: string
+        description: Summary of the problem.
+      correlation_code:
+        type: string
+        description: Code used to group multiple log entries for a request.
+      reason:
+        type: string
+        description: The cause of the error.
+  #
+  existingActions:
+    type: object
+    required:
+      - actions
+    properties:
+      totalHits:
+        type: integer
+        format: int32
+        description: |
+          The total number of Actions matching the request. Not all items may be returned due to paging options.
+      actions:
+        type: array
+        items:
+          $ref: "#/definitions/existingAction"
+  #
+  existingAction:
+    type: object
+    allOf:
+    - $ref: "#/definitions/action"
+    - type: object
+      required:
+        - id
+        - typeInternalName
+      properties:
+        id:
+          type: integer
+          description: The identifier for the Action.
+          example: 1
+          format: int64
+        typeInternalName:
+          title: Type Internal Name
+          type: string
+          description: A string identifying the Action Type to use when processing with this Action.
+          example: GenericQueueHandler
+  #
+  action:
+    type: object
+    required:
+      - name
+      - description
+      - order
+      - settings
+      - typeId
+    properties:
+      name:
+        title: Name
+        type: string
+        description: The name of the Action.
+      description:
+        title: Description
+        type: [string, "null"]
+        description: The description of the Action.
+        default: ""
+      order:
+        title: Order
+        type: [integer, "null"]
+        description: The order that an Action will be processed in relative to other Actions on the associated Rule.
+        default: 100
+        example: 100
+      settings:
+        title: Settings
+        example: {"queueName": "test-queue"}
+        type: object
+        description: Used to control the behaviour of the Action. Specify the settings supported by a type here.
+      typeId:
+        title: Type ID
+        type: integer
+        description: The identifier for the Action Type.
+        example: 1
+        format: int64
+  #
+  existingActionTypes:
+    type: object
+    required:
+      - actionTypes
+    properties:
+      totalHits:
+        type: integer
+        format: int32
+        description: |
+          The total number of Action Types matching the request. Not all items may be returned due to paging options.
+      actionTypes:
+        type: array
+        items:
+          $ref: "#/definitions/existingActionType"
+  #
+  existingActionType:
+    type: object
+    allOf:    
+    - $ref: "#/definitions/actionType"
+    - type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          description: The identifier for the Action Type.
+          example: 1 
+          format: int64
+  #
+  actionType:
+    type: object
+    required:
+      - name
+      - internal_name
+      - definition
+    properties:
+      name:
+        title: Name
+        type: string
+        description: Name of the Action Type.
+      description:
+        title: Description
+        type: [string, "null"]
+        description: Description of the Action Type.
+        default: ""
+      definition:
+        title: Definition
+        default: {}
+        type: object
+        description: JSON schema definition of the settings allowed when Actions are use this type.
+        example:  |
+          {"properties": {"queueName": {
+          "description": "Optional. An Entity Extract Policy Handler exists to execute Policies of type 'Entity Extract Policy Type'. Typically the target queue name is provided via Entity Extract Policy Handler configuration. If there is a need to establish multiple instances of an Entity Extract Policy to target different queues, then queueName should be specified as part of the  Policy. An example usage of this feature could be to route larger files to a different queue.",
+          "type": "string"
+          }}}
+      internal_name:
+        title: Internal Name
+        type: string
+        description: A string identifying the component to use when processing with this Action Type. Unique per Action Type.
+        example: MyCustomActionImplementation
+  #
+  healthStatus:
+    type: object
+    required:
+      - status
+    properties:
+      status:
+        title: Service Status
+        description: Represents whether the data processing service is in a healthy state for calls to be made to it.
+        type: string
+        enum: ["HEALTHY", "UNHEALTHY"]
+      dependencies:
+        title: Dependencies
+        description: |
+          Lists the health of the dependent components that the data processing service may call. These being unhealthy may cause the Service Status to report as unhealthy.
+        type: array
+        items:
+          type: object
+          required:
+            - name
+            - status
+          properties:
+            name:
+              title: Name
+              description: Name of the component.
+              type: string              
+            status:
+              title: Status
+              description: Whether this component is in a healthy state.
+              type: string
+              enum: ["HEALTHY", "UNHEALTHY"]
+  #
+  existingConditions:
+    type: object
+    required:
+      - conditions
+    properties:
+      totalHits:
+        type: integer
+        format: int32
+        description: |
+          The total number of Conditions matching the request. Not all items may be returned due to paging options.
+      conditions:
+        type: array
+        items:
+          $ref: "#/definitions/existingCondition"
+  #
+  existingCondition:
+    type: object
+    allOf:
+      - $ref: "#/definitions/condition"  
+      - type: object
+        required:
+          - id
+        properties:
+          id:
+            type: integer
+            description: The identifier for the Condition.
+            example: 1
+            format: int64
+  #
+  condition:
+    type: object
+    required:
+      - additional
+    properties:
+      name:
+        title: Name
+        description: A name identifying the condition.
+        type: string
+      additional:
+        title: Additional Definition
+        description: Describes the options set for this condition appropriate to its type. See the condition type definitions for properties that can be set on this object.
+        type: object
+        example:
+          type: boolean
+          operator: "and"
+          children:     
+          - name: Cat Condition
+            additional:
+              type: string
+              order: 100
+              field: "CONTENT"
+              value: "cat"
+              operator: "contains"
+              notes: "CAT_CONDITION"
+          - name: Count Condition
+            additional:
+              type: integer
+              order: 200
+              field: "COUNT"
+              value: 2
+              operator: "eq"
+  #
+  conditionFieldDefinition:
+    type: object
+    allOf:
+      - $ref: "#/definitions/conditionCommon"
+      - type: object
+        required:
+          - field
+        properties:
+          field:
+            type: string
+            description: Name of the field to evaluate condition against.
+            title: Field
+            minLength: 1
+  ########################
+  # CONDITION TYPES
+  ########################
+  conditionCommon:
+    #the 'type' property describes the definition that inherits 'conditionType'
+    discriminator: type
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        description: The type of a condition. Affects the behaviour of the condition in evaluation and the properties that can be set on the condition to control that behaviour. Set to the appropriate type for the condition.
+        enum: [ "boolean", "regex", "date", "fragment", "lexicon", "not", "number", "string", "exists", "text" ]
+        title: Condition Type
+        type: string
+      order:
+        type: integer
+        description: The order that the condition is evaluated relative to other sibling conditions.
+        title: Order
+        format: int32
+      notes:              
+        description: May be used to store additional description of the condition.
+        title: Notes
+        type: string
+  #
+  boolean_condition_additional:
+    title: Boolean Condition
+    description: A boolean operator that is applied to supplied child conditions.
+    type: object    
+    allOf:
+      - $ref: "#/definitions/conditionCommon"
+      - type: object
+        required:
+          - operator
+        properties:
+          operator:
+            title: Operator
+            description: Boolean operator to apply against child conditions e.g. logical AND or logical OR of children.
+            type: string
+            enum: ["and", "or"]
+          children:
+            description: Conditions the operator applies to.
+            type: array
+            items:
+              $ref: "#/definitions/condition"
+  #
+  regex_condition_additional:
+    title: Regex Condition
+    description: Describe a regular expression that items condition is evaluated against should match.
+    type: object    
+    allOf:
+      - $ref: "#/definitions/conditionFieldDefinition"
+      - type: object
+        properties:
+          value:
+            title: Value
+            description: The regular expression value to match with.
+            type: string
+            minLength: 1
+  date_condition_additional:
+    title: Date Condition
+    description: Describes a date and how it should be compared against items.    
+    allOf:
+      - $ref: "#/definitions/conditionFieldDefinition"
+      - type: object
+        required:
+          - value
+          - operator
+        properties:
+          value:
+            title: Value
+            description: | 
+              The date to match with. Supports the following formats;
+                - A date in epoch post fixed with e: 1412935999e corresponds to 2014-10-10T10.13:19Z
+                - A date in ISO8601 format: 2014-10-10T10.13:19Z
+                - A date period in ISO8601 period format: P3Y6M4DT12H30M5S corresponds to 3 years, 6 months, 4 days, 12 hours, 30 minutes and 5 seconds
+                - A day of the week - The following values may be truncated to Mon etc.: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+                - A time of day in hh:mm or hh:mm:ss format: 12:00 or 14:30
+            type: string
+            minLength: 1
+          operator:
+            type: string
+            enum: ["before", "after", "on"]
+            description: The comparison type to perform on the date value against the field value of item being evaluated against condition.
+  exists_condition_additional:
+    title: Exists Condition
+    description: The specified field must exist on the item being evaluated in order to match this condition.
+    allOf:
+      - $ref: "#/definitions/conditionFieldDefinition"
+  number_condition_additional:
+    title: Number Condition
+    description: Describes a number and how it should be compared against items.    
+    allOf:
+      - $ref: '#/definitions/conditionFieldDefinition'
+      - type: object
+        required:
+          - value
+          - operator
+        properties:
+          value:
+            title: Value
+            type: integer
+            format: int64
+            description: The number value to compare item field value against.
+            multipleOf: 1.0
+          operator:
+            title: Operator
+            description: The comparison type to perform. 'gt' means'Greater Than', 'lt' means 'Less Than' and 'eq' means 'Equals'.
+            type: string
+            enum: ["gt","lt","eq"]
+  string_condition_additional:
+    title: String Condition
+    description: Describes a string value and how it should be compared against items.
+    allOf:
+      - $ref: '#/definitions/conditionFieldDefinition'
+      - type: object
+        required:
+          - value
+          - operator
+        properties:
+          value:
+            title: Value
+            description: The string value to compare item field value against.
+            type: string
+          operator:
+            title: Operator
+            type: string
+            description: The comparison type to perform on values.
+            enum: ["is", "starts_with", "ends_with"]
+  not_condition_additional:
+    title: Not Condition
+    description: Contains another Condition that must evaluate to 'false' for this Condition to be considered matched.
+    allOf:
+      - $ref: "#/definitions/conditionCommon"
+      - type: object   
+        required:
+          - condition      
+        properties:
+          condition:
+            title: Condition
+            description: The condition that should evaluate to 'false'.
+            $ref: '#/definitions/condition'
+        example: 
+          type: "not"      
+          condition:
+            additional:
+              type: "string"
+              field: "AUTHOR"
+              operator: "is"
+              value: "John Smith"

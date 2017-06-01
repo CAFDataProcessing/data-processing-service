@@ -1,0 +1,24 @@
+title: Data Processing
+email: caf@hpe.com
+
+description: Data Processing Documentation
+baseurl: "/data-processing-service"
+
+# Build settings
+exclude: ['node_modules']
+
+navigation_image: 'assets/img/data-processing-logo.png'
+custom_stylesheet: 'assets/css/site.css'
+
+markdown: kramdown
+highlighter: rouge
+
+gems: ['jekyll-coffeescript', 'jekyll-watch', 'jekyll-assets', 'jekyll-paginate']
+
+layouts_dir:  caf-templates/_layouts
+includes_dir: caf-templates/_includes
+sass:
+    sass_dir: caf-templates/_sass
+
+paginate: 5
+paginate_path: "/pages/en-us/blog/page:num/"
