@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doAnswer;
 
 /**
  * A mocked up data store that stores files in memory
@@ -49,6 +50,13 @@ public class MockedDataStore {
                     return retrieveFromLocalDataStore((String) args[0]);
                 }
             });
+            doAnswer(new Answer<Void>() {
+                public Void answer(InvocationOnMock invocation) throws DataStoreException {
+                    Object[] args = invocation.getArguments();
+                    deleteFromLocalDataStore((String) args[0]);
+                    return null;
+                }
+            }).when(dataStore).delete(Mockito.anyString());
         } catch (DataStoreException e) {
             throw new RuntimeException("Failure mocking data store.", e);
         }
@@ -74,5 +82,9 @@ public class MockedDataStore {
             throw new DataStoreException("Failed to retrieve data");
         }
         return matchedStream;
+    }
+
+    private void deleteFromLocalDataStore(String storageReferenceKey) throws DataStoreException {
+        InputStream matchedStream = localDataStore.remove(storageReferenceKey);
     }
 }

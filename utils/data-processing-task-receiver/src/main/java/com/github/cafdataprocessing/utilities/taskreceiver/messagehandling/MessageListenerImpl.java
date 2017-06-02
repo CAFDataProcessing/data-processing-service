@@ -44,9 +44,11 @@ public class MessageListenerImpl implements MessageListener
     {
         this.queuesToListenOn = RabbitServices.getInstance().getRabbitProperties().getConsumeQueueNames();
         String messageOutputDir = Services.getInstance().getTaskReceiverProperties().getOutputDirectory();
+        Boolean saveTaskDataOnly = Boolean.valueOf(Services.getInstance().getTaskReceiverProperties().getIsSaveTaskDataOnly());
+        Boolean cleanupDataStoreAfterProcessing = Boolean.valueOf(Services.getInstance().getTaskReceiverProperties().getCleanupDataStoreAfterProcessing());
         ManagedDataStore dataStore = Services.getInstance().getStorageDataStore();
         OutputHelper outputHelper = new OutputHelper();
-        messageWriter = new TaskMessageWriter(messageOutputDir, dataStore, outputHelper);
+        messageWriter = new TaskMessageWriter(messageOutputDir, dataStore, outputHelper, saveTaskDataOnly, cleanupDataStoreAfterProcessing);
     }
 
     @Override

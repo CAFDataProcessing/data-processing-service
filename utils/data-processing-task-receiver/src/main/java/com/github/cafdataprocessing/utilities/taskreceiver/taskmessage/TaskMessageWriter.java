@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.github.cafdataprocessing.entity.fields.FieldChangeRecord;
 import com.github.cafdataprocessing.worker.policy.handlers.shared.document.SharedDocument;
 import com.google.common.base.Strings;
 import com.hpe.caf.api.Codec;
@@ -35,7 +36,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -51,7 +54,10 @@ public class TaskMessageWriter {
     private static final String storageReferenceFieldName = "storageReference";
     private final ManagedDataStore dataStore;
     private final String outputDirectory;
+    private final boolean saveTaskDataOnly;
+    private final boolean cleanupDataStoreAfterwards;
     private final OutputHelper outputHelper;
+    private List<String> storageReferences = new ArrayList<>();
 
     static {
         codec = services.getCodec();
@@ -65,10 +71,13 @@ public class TaskMessageWriter {
      * @param dataStore DataStore to use in retrieving data referenced in task messages.
      * @param outputHelper OutputHelper for task message output operations.
      */
-    public TaskMessageWriter (String outputDirectory, ManagedDataStore dataStore, OutputHelper outputHelper){
+    public TaskMessageWriter (String outputDirectory, ManagedDataStore dataStore, OutputHelper outputHelper, boolean saveTaskDataOnly,
+                              boolean cleanupDataStoreAfterwards){
         this.outputDirectory = outputDirectory;
         this.outputHelper = outputHelper;
         this.dataStore = dataStore;
+        this.saveTaskDataOnly = saveTaskDataOnly;
+        this.cleanupDataStoreAfterwards = cleanupDataStoreAfterwards;
     }
 
     /**
@@ -81,6 +90,20 @@ public class TaskMessageWriter {
         String messageAsString = convertMessageToString(taskMessage);
         LOGGER.debug("Message received converted to string: "+messageAsString);
         writeMessageWithTaskGrouping(taskMessage, messageAsString);
+        if(cleanupDataStoreAfterwards) {
+            cleanupStoredData();
+        }
+    }
+
+    private void cleanupStoredData() {
+        try {
+            for (final String storageReference: storageReferences) {
+                dataStore.delete(storageReference);
+            }
+        } catch (DataStoreException e) {
+            e.printStackTrace();
+        }
+        storageReferences.clear();
     }
 
     private void writeMessageWithTaskGrouping(TaskMessage taskMessage, String messageAsStr) throws IOException, CodecException {
@@ -119,6 +142,7 @@ public class TaskMessageWriter {
         String storageReference = null;
         try {
             storageReference = getStorageReferenceFromDocument(document);
+            storageReferences.add(storageReference);
         } catch (Exception e) {
             LOGGER.error("Cannot write file to disk. Unable to find storage reference on document in task message in folder: "+
                     messageOutputDir);
@@ -132,6 +156,7 @@ public class TaskMessageWriter {
                                                Map.Entry<String, ReferencedData> metadataReference) throws IOException {
         //retrieve the file
         String metadataReferenceValue = metadataReference.getValue().getReference();
+        storageReferences.add(metadataReferenceValue);
         InputStream rawFile = null;
         try {
             rawFile = dataStore.retrieve(metadataReferenceValue);
@@ -154,11 +179,24 @@ public class TaskMessageWriter {
     }
 
     private void writeFriendlyMessageFile(String messageAsStr, String messageOutputDir) throws IOException {
+        if (saveTaskDataOnly) {
+            JsonNode node = mapper.readTree(messageAsStr);
+            if (node.has(TaskMessageConstants.TASK_DATA)) {
+                messageAsStr = mapper.writeValueAsString(node.get(TaskMessageConstants.TASK_DATA));
+            }
+            else{
+                LOGGER.error("Output message does not contain node: " + TaskMessageConstants.TASK_DATA + ". It cannot be output separately");
+            }
+        }
         outputHelper.outputString(messageOutputDir, FileNameHelper.getTaskMessageFilename(), messageAsStr);
     }
 
     private void writeRawMessageFile(TaskMessage taskMessage, String messageOutputDir) throws IOException, CodecException {
-        outputHelper.outputString(messageOutputDir, FileNameHelper.getRawTaskMessageFilename(), org.apache.commons.io.IOUtils.toString(codec.serialise(taskMessage)));
+        if (saveTaskDataOnly) {
+            outputHelper.outputString(messageOutputDir, FileNameHelper.getRawTaskMessageFilename(), org.apache.commons.io.IOUtils.toString(codec.serialise(taskMessage.getTaskData())));
+        } else {
+            outputHelper.outputString(messageOutputDir, FileNameHelper.getRawTaskMessageFilename(), org.apache.commons.io.IOUtils.toString(codec.serialise(taskMessage)));
+        }
     }
 
     private void writeStoredDocumentFile(SharedDocument document, String storageReference,
@@ -177,15 +215,24 @@ public class TaskMessageWriter {
     }
 
     private String getStorageReferenceFromDocument(SharedDocument document) throws Exception {
+        String storageReference = null;
         Optional<String> storageReferenceOpt = document.getMetadata().stream().filter(
                 md -> md.getKey().equals(storageReferenceFieldName)).map(md -> md.getValue())
                 .findFirst();
-        if(!storageReferenceOpt.isPresent()){
-            throw new Exception("No "+storageReferenceFieldName+" field could be retrieved from document to use in constructing folder name for output.");
+
+        if(!storageReferenceOpt.isPresent() || Strings.isNullOrEmpty(storageReferenceOpt.get())) {
+            // Try get the storageReference off the DocumentProcessingRecord
+            final Map<String, FieldChangeRecord> processingRecordMetadataChanges = document.getDocumentProcessingRecord().metadataChanges;
+            if (processingRecordMetadataChanges.containsKey(storageReferenceFieldName)) {
+                storageReference = processingRecordMetadataChanges.get(storageReferenceFieldName).changeValues.iterator().next().value;
+            }
+        } else {
+            storageReference = storageReferenceOpt.get();
         }
-        String storageReference = storageReferenceOpt.get();
-        if(Strings.isNullOrEmpty(storageReference)){
-            throw new Exception("No value present on "+storageReferenceFieldName+" field for document to use in constructing folder name for output.");
+
+        //If null or empty, check if the storageReference is in the DocumentProcessingRecord.
+        if(storageReference == null) {
+                throw new Exception("No value present on " + storageReferenceFieldName + " field for document to use in constructing folder name for output.");
         }
         return storageReference;
     }

@@ -24,12 +24,15 @@ import com.hpe.caf.codec.JsonCodec;
 import com.github.cafdataprocessing.utilities.taskreceiver.services.Services;
 import com.github.cafdataprocessing.utilities.taskreceiver.taskmessage.TaskMessageWriter;
 import com.github.cafdataprocessing.utilities.taskreceiver.taskoutput.FileNameHelper;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -43,14 +46,10 @@ public class TaskMessageWriterTest {
 
     private MockedOutputHelper mockedOutputHelper;
 
-    @BeforeClass(description = "Stores the doc contents for use in testing.")
-    public void storeDocs() throws DataStoreException {
+    @BeforeMethod(description = "Stores the doc contents for use in testing.")
+    public void setupLocalStorage() throws IOException, DataStoreException {
         this.testDocumentData = new TestDocumentData(dataStore, storeOutputLocation);
         this.testDocumentData.storeAllDocs();
-    }
-
-    @BeforeMethod
-    public void setupLocalStorage() throws IOException {
         mockedOutputHelper = new MockedOutputHelper();
     }
 
@@ -67,7 +66,10 @@ public class TaskMessageWriterTest {
     @Test()
     public void writeDocxTest() throws Exception {
         String outputDir = "./test";
-        TaskMessageWriter writer = new TaskMessageWriter(outputDir, dataStore, mockedOutputHelper.getOutputHelper());
+        boolean saveTaskDataOnly = false;
+        boolean cleanDataStoreAfterProcessing = false;
+        TaskMessageWriter writer = new TaskMessageWriter(
+                outputDir, dataStore, mockedOutputHelper.getOutputHelper(), saveTaskDataOnly, cleanDataStoreAfterProcessing);
         String docRef = "/input/Good team.docx";
         SharedDocument docxExample = testDocumentData.getDocxExample(docRef);
         TaskMessage message = TestTaskMessageBuilder.buildTaskMessage(docxExample);
@@ -77,7 +79,10 @@ public class TaskMessageWriterTest {
     @Test()
     public void writeJpgTest() throws Exception {
         String outputDir = "/test";
-        TaskMessageWriter writer = new TaskMessageWriter(outputDir, dataStore, mockedOutputHelper.getOutputHelper());
+        boolean saveTaskDataOnly = false;
+        boolean cleanDataStoreAfterProcessing = false;
+        TaskMessageWriter writer = new TaskMessageWriter(
+                outputDir, dataStore, mockedOutputHelper.getOutputHelper(), saveTaskDataOnly, cleanDataStoreAfterProcessing);
         String docRef = "/input/other - team lineup.jpg";
         SharedDocument document = testDocumentData.getJpgExample(docRef);
         TaskMessage message = TestTaskMessageBuilder.buildTaskMessage(document);
@@ -87,7 +92,10 @@ public class TaskMessageWriterTest {
     @Test
     public void writeZipTest() throws Exception {
         String outputDir = "/test";
-        TaskMessageWriter writer = new TaskMessageWriter(outputDir, dataStore, mockedOutputHelper.getOutputHelper());
+        boolean saveTaskDataOnly = false;
+        boolean cleanDataStoreAfterProcessing = false;
+        TaskMessageWriter writer = new TaskMessageWriter(
+                outputDir, dataStore, mockedOutputHelper.getOutputHelper(), saveTaskDataOnly, cleanDataStoreAfterProcessing);
         //write the root document first
         SharedDocument rootDocument = testDocumentData.getZipRootExample();
         TaskMessage rootMessage = TestTaskMessageBuilder.buildTaskMessage(rootDocument);
@@ -112,10 +120,52 @@ public class TaskMessageWriterTest {
         writer.writeMessage(level1DocMessage);
     }
 
+    @Test()
+    public void writeDocxWithStorageRefNotInMetadataTest() throws Exception {
+        String outputDir = "./test";
+        boolean saveTaskDataOnly = false;
+        boolean cleanDataStoreAfterProcessing = false;
+        TaskMessageWriter writer = new TaskMessageWriter(
+                outputDir, dataStore, mockedOutputHelper.getOutputHelper(), saveTaskDataOnly, cleanDataStoreAfterProcessing);
+        String docRef = "/input/Good team.docx";
+        SharedDocument docxExample = testDocumentData.getDocxExample(docRef);
+
+        // Clear the metadata, so that the DocumentProcessingRecord is checked for a storageReference
+        docxExample.getMetadata().clear();
+        TaskMessage message = TestTaskMessageBuilder.buildTaskMessage(docxExample);
+        writer.writeMessage(message);
+
+        Assert.assertEquals(mockedOutputHelper.getLocalStorage().size(), 4, "Four files should be output to local storage.");
+    }
+
+    @Test(expectedExceptions = DataStoreException.class)
+    public void writeDocxAndEnsureDataStoreCleared() throws Exception {
+        final String outputDir = "./test";
+        boolean saveTaskDataOnly = false;
+        boolean cleanDataStoreAfterProcessing = true;
+        final TaskMessageWriter writer = new TaskMessageWriter(
+                outputDir, dataStore, mockedOutputHelper.getOutputHelper(), saveTaskDataOnly, cleanDataStoreAfterProcessing);
+        final String docRef = "/input/Good team.docx";
+        final SharedDocument docxExample = testDocumentData.getDocxExample(docRef);
+
+        // Get the storageReference odd the document so that it can be validated that it has been deleted later.
+        final String storageRef = docxExample.getMetadata().stream().filter(
+                md -> md.getKey().equals("storageReference")).map(md -> md.getValue())
+                .findFirst().get();
+        final TaskMessage message = TestTaskMessageBuilder.buildTaskMessage(docxExample);
+        writer.writeMessage(message);
+
+        // Throws a DataStoreException because the reference should not exist.
+        final InputStream stream = dataStore.retrieve(storageRef);
+    }
+
     @Test
     public void writeNonSharedDocumentMessage() throws IOException, CodecException {
         String outputDir = "/test";
-        TaskMessageWriter writer = new TaskMessageWriter(outputDir, dataStore, mockedOutputHelper.getOutputHelper());
+        boolean saveTaskDataOnly = false;
+        boolean cleanDataStoreAfterProcessing = false;
+        TaskMessageWriter writer = new TaskMessageWriter(
+                outputDir, dataStore, mockedOutputHelper.getOutputHelper(), saveTaskDataOnly, cleanDataStoreAfterProcessing);
         String expectedOutputData = "This is the output message expected.";
         Codec codec = new JsonCodec();
         TaskMessage message = TestTaskMessageBuilder.buildTaskMessage(codec.serialise(expectedOutputData));
@@ -137,6 +187,33 @@ public class TaskMessageWriterTest {
         JsonNode taskDataNode = prettyTaskMessageNode.findValue("taskData");
         String receivedPrettyOutputData = taskDataNode.textValue();
         Assert.assertEquals(receivedPrettyOutputData, expectedOutputData, "Output formatted data should match expected data.");
+    }
+
+    @Test
+    public void writeNonSharedDocumentTaskDataOnlyMessage() throws IOException, CodecException {
+        String outputDir = "/test";
+        boolean saveTaskDataOnly = true;
+        boolean cleanDataStoreAfterProcessing = false;
+        TaskMessageWriter writer = new TaskMessageWriter(
+                outputDir, dataStore, mockedOutputHelper.getOutputHelper(), saveTaskDataOnly, cleanDataStoreAfterProcessing);
+        String expectedOutputData = "This is the output message expected.";
+        Codec codec = new JsonCodec();
+        TaskMessage message = TestTaskMessageBuilder.buildTaskMessage(codec.serialise(expectedOutputData));
+        writer.writeMessage(message);
+
+        HashMap<String, InputStream> localStorage = mockedOutputHelper.getLocalStorage();
+        Assert.assertEquals(localStorage.size(), 2, "Expecting two files to have been output for non shared document task message.");
+
+        String expectedFolder = buildTestOutputFolderName(message, outputDir);
+        InputStream rawTaskMessageStream = localStorage.get(expectedFolder + FileNameHelper.getRawTaskMessageFilename());
+        String outputRawTaskMessage = IOUtils.toString(rawTaskMessageStream, StandardCharsets.UTF_8);
+        //Base64 Decode the result and remove the outer quotes.
+        String decodedOutputRawTaskMessage = new String(Base64.decodeBase64(outputRawTaskMessage), "UTF-8").replaceAll("^\"|\"$", "");
+        Assert.assertEquals(decodedOutputRawTaskMessage, expectedOutputData, "Output raw data should match expected data.");
+
+        InputStream prettyTaskMessageStream = localStorage.get(expectedFolder + FileNameHelper.getTaskMessageFilename());
+        String prettyTaskMessageNode = IOUtils.toString(prettyTaskMessageStream, StandardCharsets.UTF_8).replaceAll("^\"|\"$", "");
+        Assert.assertEquals(prettyTaskMessageNode, expectedOutputData, "Output formatted data should match expected data.");
     }
 
     private static String buildTestOutputFolderName(TaskMessage message, String outputDir){

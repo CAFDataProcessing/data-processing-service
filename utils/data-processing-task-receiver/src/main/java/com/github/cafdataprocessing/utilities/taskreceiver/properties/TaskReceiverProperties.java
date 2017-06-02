@@ -32,7 +32,16 @@ public class TaskReceiverProperties {
 
     public static final String OUTPUT_DIRECTORY_PROP_NAME = "CAF_TASKRECEIVER_OUTPUT_DIRECTORY";
 
+    public static final String SAVE_TASK_DATA_ONLY = "CAF_TASKRECEIVER_SAVE_TASK_DATA_ONLY";
+
+    public static final String CLEANUP_DATASTORE_AFTER_PROCESSING = "CAF_TASKRECEIVER_CLEANUP_DATASTORE_AFTER_PROCESSING";
+
+
     public String getOutputDirectory(){
         return environment.getProperty(OUTPUT_DIRECTORY_PROP_NAME);
     }
+
+    public String getIsSaveTaskDataOnly() { return environment.getProperty(SAVE_TASK_DATA_ONLY); }
+
+    public String getCleanupDataStoreAfterProcessing() { return environment.getProperty(CLEANUP_DATASTORE_AFTER_PROCESSING); }
 }

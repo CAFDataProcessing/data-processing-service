@@ -62,6 +62,14 @@ These are properties specific to the functionality of the task receiver applicat
 
 The directory under which to output files for any received task message.
 
+#### CAF_TASKRECEIVER_SAVE_TASK_DATA_ONLY
+
+Dictates whether or not to output only the task data. The default value is false, and to output the entire message.
+
+#### CAF_TASKRECEIVER_CLEANUP_DATASTORE_AFTER_PROCESSING
+
+Dictates whether or not to delete references from the data store after processing. The default value is false, and to not delete any references.
+
 ## Running the Application
 
 The example below shows running the application with configuration passed as environment variables. The application will connect to rabbit on the specified host and listen for any messages placed on the queue 'result'. Messages will be taken from this queue and files with information about the messages will be output under folder specified via the taskReceiver.outputDirectory property.
