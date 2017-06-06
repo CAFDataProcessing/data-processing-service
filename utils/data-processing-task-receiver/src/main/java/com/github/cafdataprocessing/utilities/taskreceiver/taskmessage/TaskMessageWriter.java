@@ -182,7 +182,7 @@ public class TaskMessageWriter {
         if (saveTaskDataOnly) {
             JsonNode node = mapper.readTree(messageAsStr);
             if (node.has(TaskMessageConstants.TASK_DATA)) {
-                messageAsStr = mapper.writeValueAsString(node.get(TaskMessageConstants.TASK_DATA));
+                messageAsStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node.get(TaskMessageConstants.TASK_DATA));
             }
             else{
                 LOGGER.error("Output message does not contain node: " + TaskMessageConstants.TASK_DATA + ". It cannot be output separately");

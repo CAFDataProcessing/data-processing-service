@@ -64,11 +64,11 @@ The directory under which to output files for any received task message.
 
 #### CAF_TASKRECEIVER_SAVE_TASK_DATA_ONLY
 
-Dictates whether or not to output only the task data. The default value is false, and to output the entire message.
+Setting for whether or not to output only the task data. The default value is false which outputs the entire message.
 
 #### CAF_TASKRECEIVER_CLEANUP_DATASTORE_AFTER_PROCESSING
 
-Dictates whether or not to delete references from the data store after processing. The default value is false, and to not delete any references.
+Setting for whether or not to delete storage references from the data store after processing. The default value is false which will not delete any storage references.
 
 ## Running the Application
 
