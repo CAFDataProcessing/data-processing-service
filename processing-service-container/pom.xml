@@ -342,6 +342,10 @@
                                 </ports>
                                 <env>
                                     <NODE_ENV>production</NODE_ENV>
+                                    <!-- Docker for windows issue - uncomment if you're using it on developer machine
+                                    <http_proxy>http://web-proxy.sdc.hpecorp.net:8080</http_proxy>
+                                    <https_proxy>http://web-proxy.sdc.hpecorp.net:8080</https_proxy>
+                                    -->
                                 </env>
                                 <assembly>
                                     <inline>
@@ -370,7 +374,6 @@
                                 <env>
                                     <CAF_PROCESSING_SERVICE_PORT>8080</CAF_PROCESSING_SERVICE_PORT>
                                     <CAF_PROCESSING_SERVICE_CACHE_DURATION>${processing.service.cacheduration}</CAF_PROCESSING_SERVICE_CACHE_DURATION>
-                                    
                                     <CAF_PROCESSING_SERVICE_POLICY_API_HOST>policy-admin</CAF_PROCESSING_SERVICE_POLICY_API_HOST>
                                     <CAF_PROCESSING_SERVICE_POLICY_API_PORT>8080</CAF_PROCESSING_SERVICE_POLICY_API_PORT>
                                     <CAF_PROCESSING_SERVICE_POLICY_API_ENTRY_PATH>${processing.service.policyapi.entrypath}</CAF_PROCESSING_SERVICE_POLICY_API_ENTRY_PATH>

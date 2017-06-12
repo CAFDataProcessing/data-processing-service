@@ -87,13 +87,14 @@ public class QueueManager implements Closeable {
 
         publishQueue = services.getRabbitProperties().getPublishQueue();
         consumeQueues = services.getRabbitProperties().getConsumeQueueNames();
+        int maxPriority = services.getRabbitProperties().getMaxPriority() == null ? 0 : services.getRabbitProperties().getMaxPriority();
         if(Strings.isNullOrEmpty(publishQueue)){
             LOGGER.debug("No RabbitMQ queue to publish to passed. Check your RabbitMQ properties if this is unexpected.");
             publisherChannel = null;
         }
         else{
             publisherChannel = connection.createChannel();
-            RabbitUtil.declareWorkerQueue(publisherChannel, publishQueue);
+            RabbitUtil.declareWorkerQueue(publisherChannel, publishQueue, maxPriority);
         }
         if(consumeQueues==null || consumeQueues.isEmpty()){
             LOGGER.debug("No RabbitMQ queues to consume message from set. Check your RabbitMQ properties if this is unexpected.");
@@ -104,7 +105,7 @@ public class QueueManager implements Closeable {
         else{
             consumerChannel = connection.createChannel();
             for (String queue : consumeQueues) {
-                RabbitUtil.declareWorkerQueue(consumerChannel, queue);
+                RabbitUtil.declareWorkerQueue(consumerChannel, queue, maxPriority);
             }
             BlockingQueue<Event<QueueConsumer>> conEvents = new LinkedBlockingQueue<>();
 

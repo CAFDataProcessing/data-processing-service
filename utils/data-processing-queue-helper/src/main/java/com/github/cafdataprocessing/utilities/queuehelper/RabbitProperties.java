@@ -74,4 +74,9 @@ public class RabbitProperties {
     public String getUser() {
         return environment.getProperty("CAF_RABBITMQ_USERNAME");
     }
+
+    public Integer getMaxPriority() {
+        if (environment.getProperty("CAF_RABBITMQ_MAX_PRIORITY") == null) return null;
+        return Integer.valueOf(environment.getProperty("CAF_RABBITMQ_MAX_PRIORITY"));
+    }
 }
