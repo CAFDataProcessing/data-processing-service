@@ -114,7 +114,7 @@ Documents can be processed as a batch.
 
 Explicit failures should be added to documents as they are processed. Failures are recorded on the document by using the
 `addFailure` method on the `Document` object. The `addFailure` method takes two `String` arguments: a failure ID, and a
-failure message. The failure ID should be a non localizable identifier related to the failure. The failure message
+failure message. The failure ID should be a non localisable identifier related to the failure. The failure message
 should be a human readable message relating to the failure.
 
 An example failure ID: "KVERR_FormatNotSupported". <br/>
