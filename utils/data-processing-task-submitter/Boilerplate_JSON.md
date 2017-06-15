@@ -2,7 +2,7 @@
 
 ## Summary
 
-The task submitter supports creating boilerplate expressions and tags for use in the processing workflow used on messages it sends. The expressions and tags should be defined in JSON format in a file the submitter can access. The structure of this JSON is described in this document. The creation of the expressions and tags is achieved through the [util-boilerplate-creation](https://github.hpe.com/caf/boilerplate-service/tree/develop/util-boilerplate-creation) library.
+The task submitter supports creating boilerplate expressions and tags for use in the processing workflow used on messages it sends. The expressions and tags should be defined in JSON format in a file the submitter can access. The structure of this JSON is described in this document. The creation of the expressions and tags is achieved through the [util-boilerplate-creation](https://github.com/CAFDataProcessing/boilerplate-service/tree/develop/util-boilerplate-creation) library.
 
 ## Format
 

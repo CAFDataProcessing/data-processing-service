@@ -34,7 +34,7 @@ The Text Extract processing operation is only available with the Enterprise Edit
 
 ### Deployment
 
-The components required for text extract are included as part of the Enterprise Edition data processing service compose file available [here](https://github.hpe.com/caf/data-processing-service-internal-deploy). Refer to Data Processing Getting Started [here](../Getting-Started) for deploy instructions. If not using the compose file, you will need to deploy the workflow worker (with text extract handler and converter on its classpath), workflow database and extract worker for this action.
+The components required for text extract are included as part of the Enterprise Edition data processing service compose file available [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy). Refer to Data Processing Getting Started [here](../Getting-Started) for deploy instructions. If not using the compose file, you will need to deploy the workflow worker (with text extract handler and converter on its classpath), workflow database and extract worker for this action.
 
 ### Creating Text Extract Actions
 

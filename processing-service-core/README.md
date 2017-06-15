@@ -43,7 +43,7 @@ For developers it is recommended to install and run the project with swagger-nod
     
 ## UI
 
-An HPE Swagger UI is available based on the UI generated in the data-processing-service-contract repository [here](https://github.hpe.com/caf/data-processing-service-contract).
+An HPE Swagger UI is available based on the UI generated in the data-processing-service-contract repository [here](https://github.com/CAFDataProcessing/data-processing-service/tree/develop/processing-service-contract).
 
 For a deployed service the UI is available at;
 

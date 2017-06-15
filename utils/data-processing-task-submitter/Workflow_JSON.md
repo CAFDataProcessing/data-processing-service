@@ -6,7 +6,7 @@ The task submitter supports creating a processing workflow for use in the messag
 
 ## Format
 
-The file is expected to define a single workflow, including all its processing rules, conditions and actions. Objects and their properties are supported as defined in the Data Processing API contract, [here](https://pages.github.hpe.com/caf/data-processing-service/pages/en-us/Data_Processing/API), differing where noted below.
+The file is expected to define a single workflow, including all its processing rules, conditions and actions. Objects and their properties are supported as defined in the Data Processing API contract, [here](https://cafdataprocessing.github.io/data-processing-service/pages/en-us/Data_Processing/API), differing where noted below.
 
 ### Workflow
 

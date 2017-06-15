@@ -2,11 +2,11 @@
 
 ## Summary
 
-The task submitter supports creating a classification workflow for use in the processing workflow used on messages it sends. The workflow should be defined in JSON format in a file the submitter can access. The structure of this JSON is described in this document. The creation of the classification workflow is achieved through the classification [creation-util](https://github.hpe.com/caf/classification-service/tree/develop/creation-util) library.
+The task submitter supports creating a classification workflow for use in the processing workflow used on messages it sends. The workflow should be defined in JSON format in a file the submitter can access. The structure of this JSON is described in this document. The creation of the classification workflow is achieved through the classification [creation-util](https://github.com/CAFDataProcessing/classification-service/tree/develop/classification-service-creation-util) library.
 
 ## Format
 
-The file is expected to define a single workflow, including all its processing rules, conditions and actions. Objects and their properties are supported as defined in the Classification API contract, [here](https://pages.github.hpe.com/caf/data-processing-service/pages/en-us/Classification/API), differing where noted below.
+The file is expected to define a single workflow, including all its processing rules, conditions and actions. Objects and their properties are supported as defined in the Classification API contract, [here](https://cafdataprocessing.github.io/data-processing-service/pages/en-us/Classification/API), differing where noted below.
 
 ### Workflow
 
