@@ -112,8 +112,13 @@ Documents can be processed as a batch.
 
 ## Document Worker Error Handling
 
-Explicit failures should be added to documents as they are processed so they can form part of the DocumentWorkerResult. A
-DocumentWorkerFailure must include a 'failureId' and a 'failureMessage'. These failures are recorded on the document.
+Explicit failures should be added to documents as they are processed. Failures are recorded on the document by using the
+`addFailure` method on the `Document` object. The `addFailure` method takes two `String` arguments: a failure ID, and a
+failure message. The failure ID should be a non localizable identifier related to the failure. The failure message
+should be a human readable message relating to the failure.
+
+An example failure ID: "KVERR_FormatNotSupported". <br/>
+An example failure message: "The file format 'IPG' is not recognized".
 
 When utilising BulkDocumentWorker, if an error is encountered whilst processing a batch of documents, the worker will stop processing the
 documents as a batch and begin processing each document individually. This occurs so that a troublesome document in a batch will not stop
