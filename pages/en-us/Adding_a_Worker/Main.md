@@ -25,7 +25,7 @@ The process of adding a worker to the default Data Processing workflow consists 
 + Update the Docker Compose overlay file that provides additional debug settings for Data Processing services.
 + Update the Data Processing workflow definition to include the new worker.
 
-A compose file that deploys only open source components is available [here](https://github.com/CAFDataProcessing/data-processing-service-deploy). If the new worker is open source then it may be added to this file if required. Otherwise it should be added to the Enterprise Edition compose file [here](https://github.hpe.com/caf/data-processing-service-internal-deploy).
+A compose file that deploys only open source components is available [here](https://github.com/CAFDataProcessing/data-processing-service-deploy). If the new worker is open source then it may be added to this file if required. Otherwise it should be added to the Enterprise Edition compose file [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy).
 
 For Enterprise Edition, in addition to the default data Processing workflow, there is also a "minimal" form of the workflow which may also be updated with the new worker if required.
 
@@ -151,23 +151,23 @@ If your worker has any preconditions that must be satisfied for it to perform it
 
 For Enterprise Edition, in addition to the default Data Processing workflow and the services that it requires, there is also a minimal Data Processing workflow.
 
-If it is desirable to include the new worker in the minimal workflow as well as the default workflow, then similar changes need to be made in the minimal workflow definitions. The minimal Data Processing definitions can be found [here](https://github.hpe.com/caf/data-processing-service-internal-deploy/tree/develop/minimal).
+If it is desirable to include the new worker in the minimal workflow as well as the default workflow, then similar changes need to be made in the minimal workflow definitions. The minimal Data Processing definitions can be found [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/tree/develop/minimal).
 
 ### Add the worker to the minimal workflow's Docker Compose file
 
-The minimal Data Processing workflow's Docker Compose file can be found [here](https://github.hpe.com/caf/data-processing-service-internal-deploy/blob/develop/minimal/docker-compose.yml).
+The minimal Data Processing workflow's Docker Compose file can be found [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/blob/develop/minimal/docker-compose.yml).
 
 The changes to make in this file are analogous to those made for the default definition, as described in [Adding a Worker to the Docker Compose File](#adding-a-worker-to-the-docker-compose-file).
 
 ### Add the worker to the minimal workflow's debug Docker Compose file
 
-The minimal Data Processing workflow's debug Docker Compose overlay file can be found [here](https://github.hpe.com/caf/data-processing-service-internal-deploy/blob/develop/minimal/docker-compose.debug.yml).
+The minimal Data Processing workflow's debug Docker Compose overlay file can be found [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/blob/develop/minimal/docker-compose.debug.yml).
 
 The changes to make in this file are analogous to those made for the default definition, as described in [Updating the Debug Docker Compose File](#updating-the-debug-docker-compose-file).
 
 ### Add the worker to the minimal workflow's definition
 
-The minimal Data Processing workflow definition can be found [here](https://github.hpe.com/caf/data-processing-service-internal-deploy/blob/develop/minimal/processing-workflow.json).
+The minimal Data Processing workflow definition can be found [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/blob/develop/minimal/processing-workflow.json).
 
 The changes to make in this file are analogous to those made for the default workflow definition, as described in [Updating the Data Processing Workflow Definition](#updating-the-data-processing-workflow-definition).
 

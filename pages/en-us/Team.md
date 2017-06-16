@@ -10,7 +10,7 @@ team_members:
       social:
         - title: GitHub
           icon: hpe-social-github
-          url: https://github.hpe.com/aaron-oloughlin
+          url: https://github.houston.softwaregrp.net/aaron-oloughlin
         - title: Email
           icon: hpe-social-email
           url: mailto:aaron.oloughlin@hpe.com
@@ -21,7 +21,7 @@ team_members:
       social:
         - title: GitHub
           icon: hpe-social-github
-          url: https://github.hpe.com/adam-pau-rogan
+          url: https://github.houston.softwaregrp.net/adam-pau-rogan
         - title: Email
           icon: hpe-social-email
           url: mailto:adam.pau.rogan@hpe.com
@@ -32,7 +32,7 @@ team_members:
       social:
         - title: GitHub
           icon: hpe-social-github
-          url: https://github.hpe.com/anthony-mcgreevy
+          url: https://github.houston.softwaregrp.net/anthony-mcgreevy
         - title: Email
           icon: hpe-social-email
           url: mailto:anthony.mcgreevy@hpe.com
@@ -43,7 +43,7 @@ team_members:
       social:
         - title: GitHub
           icon: hpe-social-github
-          url: https://github.hpe.com/christopher-jam-comac
+          url: https://github.houston.softwaregrp.net/christopher-jam-comac
         - title: Email
           icon: hpe-social-email
           url: mailto:christopher.jam.comac@hpe.com
@@ -54,7 +54,7 @@ team_members:
       social:
         - title: GitHub
           icon: hpe-social-github
-          url: https://github.hpe.com/michael-mcalynn
+          url: https://github.houston.softwaregrp.net/michael-mcalynn
         - title: Email
           icon: hpe-social-email
           url: mailto:michael.mcalynn@hpe.com
@@ -65,7 +65,7 @@ team_members:
       social:
         - title: GitHub
           icon: hpe-social-github
-          url: https://github.hpe.com/philip-crooks
+          url: https://github.houston.softwaregrp.net/philip-crooks
         - title: Email
           icon: hpe-social-email
           url: mailto:philip-crooks@hpe.com
@@ -76,7 +76,7 @@ team_members:
       social:
         - title: GitHub
           icon: hpe-social-github
-          url: https://github.hpe.com/trevor-getty
+          url: https://github.houston.softwaregrp.net/trevor-getty
         - title: Email
           icon: hpe-social-email
           url: mailto:trevor.getty@hpe.com
