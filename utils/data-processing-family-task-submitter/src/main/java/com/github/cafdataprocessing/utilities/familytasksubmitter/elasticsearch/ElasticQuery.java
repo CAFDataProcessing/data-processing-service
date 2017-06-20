@@ -55,19 +55,19 @@ public class ElasticQuery
     private final int elasticPort = Integer.parseInt(getEnvironmentValue(FamilyTaskSubmitterConstants.Elastic.CAF_ELASTIC_TRANSPORT_PORT,
                                                                           "9300"));
     private final TransportClient transportClient;
-    private final String rootReference;
+    private final String familyReference;
 
-    public ElasticQuery(final String rootReference) throws ConfigurationException
+    public ElasticQuery(final String familyReference) throws ConfigurationException
     {
         this.transportClient = getTransportClient();
-        this.rootReference = rootReference;
+        this.familyReference = familyReference;
     }
 
     public Map<String, Object> createFamily(final String filename)
     {
         try {
             final Map<String, Object> fileMap = new HashMap<>();
-            fileMap.put(filename, getHits(issueGet(rootReference)));
+            fileMap.put(filename, getHits(issueGet(familyReference)));
             return fileMap;
         } catch (JSONException ex) {
             LOG.error("Failed to convert search result into JSON: ", ex);
@@ -75,7 +75,7 @@ public class ElasticQuery
         }
     }
 
-    private SearchResponse issueGet(final String rootRef)
+    private SearchResponse issueGet(final String familyRef)
     {
         return transportClient.prepareSearch(elasticIndexName)
             .setTypes(elasticType)
@@ -83,7 +83,7 @@ public class ElasticQuery
             .setFetchSource(true)
             .setSize(ELASTIC_INDEX_MAX_RESULT_WINDOW)
             .setQuery(boolQuery()
-                .must(queryStringQuery("(ROOT_reference:\"" + rootRef + "\")")))
+                .must(queryStringQuery("(FAMILY_reference:\"" + familyRef + "\")")))
             .execute()
             .actionGet();
     }

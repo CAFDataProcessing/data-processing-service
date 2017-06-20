@@ -33,17 +33,17 @@ public class HierarchyBuilder
     {
     }
 
-    public Document convert(final Map<String, Multimap<String, String>> documents)
+    public Document convert(final Map<String, Multimap<String, String>> documents, final String familyReference)
     {
         this.documents = documents;
-        return getRootDocument();
+        return getRootDocument(familyReference);
     }
 
-    private Document getRootDocument()
+    private Document getRootDocument(final String familyReference)
     {
         for (String document : documents.keySet()) {
             final Multimap<String, String> documentMap = documents.get(document);
-            if (isRootOrigin(documentMap)) {
+            if (isFamilyRoot(documentMap, familyReference)) {
                 Collection<Document> subfiles = new ArrayList<>();
                 for (int i = 0; i < Integer.parseInt(documentMap.get(FamilyTaskSubmitterConstants.CHILD_INFO_COUNT).stream().findFirst()
                      .orElse("0")); i++) {
@@ -86,8 +86,9 @@ public class HierarchyBuilder
         return Boolean.parseBoolean(documentMap.get(FamilyTaskSubmitterConstants.IS_FAMILY_ORIGIN).stream().findFirst().orElse("false"));
     }
 
-    private boolean isRootOrigin(final Multimap<String, String> documentMap)
+    private boolean isFamilyRoot(final Multimap<String, String> documentMap, final String familyReference)
     {
-        return Boolean.parseBoolean(documentMap.get(FamilyTaskSubmitterConstants.IS_ROOT).stream().findFirst().orElse("false"));
+        final String reference = documentMap.get("DREREFERENCE").stream().findFirst().orElse("");
+        return reference.equals(familyReference);
     }
 }

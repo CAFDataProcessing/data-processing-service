@@ -42,13 +42,13 @@ public final class Main
 
     public void run() throws CodecException, IOException, ConfigurationException, TimeoutException
     {
-        final String rootReference = getEnvironmentValue(FamilyTaskSubmitterConstants.ROOT_REFERENCE); 
-        final ElasticQuery esQuery = new ElasticQuery(rootReference);
-        final Map<String, Object> family = esQuery.createFamily(rootReference);
+        final String familyReference = getEnvironmentValue(FamilyTaskSubmitterConstants.FAMILY_REFERENCE); 
+        final ElasticQuery esQuery = new ElasticQuery(familyReference);
+        final Map<String, Object> family = esQuery.createFamily(familyReference);
         final DocumentExtractor docBuilder = new DocumentExtractor(family);
         final Map<String, Multimap<String, String>> documents = docBuilder.convert();
         final HierarchyBuilder hierarchyBuilder = new HierarchyBuilder();
-        final Document rootDocument = hierarchyBuilder.convert(documents);
+        final Document rootDocument = hierarchyBuilder.convert(documents, familyReference);
         final Message message = new Message(rootDocument, getEnvironmentValue(FamilyTaskSubmitterConstants.OUTPUT_QUEUE_NAME));
         final RabbitMessageDispatcher messageDispatcher = new RabbitMessageDispatcher();
         messageDispatcher.configure(getEnvironmentValue(FamilyTaskSubmitterConstants.OUTPUT_QUEUE_NAME));
