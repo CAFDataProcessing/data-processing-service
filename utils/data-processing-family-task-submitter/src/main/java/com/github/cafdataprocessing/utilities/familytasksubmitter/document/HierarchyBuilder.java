@@ -83,7 +83,8 @@ public class HierarchyBuilder
 
     private boolean isFamilyOrigin(final Multimap<String, String> documentMap)
     {
-        return Boolean.parseBoolean(documentMap.get(FamilyTaskSubmitterConstants.IS_FAMILY_ORIGIN).stream().findFirst().orElse("false"));
+        final int children = Integer.parseInt(documentMap.get(FamilyTaskSubmitterConstants.CHILD_INFO_COUNT).stream().findFirst().orElse("0"));
+        return children > 0;
     }
 
     private boolean isFamilyRoot(final Multimap<String, String> documentMap, final String familyReference)
