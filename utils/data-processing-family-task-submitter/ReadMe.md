@@ -1,11 +1,11 @@
-##Data-Processing-Family-Task-Submitter
+## Data-Processing-Family-Task-Submitter
 
 The "Data-Processing-Family-Task-Submitter" will use a provided family reference for a family file that has already been indexed to elastic search and use this to query Elastic Search, reconstruct the document and its possible attachments and use this document to construct a policy message and send it to a policy worker queue specified.
 
 
 Below are the configuration options for the submitter, these are broken into required and optional, optional configurations will have a pre-set default value that will also be listed below.
 
-####Required:
+#### Required:
 **FAMILY_REFERENCE:**
 
 The FAMILY_REFERENCE of the document you wish to use from Elastic Search.
@@ -16,7 +16,7 @@ i.e. `/inputFolder/myTestTextDocument.docx`
 The Policy Worker queue that the output messages should be sent to.
 i.e. `cloud-ploicyworker-input-1`
 
-####Optional:
+#### Optional:
 **PROJECT_ID:**
 
 The project id to use in the new Policy Worker task
