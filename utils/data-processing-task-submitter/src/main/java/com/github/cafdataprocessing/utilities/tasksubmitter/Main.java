@@ -15,24 +15,16 @@
  */
 package com.github.cafdataprocessing.utilities.tasksubmitter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.cafdataprocessing.classification.service.creation.WorkflowCreator;
 import com.github.cafdataprocessing.processing.service.client.ApiException;
 import com.github.cafdataprocessing.utilities.initialization.*;
 import com.github.cafdataprocessing.utilities.tasksubmitter.environment.ValidateEnvironment;
-import com.github.cafdataprocessing.utilities.initialization.boilerplate.BoilerplateInvoker;
 import com.github.cafdataprocessing.utilities.initialization.boilerplate.BoilerplateNameResolver;
-import com.github.cafdataprocessing.utilities.initialization.boilerplate.CreationResultJson;
 import com.github.cafdataprocessing.utilities.tasksubmitter.properties.TaskSubmitterProperties;
 import com.github.cafdataprocessing.utilities.tasksubmitter.services.Services;
 import com.github.cafdataprocessing.utilities.tasksubmitter.taskmessage.TaskMessagePublisher;
-import com.google.common.base.Strings;
-import com.hpe.caf.boilerplate.webcaller.ApiClient;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
