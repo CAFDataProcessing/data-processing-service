@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cafdataprocessing.utilities.tasksubmitter.initialize;
+package com.github.cafdataprocessing.utilities.initialization;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.cafdataprocessing.processing.service.client.ApiClient;
@@ -23,11 +23,11 @@ import com.github.cafdataprocessing.processing.service.client.model.Action;
 import com.github.cafdataprocessing.processing.service.client.model.ExistingAction;
 import com.github.cafdataprocessing.processing.service.client.model.ExistingProcessingRule;
 import com.github.cafdataprocessing.processing.service.client.model.ExistingWorkflow;
-import com.github.cafdataprocessing.utilities.tasksubmitter.initialize.boilerplate.BoilerplateNameResolver;
-import com.github.cafdataprocessing.utilities.tasksubmitter.initialize.jsonobjects.ProcessingRuleJson;
-import com.github.cafdataprocessing.utilities.tasksubmitter.initialize.jsonobjects.conditions.ConditionJson;
-import com.github.cafdataprocessing.utilities.tasksubmitter.initialize.jsonobjects.ActionJson;
-import com.github.cafdataprocessing.utilities.tasksubmitter.initialize.jsonobjects.WorkflowJson;
+import com.github.cafdataprocessing.utilities.initialization.boilerplate.BoilerplateNameResolver;
+import com.github.cafdataprocessing.utilities.initialization.jsonobjects.ActionJson;
+import com.github.cafdataprocessing.utilities.initialization.jsonobjects.ProcessingRuleJson;
+import com.github.cafdataprocessing.utilities.initialization.jsonobjects.WorkflowJson;
+import com.github.cafdataprocessing.utilities.initialization.jsonobjects.conditions.ConditionJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +79,28 @@ public class WorkflowInitializer {
         this.actionTypeNameResolver = actionTypeNameResolver;
         this.boilerplateNameResolver = boilerplateNameResolver;
         this.classificationWorkflowNameResolver = classificationWorkflowNameResolver;
+    }
+
+    public static WorkflowInitializer createWorkflowInitializer(String processingApiUrl, String boilerplateApiUrl, String classificationApiUrl)
+    {
+        com.hpe.caf.boilerplate.webcaller.ApiClient boilerplateClient = new com.hpe.caf.boilerplate.webcaller.ApiClient();
+        boilerplateClient.setBasePath(boilerplateApiUrl);
+        BoilerplateNameResolver boilerplateNameResolver = new BoilerplateNameResolver(boilerplateClient);
+
+        com.github.cafdataprocessing.classification.service.client.ApiClient classificationClient = new com.github.cafdataprocessing.classification.service.client.ApiClient();
+        classificationClient.setBasePath(classificationApiUrl);
+
+        ClassificationWorkflowNameResolver classificationWorkflowNameResolver = new ClassificationWorkflowNameResolver(classificationClient);
+
+        return new WorkflowInitializer(processingApiUrl, boilerplateNameResolver, new ActionTypeNameResolver(), classificationWorkflowNameResolver);
+    }
+
+    public static WorkflowInitializer createWorkflowOnlyInitializer(String processingApiUrl)
+    {
+        return new WorkflowInitializer(processingApiUrl,
+                                       new BoilerplateNameResolver(null),
+                                       new ActionTypeNameResolver(),
+                                       new ClassificationWorkflowNameResolver(null));
     }
 
     private void retrieveActionTypeInformation(String projectId) throws ApiException {

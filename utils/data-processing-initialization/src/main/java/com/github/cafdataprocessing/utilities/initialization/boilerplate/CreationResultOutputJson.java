@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cafdataprocessing.utilities.tasksubmitter.initialize.jsonobjects.conditions;
-
+package com.github.cafdataprocessing.utilities.initialization.boilerplate;
 
 /**
- * JSON representation of a data processing date condition 'additional' property for use with task submitter application
+ * Deserializable version of Boilerplate Creation Utility CreationResultOutput class, providing default constructor.
  */
-public class DateConditionAdditionalJson extends ConditionAdditionalJson {
-    public String value;
-    public com.github.cafdataprocessing.processing.service.client.model.DateConditionAdditional.OperatorEnum operator;
-    public String field;
+public class CreationResultOutputJson {
+    public Long id;
+    public String name;
+
+    public CreationResultOutputJson(){}
 }

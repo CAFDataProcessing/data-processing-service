@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cafdataprocessing.utilities.tasksubmitter.initialize.jsonobjects.conditions;
+package com.github.cafdataprocessing.utilities.initialization.boilerplate;
 
-import com.github.cafdataprocessing.processing.service.client.model.StringConditionAdditional;
+import java.util.Collection;
 
 /**
- * JSON representation of a data processing string condition 'additional' property for use with task submitter application
+ * Deserializable version of Boilerplate Creation Utility CreationResult class, providing default constructor.
  */
-public class StringConditionAdditionalJson extends ConditionAdditionalJson{
-    public String field;
-    public StringConditionAdditional.OperatorEnum operator;
-    public String value;
+public class CreationResultJson {
+    public String projectId;
+    public Collection<CreationResultOutputJson> expressions;
+    public Collection<CreationResultOutputJson> tags;
+
+    public CreationResultJson(){}
 }

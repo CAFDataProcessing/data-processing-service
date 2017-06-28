@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cafdataprocessing.utilities.tasksubmitter.initialize.boilerplate;
+package com.github.cafdataprocessing.utilities.initialization.boilerplate;
 
+import com.google.common.base.Strings;
 import com.hpe.caf.boilerplate.webcaller.ApiClient;
 import com.hpe.caf.boilerplate.webcaller.ApiException;
 import com.hpe.caf.boilerplate.webcaller.api.BoilerplateApi;
@@ -72,11 +73,8 @@ public class BoilerplateNameResolver {
         }
     }
 
-    /**
-     * Populates the known mapping of expression names to expression IDs by querying the boilerplate API for all existing expressions.
-     * @throws ApiException Thrown if there is an error communicating with the API or if error response received from API.
-     */
-    public void populateExpressionsFromApiCall() throws ApiException {
+    public void populateExpressionsFromApiCall(String projectId) throws ApiException
+    {
         if(boilerplateApi==null){
             LOGGER.error("Boilerplate API is not configured for usage, unable to retrieve expressions.");
             return;
@@ -85,6 +83,9 @@ public class BoilerplateNameResolver {
         int pageIndex = 1;
         int pageSize = 100;
         int retrievedHitsSize;
+        if (!Strings.isNullOrEmpty(projectId)) {
+            boilerplateApi.getApiClient().setApiKey(projectId);
+        }
         do {
             List<BoilerplateExpression> retrievedExpressions = boilerplateApi.getExpressions(pageIndex, pageSize);
             pageIndex = pageIndex + pageSize;
@@ -97,6 +98,14 @@ public class BoilerplateNameResolver {
             }
         }
         while(retrievedHitsSize >= pageSize);
+    }
+
+    /**
+     * Populates the known mapping of expression names to expression IDs by querying the boilerplate API for all existing expressions.
+     * @throws ApiException Thrown if there is an error communicating with the API or if error response received from API.
+     */
+    public void populateExpressionsFromApiCall() throws ApiException {
+        populateExpressionsFromApiCall(null);
     }
 
     /**

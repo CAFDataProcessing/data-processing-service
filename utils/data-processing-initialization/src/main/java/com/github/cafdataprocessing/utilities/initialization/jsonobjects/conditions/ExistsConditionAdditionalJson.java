@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cafdataprocessing.utilities.tasksubmitter.initialize.jsonobjects.conditions;
+package com.github.cafdataprocessing.utilities.initialization.jsonobjects.conditions;
 
 /**
- * JSON representation of a data processing regex condition 'additional' property for use with task submitter application
+ * JSON representation of a data processing exists condition 'additional' property for use with task submitter application
  */
-public class RegexConditionAdditionalJson extends ConditionAdditionalJson {
+public class ExistsConditionAdditionalJson extends ConditionAdditionalJson {
     public String field;
-    public String value;
 }

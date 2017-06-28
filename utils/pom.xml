@@ -46,6 +46,11 @@
                 <artifactId>data-processing-task-submitter</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>data-processing-initialization</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -57,5 +62,6 @@
         <module>data-processing-task-submitter</module>
         <module>data-processing-task-submitter-container</module>
         <module>data-processing-family-task-submitter</module>
+        <module>data-processing-initialization</module>
     </modules>
 </project>
