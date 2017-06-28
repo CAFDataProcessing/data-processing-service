@@ -38,6 +38,9 @@ client/target
 # Runtime configuration for swagger app
 config/runtime.yaml
 
+# Dependency reduced pom generated during build/Release
+**/dependency-reduced-pom.xml
+
 docs/node_modules
 docs/_site
 docs/.sass-cache
