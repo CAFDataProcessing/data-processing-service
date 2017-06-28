@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cafdataprocessing.utilities.tasksubmitter.initialize.boilerplate;
+package com.github.cafdataprocessing.utilities.initialization.boilerplate;
 
 import com.hpe.caf.util.boilerplate.creation.BoilerplateCreator;
 

@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cafdataprocessing.utilities.tasksubmitter.initialize.boilerplate;
+package com.github.cafdataprocessing.utilities.initialization.jsonobjects.conditions;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
- * Deserializable version of Boilerplate Creation Utility CreationResult class, providing default constructor.
+ * JSON representation of a data processing boolean condition 'additional' property for use with task submitter application
  */
-public class CreationResultJson {
-    public String projectId;
-    public Collection<CreationResultOutputJson> expressions;
-    public Collection<CreationResultOutputJson> tags;
-
-    public CreationResultJson(){}
+public class BooleanConditionAdditionalJson extends ConditionAdditionalJson{
+    public  List<ConditionJson> children;
+    public String operator;
 }

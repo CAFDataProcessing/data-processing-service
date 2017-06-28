@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.cafdataprocessing.utilities.tasksubmitter.initialize.jsonobjects.conditions;
+package com.github.cafdataprocessing.utilities.initialization.jsonobjects.conditions;
+
 
 /**
- * JSON representation of a data processing not condition 'additional' property for use with task submitter application
+ * JSON representation of a data processing number condition 'additional' property for use with task submitter application
  */
-public class NotConditionAdditionalJson extends ConditionAdditionalJson {
-    public ConditionJson condition;
+public class NumberConditionAdditionalJson extends ConditionAdditionalJson {
+    public long value;
+    public com.github.cafdataprocessing.processing.service.client.model.NumberConditionAdditional.OperatorEnum operator;
+    public String field;
 }
