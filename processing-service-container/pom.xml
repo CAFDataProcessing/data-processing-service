@@ -342,10 +342,6 @@
                                 </ports>
                                 <env>
                                     <NODE_ENV>production</NODE_ENV>
-                                    <!-- Docker for windows issue - uncomment if you're using it on developer machine
-                                    <http_proxy>http://web-proxy.sdc.hpecorp.net:8080</http_proxy>
-                                    <https_proxy>http://web-proxy.sdc.hpecorp.net:8080</https_proxy>
-                                    -->
                                 </env>
                                 <assembly>
                                     <inline>
@@ -363,7 +359,11 @@
                                 </assembly>
                                 <workdir>/maven/processing-service</workdir>
                                 <runCmds>
-                                    <runCmd>npm install</runCmd>
+                                    <runCmd>
+                                        http_proxy=${env.HTTP_PROXY} \
+                                        https_proxy=${env.HTTPS_PROXY} \
+                                        npm install
+                                    </runCmd>
                                 </runCmds>
                                 <cmd>node app.js</cmd>
                             </build>
