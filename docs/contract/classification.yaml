@@ -1,8 +1,24 @@
+#
+# Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 #THIS CONTRACT BELONG TO THE CLASSIFICATION-SERVICE PROJECT AND SHOULD NOT BE EDITED HERE. CHANGES REQUIRED SHOULD BE MADE TO THE CLASSIFICATION-SERVICE PROJECT AND THE CHANGED CONTRACT COPIED HERE.
+
 swagger: "2.0"
 info:
   title: "Classification Service API"
-  version: "1.0.0"
+  version: "1.2.0"
   description: |
     The Classification API allows for the creation of sets of criteria representing groups of data (Classifications) and pipelines defining lists of these groups to compare data against (Workflows containing Classification Rules).
 # basePath prefixes all resource paths 
@@ -1299,6 +1315,18 @@ definitions:
         type: [string, "null"]
         description: The description of the Classification.
         default: ""
+      classificationTarget:
+        default: "ALL"
+        description: |
+          Determines the scope of classification evaluation, whether it only examines the root document passed for evaluation or considers child documents (and those children's children) passed with the root document also.
+          -	ALL: Root and child documents (immediate and nested) will be considered during condition evaluation (Default).
+          - CHILDREN: Only child documents (immediate and nested) will be considered during condition evaluation.
+          - CONTAINER: Only the root document will be considered during condition evaluation.
+          - CONTAINER_AND_IMMEDIATE_CHILDREN: Root document and immediate children will be considered during condition evaluation.
+          - IMMEDIATE_CHILDREN: Only immediate child documents of the root document will be considered during condition evaluation.
+        enum: [ "ALL", "CHILDREN", "CONTAINER", "CONTAINER_AND_IMMEDIATE_CHILDREN", "IMMEDIATE_CHILDREN" ]
+        title: Classification Target
+        type: string
       type:
         title: Type
         type: [string, "null"]
@@ -1567,19 +1595,19 @@ definitions:
     type: object
     required:
       - type
-    properties:
-      type:
-        description: The type of a condition. Affects the behaviour of the condition in evaluation and the properties that can be set on the condition to control that behaviour. Set to the appropriate type for the condition.
-        enum: [ "boolean", "regex", "date", "fragment", "lexicon", "termlist", "not", "number", "string", "exists", "text" ]
-        title: Condition Type
+    properties:      
+      notes:              
+        description: May be used to store additional description of the condition.
+        title: Notes
         type: string
       order:
         type: integer
         description: The order that the condition is evaluated relative to other sibling conditions.
-        title: Order
-      notes:              
-        description: May be used to store additional description of the condition.
-        title: Notes
+        title: Order      
+      type:
+        description: The type of a condition. Affects the behaviour of the condition in evaluation and the properties that can be set on the condition to control that behaviour. Set to the appropriate type for the condition.
+        enum: [ "boolean", "regex", "date", "fragment", "lexicon", "termlist", "not", "number", "string", "exists", "text" ]
+        title: Condition Type
         type: string
   #
   boolean_condition_additional:
