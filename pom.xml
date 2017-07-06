@@ -82,7 +82,7 @@
     </developers>
 
     <properties>
-        <caf.boilerplate.service.version>2.0.1-7</caf.boilerplate.service.version>
+        <caf.boilerplate.service.version>2.2.0-SNAPSHOT</caf.boilerplate.service.version>
         <caf.classification.service.version>1.1.0-SNAPSHOT</caf.classification.service.version>
         <caf.container.policy.admin.name>cafdataprocessing/policy-admin-elasticsearch:1.0.0</caf.container.policy.admin.name>
         <caf.corepolicy.version>1.0.0-4</caf.corepolicy.version>
