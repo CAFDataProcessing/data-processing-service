@@ -86,7 +86,7 @@
         <caf.classification.service.version>1.1.0-SNAPSHOT</caf.classification.service.version>
         <caf.container.policy.admin.name>cafdataprocessing/policy-admin-elasticsearch:1.0.0</caf.container.policy.admin.name>
         <caf.corepolicy.version>1.0.0-4</caf.corepolicy.version>
-        <caf.worker.policy.version>1.1.0-21</caf.worker.policy.version>
+        <caf.worker.policy.version>1.2.0-SNAPSHOT</caf.worker.policy.version>
     </properties>
 
     <dependencyManagement>
