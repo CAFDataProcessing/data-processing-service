@@ -21,6 +21,7 @@ import com.hp.autonomy.policyworker.shared.Document;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -55,16 +56,22 @@ public class HierarchyBuilder
         throw new UnsupportedOperationException();
     }
 
-    private Document getSubDocument(final int childOrdinal, final String parentReference)
-    {
+    private Document getSubDocument(final int childOrdinal, final String parentReference) {
         final String subDocReference = parentReference + ":" + childOrdinal;
+        return getSubDocument(subDocReference);
+    }
+
+    private Document getSubDocument(final String subDocReference)
+    {
         final Multimap<String, String> subDocumentMap = documents.get(subDocReference);
         Collection<Document> subfiles = new ArrayList<>();
 
-        if (isFamilyOrigin(subDocumentMap)) {
-            for (int i = 0; i < Integer.parseInt(subDocumentMap.get(FamilyTaskSubmitterConstants.CHILD_INFO_COUNT).stream().findFirst()
-                 .orElse("0")); i++) {
-                subfiles.add(getSubDocument(i, subDocReference));
+        //get the sub files of this sub document
+        for(Map.Entry<String, Multimap<String, String>> documentEntry: this.documents.entrySet()){
+            Multimap<String, String> documentMap = documentEntry.getValue();
+            if(documentMap.get("PARENT_REFERENCE") != null && !documentMap.get("PARENT_REFERENCE").isEmpty()
+                    && documentMap.get("PARENT_REFERENCE").iterator().next().equals(subDocReference)){
+                subfiles.add(getSubDocument(documentEntry.getKey()));
             }
         }
         return createDocument(subDocReference, subDocumentMap, subfiles);

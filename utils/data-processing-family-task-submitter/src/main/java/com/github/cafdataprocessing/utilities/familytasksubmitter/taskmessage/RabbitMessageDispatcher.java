@@ -47,7 +47,7 @@ public class RabbitMessageDispatcher implements Closeable
                 getEnvironmentValue(FamilyTaskSubmitterConstants.RabbitConstants.RABBIT_PASSWORD, "guest"));
             this.channel = conn.createChannel();
             this.outputQueueName = outputQueueName;
-            RabbitUtil.declareWorkerQueue(channel, outputQueueName);
+            //RabbitUtil.declareWorkerQueue(channel, outputQueueName);
         } catch (IOException | TimeoutException ex) {
             LOG.error("An error occured establishing a connection with RabbitMq", ex);
             throw ex;
