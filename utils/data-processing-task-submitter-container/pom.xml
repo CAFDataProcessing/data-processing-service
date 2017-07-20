@@ -52,7 +52,7 @@
         <CAF_TASKSUBMITTER_PROJECTID>DefaultProjectId</CAF_TASKSUBMITTER_PROJECTID>
         <CAF_TASKSUBMITTER_WORKFLOW_ID>1</CAF_TASKSUBMITTER_WORKFLOW_ID>
 
-        <caf.container.tasksubmitter>cafinternal/prereleases:data-processing-task-submitter-${project.version}</caf.container.tasksubmitter>
+        <caf.container.tasksubmitter>${dockerDataProcessingOrg}data-processing-task-submitter${dockerProjectVersion}</caf.container.tasksubmitter>
         <test.webdav.directory>/srv/common/webdav</test.webdav.directory>
     </properties>
 

@@ -15,8 +15,9 @@
  */
 package com.github.cafdataprocessing.utilities.familytasksubmitter.taskmessage;
 
-import com.hp.autonomy.policyworker.shared.TaskData;
-import com.hp.autonomy.policyworker.shared.Document;
+import com.github.cafdataprocessing.worker.policy.shared.Document;
+import com.github.cafdataprocessing.worker.policy.shared.TaskData;
+
 import java.util.Objects;
 
 /**

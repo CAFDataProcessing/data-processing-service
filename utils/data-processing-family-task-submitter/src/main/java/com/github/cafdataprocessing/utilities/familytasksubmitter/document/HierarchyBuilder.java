@@ -17,11 +17,10 @@ package com.github.cafdataprocessing.utilities.familytasksubmitter.document;
 
 import com.github.cafdataprocessing.utilities.familytasksubmitter.FamilyTaskSubmitterConstants;
 import com.google.common.collect.Multimap;
-import com.hp.autonomy.policyworker.shared.Document;
+import com.github.cafdataprocessing.worker.policy.shared.Document;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 /**
  *

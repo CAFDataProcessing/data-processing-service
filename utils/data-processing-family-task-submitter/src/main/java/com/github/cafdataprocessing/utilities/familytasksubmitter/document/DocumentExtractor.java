@@ -15,8 +15,8 @@
  */
 package com.github.cafdataprocessing.utilities.familytasksubmitter.document;
 
+import com.github.cafdataprocessing.corepolicy.multimap.utils.CaseInsensitiveMultimap;
 import com.google.common.collect.Multimap;
-import com.hp.autonomy.corepolicy.multimap.utils.CaseInsensitiveMultimap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

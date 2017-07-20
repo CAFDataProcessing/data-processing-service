@@ -31,7 +31,7 @@
     <packaging>pom</packaging>
     
     <properties>
-        <caf.container.processing.service.name>cafinternal/prereleases:processing-service-${project.version}</caf.container.processing.service.name>
+        <caf.container.processing.service.name>${dockerDataProcessingOrg}processing-service${dockerProjectVersion}</caf.container.processing.service.name>
 
         <internal.hibernate.connectionstring>jdbc:postgresql://corepolicydb-postgres:5432/&lt;dbname&gt;</internal.hibernate.connectionstring>
         <hibernate.user>postgres</hibernate.user>

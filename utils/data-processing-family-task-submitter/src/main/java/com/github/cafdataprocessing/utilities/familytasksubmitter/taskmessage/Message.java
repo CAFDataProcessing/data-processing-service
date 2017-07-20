@@ -16,8 +16,8 @@
 package com.github.cafdataprocessing.utilities.familytasksubmitter.taskmessage;
 
 import com.github.cafdataprocessing.utilities.familytasksubmitter.FamilyTaskSubmitterConstants;
-import com.hp.autonomy.policyworker.shared.Document;
-import com.hp.autonomy.policyworker.shared.PolicyWorkerConstants;
+import com.github.cafdataprocessing.worker.policy.shared.Document;
+import com.github.cafdataprocessing.worker.policy.shared.PolicyWorkerConstants;
 import com.hpe.caf.api.Codec;
 import com.hpe.caf.api.CodecException;
 import com.hpe.caf.api.worker.TaskMessage;

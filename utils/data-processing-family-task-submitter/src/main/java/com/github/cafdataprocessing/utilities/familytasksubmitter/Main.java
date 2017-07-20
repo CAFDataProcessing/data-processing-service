@@ -21,7 +21,7 @@ import com.github.cafdataprocessing.utilities.familytasksubmitter.document.Hiera
 import com.github.cafdataprocessing.utilities.familytasksubmitter.elasticsearch.ElasticQuery;
 import com.github.cafdataprocessing.utilities.familytasksubmitter.taskmessage.Message;
 import com.google.common.collect.Multimap;
-import com.hp.autonomy.policyworker.shared.Document;
+import com.github.cafdataprocessing.worker.policy.shared.Document;
 import com.hpe.caf.api.CodecException;
 import com.hpe.caf.api.ConfigurationException;
 import java.io.IOException;

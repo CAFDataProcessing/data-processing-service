@@ -64,15 +64,9 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>com.hp.autonomy.corepolicy</groupId>
-            <artifactId>autonomy-corepolicy</artifactId>
-            <version>3.3.7-SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>com.hp.autonomy.corepolicy</groupId>
-            <artifactId>autonomy-corepolicy-policyworker-shared</artifactId>
-            <version>1.11.1</version>
+            <groupId>com.github.cafdataprocessing</groupId>
+            <artifactId>corepolicy-condition-engine</artifactId>
+            <version>1.0.0-4</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -94,14 +88,12 @@
             <artifactId>codec-json</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf</groupId>
-            <artifactId>caf-api</artifactId>
-            <version>12.0.0-SNAPSHOT</version>
+            <groupId>com.github.workerframework</groupId>
+            <artifactId>worker-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.util</groupId>
+            <groupId>com.github.workerframework</groupId>
             <artifactId>util-rabbitmq</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

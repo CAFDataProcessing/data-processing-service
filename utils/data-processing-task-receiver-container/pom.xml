@@ -41,7 +41,7 @@
         <CAF_RABBITMQ_PASSWORD>root</CAF_RABBITMQ_PASSWORD>
         <CAF_RABBITMQ_USERNAME>root</CAF_RABBITMQ_USERNAME>
 
-        <caf.container.taskreceiver.name>cafinternal/prereleases:data-processing-task-receiver-${project.version}</caf.container.taskreceiver.name>
+        <caf.container.taskreceiver.name>${dockerDataProcessingOrg}data-processing-task-receiver${dockerProjectVersion}</caf.container.taskreceiver.name>
 
         <test.webdav.directory>/srv/common/webdav</test.webdav.directory>
 
