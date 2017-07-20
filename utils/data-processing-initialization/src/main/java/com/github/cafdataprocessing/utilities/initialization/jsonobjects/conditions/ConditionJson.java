@@ -23,7 +23,7 @@ import com.github.cafdataprocessing.processing.service.client.model.Condition;
  */
 public class ConditionJson {
     public final String name;
-    public final ConditionAdditionalJson additional;
+    public ConditionAdditionalJson additional;
 
     public ConditionJson(@JsonProperty(value= "name")String name,
                          @JsonProperty(value= "additional", required = true)ConditionAdditionalJson additional){

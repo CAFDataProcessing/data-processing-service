@@ -26,24 +26,27 @@ import java.util.List;
  */
 public class ProcessingRuleJson {
     public final String name;
-    public final String description;
-    public final Boolean enabled;
-    public final Integer priority;
-    public final List<ActionJson> actions;
-    public final List<ConditionJson> ruleConditions;
+    public String description;
+    public Boolean enabled;
+    public Integer priority;
+    public List<ActionJson> actions;
+    public List<ConditionJson> ruleConditions;
+    public MergeMode mergeMode;
 
     public ProcessingRuleJson(@JsonProperty(value= "name", required = true)String name,
                               @JsonProperty(value= "description")String description,
                               @JsonProperty(value= "enabled")Boolean enabled,
                               @JsonProperty(value= "priority")Integer priority,
                               @JsonProperty(value= "actions")List<ActionJson> actions,
-                              @JsonProperty(value= "ruleConditions")List<ConditionJson> ruleConditions){
+                              @JsonProperty(value= "ruleConditions")List<ConditionJson> ruleConditions,
+                              @JsonProperty(value = "mergeMode") MergeMode mergeMode){
         this.name = name;
         this.description = description;
         this.enabled = enabled == null ? true : enabled;
         this.priority = priority;
         this.actions = actions;
         this.ruleConditions = ruleConditions;
+        this.mergeMode = mergeMode == null ? MergeMode.MERGE : mergeMode;
     }
 
     public BaseProcessingRule toApiBaseProcessingRule(){

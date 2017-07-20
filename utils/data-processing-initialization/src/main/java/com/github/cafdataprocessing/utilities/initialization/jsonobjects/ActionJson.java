@@ -29,11 +29,12 @@ import java.util.Map;
  * JSON representation of a data processing action for use with task submitter application
  */
 public class ActionJson {
-    public final String name;
-    public final String description;
-    public final Integer order;
-    public final LinkedHashMap<String, Object> settings;
-    public final List<ConditionJson> actionConditions;
+    public String name;
+    public String description;
+    public Integer order;
+    public LinkedHashMap<String, Object> settings;
+    public List<ConditionJson> actionConditions;
+    public MergeMode mergeMode;
 
     //The name of the type will be used to retrieve the actual action type ID if set
     public String typeName;
@@ -46,18 +47,17 @@ public class ActionJson {
                       @JsonProperty(value= "settings")LinkedHashMap<String, Object> settings,
                       @JsonProperty(value= "actionConditions")List<ConditionJson> actionConditions,
                       @JsonProperty(value= "typeName")String typeName,
-                      @JsonProperty(value= "typeId")Long typeId){
+                      @JsonProperty(value= "typeId")Long typeId,
+                      @JsonProperty(value = "mergeMode") MergeMode mergeMode){
         this.name = name;
         this.description = description;
         this.order = order;
         this.settings = settings == null ? new LinkedHashMap<>() : settings;
         this.actionConditions = actionConditions;
-
-        if(typeId==null && Strings.isNullOrEmpty(typeName)){
-            throw new RuntimeException(new JsonMappingException("'typeId' or 'typeName' property must be set on action. Neither currently set on action with name: "+name));
-        }
         this.typeId = typeId;
         this.typeName = typeName;
+
+        this.mergeMode = mergeMode == null ? MergeMode.MERGE : mergeMode;
     }
 
     public Action toApiAction(Map<String, Long> typeNamesToIds){

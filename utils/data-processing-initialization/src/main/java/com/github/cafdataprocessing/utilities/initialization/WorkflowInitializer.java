@@ -28,11 +28,13 @@ import com.github.cafdataprocessing.utilities.initialization.jsonobjects.ActionJ
 import com.github.cafdataprocessing.utilities.initialization.jsonobjects.ProcessingRuleJson;
 import com.github.cafdataprocessing.utilities.initialization.jsonobjects.WorkflowJson;
 import com.github.cafdataprocessing.utilities.initialization.jsonobjects.conditions.ConditionJson;
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -117,16 +119,70 @@ public class WorkflowInitializer {
      * @throws IOException If unable to read the workflow input file.
      * @throws ApiException Thrown if there is an error communicating with the API or if error response received from API.
      */
-    public long initializeWorkflowBaseData(String inputFileName, String projectId) throws IOException, ApiException {
-        //retrieve action types that this project ID has available
-        retrieveActionTypeInformation(projectId);
-        //read in the json representation of the workflow
-        WorkflowJson workflowToCreate = readInputFile(inputFileName);
-        //create the workflow and return ID of created workflow
-        return createWorkflow(workflowToCreate, projectId);
+    public long initializeWorkflowBaseData(String inputFileName, String projectId) throws IOException, ApiException
+    {
+        return initializeWorkflowBaseData(inputFileName, null, projectId);
     }
 
-    private long createWorkflow(WorkflowJson workflow, String projectId) throws ApiException {
+    /**
+     * Creates a processing workflow derived from the information in the input file provided.
+     * @param inputFileName File containing workflow in JSON format that should be created.
+     * @param overlayFile Optional file containing extensions / overrides to merge with the base workflow specified in
+     *                    inputFileName. Pass null if you do not want any overrides to be applied.
+     * @param projectId ProjectId to create workflow under.
+     * @return ID of created workflow.
+     * @throws IOException If unable to read the workflow input file.
+     * @throws ApiException Thrown if there is an error communicating with the API or if error response received from API.
+     */
+    public long initializeWorkflowBaseData(String inputFileName, String overlayFile, String projectId) throws IOException, ApiException {
+        //retrieve action types that this project ID has available
+
+        //read in the json representation of the workflow
+        final WorkflowJson workflowToCreate = readInputFile(inputFileName);
+        final WorkflowJson overlayWorkflow = Strings.isNullOrEmpty(overlayFile) ? null : readInputFile(overlayFile);
+
+        //create the workflow and return ID of created workflow
+        return createWorkflow(workflowToCreate, overlayWorkflow, projectId);
+    }
+
+    /**
+     * Creates a processing workflow derived from the information in the input file provided.
+     * @param workflowBaseDataStream Input stream containing workflow in JSON format that should be created.
+     * @param workflowOverlayStream Optional input stream containing extensions / overrides to merge with the base
+     *                              workflow specified in inputFileName. Pass null if you do not want any overrides
+     *                              to be applied.
+     * @param projectId ProjectId to create workflow under.
+     * @return ID of created workflow.
+     * @throws IOException If unable to read the workflow input file.
+     * @throws ApiException Thrown if there is an error communicating with the API or if error response received from API.
+     */
+    public long initializeWorkflowBaseData(InputStream workflowBaseDataStream, InputStream workflowOverlayStream, String projectId) throws IOException, ApiException {
+
+        //read in the json representation of the workflow
+        final WorkflowJson workflowToCreate = readInputFile(workflowBaseDataStream);
+        final WorkflowJson overlayWorkflow = workflowOverlayStream == null ? null : readInputFile(workflowOverlayStream);
+
+        //create the workflow and return ID of created workflow
+        return createWorkflow(workflowToCreate, overlayWorkflow, projectId);
+    }
+
+    /**
+     * Creates a processing workflow derived from the information in the {@code workflow} object. Optional extensions or
+     * overrides can be provided in the {@code workflowOverlay} parameter.
+     * See {@link WorkflowCombiner} for more information on merging of two {@link WorkflowJson} objects.
+     * @param workflow An object describing workflow to be created.
+     * @param workflowOverlay An optional object describing extensions or overrides to the {@code workflow} parameter.
+     * @param projectId A project id
+     * @return Newly created workflow id.
+     * @throws ApiException in case of a failure to create a workflow.
+     */
+    public long createWorkflow(WorkflowJson workflow, WorkflowJson workflowOverlay, String projectId) throws ApiException {
+
+        //retrieve action types that this project ID has available
+        retrieveActionTypeInformation(projectId);
+
+        WorkflowCombiner.combineWorkflows(workflow, workflowOverlay);
+
         ExistingWorkflow createdWorkflow = workflowsApi.createWorkflow(projectId, workflow.toApiBaseWorkflow());
         long createdWorkflowId = createdWorkflow.getId();
         for(ProcessingRuleJson ruleToCreate: workflow.processingRules) {
@@ -177,6 +233,15 @@ public class WorkflowInitializer {
         File baseDataFile = new File(inputFile);
         try {
             return mapper.readValue(baseDataFile, WorkflowJson.class);
+        } catch (IOException e) {
+            throw new IOException("Failure trying to deserialize the workflow base data input file. Please check the format of the file contents.", e);
+        }
+    }
+
+    private WorkflowJson readInputFile(InputStream inputStream) throws IOException
+    {
+        try {
+            return mapper.readValue(inputStream, WorkflowJson.class);
         } catch (IOException e) {
             throw new IOException("Failure trying to deserialize the workflow base data input file. Please check the format of the file contents.", e);
         }

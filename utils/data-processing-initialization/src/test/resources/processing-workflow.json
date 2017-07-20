@@ -1,0 +1,609 @@
+{
+    "name": "Default Workflow",
+    "description": "",
+    "processingRules": [{
+            "name": "Metadata Processing",
+            "description": "Extracts document metadata.",
+            "priority": 100,
+            "actions": [{
+                "name": "BinaryHash",
+                    "description": "Returns a SHA-1 digest of the input file.",
+                    "order": 100,
+                    "settings": {
+                    },
+                    "typeName": "BinaryHashPolicyType",
+                    "actionConditions": [{
+                                        "name": "No Hash",
+                                        "additional": {
+                                            "type": "not",
+                                            "condition": {
+                                                "name": "BINARY_HASH_SHA1 exists",
+                                                "additional": {
+                                                    "type": "exists",
+                                                    "field": "BINARY_HASH_SHA1"
+                                                }
+                                            }
+                                        }
+                        }]
+                },
+                {
+                    "name": "TextExtract",
+                    "description": "Extract Metadata and Content of Parent Document.",
+                    "order": 200,
+                    "settings": {
+                        "workerName": "textextractworkerhandler",
+                        "customData": {
+                            "disableTextExtractionFormats": "157, 159, 198, 199, 200, 223, 224, 225, 356, 357, 358, 387, 413",
+                            "disableTextExtractionClassCodes": "4, 5, 9, 20",
+                            "outputPartialReference": {
+                                "source": "dataStorePartialReference"
+                            }
+                        }
+                    },
+                    "typeName": "DocumentWorkerHandler",
+                    "actionConditions": []
+                },
+                {
+                    "name": "OCR",
+                    "description": "Extract Text from Images.",
+                    "order": 300,
+                    "settings": {
+                    },
+                    "typeName": "OCRWorkerHandler",
+                    "actionConditions": [{
+                            "name": "Image",
+                            "additional": {
+                                "type": "boolean",
+                                "operator": "or",
+                                "children": [{
+                                        "name": "Raster Image",
+                                        "additional": {
+                                            "type": "string",
+                                            "notes": "DOC_CLASS_CODE is 4",
+                                            "operator": "is",
+                                            "field": "DOC_CLASS_CODE",
+                                            "value": "4"
+                                        }
+                                    },
+                                    {
+                                        "name": "fax",
+                                        "additional": {
+                                            "type": "string",
+                                            "operator": "is",
+                                            "field": "DOC_CLASS_CODE",
+                                            "notes": "DOC_CLASS_CODE is 19:fax",
+                                            "value": "19"
+                                        }
+                                    },
+                                    {
+                                        "name": "pdf",
+                                        "additional": {
+                                            "type": "string",
+                                            "value": "230",
+                                            "operator": "is",
+                                            "field": "DOC_FORMAT_CODE",
+                                            "notes": "DOC_FORMAT_CODE is 230"
+                                        }
+                                    },
+                                    {
+                                        "name": "Vector Graphic",
+                                        "additional": {
+                                            "type": "string",
+                                            "value": "5",
+                                            "operator": "is",
+                                            "field": "DOC_CLASS_CODE",
+                                            "notes": "DOC_CLASS_CODE is 5"
+                                        }
+                                    }
+                                ]
+                            }
+                        }]
+                },
+                {
+                    "name": "Speech",
+                    "description": "Extract Text from Audio or Video files.",
+                    "order": 400,
+                    "settings": {
+                    },
+                    "typeName": "SpeechWorkerHandler",
+                    "actionConditions": [{
+                            "name": "Audio/Video",
+                            "additional": {
+                                "type": "boolean",
+                                "operator": "or",
+                                "children": [{
+                                        "name": "Sound",
+                                        "additional": {
+                                            "type": "string",
+                                            "value": "9",
+                                            "operator": "is",
+                                            "field": "DOC_CLASS_CODE",
+                                            "notes": "DOC_CLASS_CODE is 9"
+                                        }
+                                    },
+                                    {
+                                        "name": "Movie",
+                                        "additional": {
+                                            "type": "string",
+                                            "value": "20",
+                                            "operator": "is",
+                                            "field": "DOC_CLASS_CODE",
+                                            "notes": "DOC_CLASS_CODE is 20"
+                                        }
+                                    }
+                                ]
+                            }
+                        }]
+                },
+                {
+                    "name": "MarkupEmails",
+                    "description": "Markup Emails.",
+                    "order": 500,
+                    "settings": {
+                        "fields": [
+                            "CONTENT",
+                            "IS_FAMILY_TYPE",
+                            "caf-mail-conversation-index",
+                            "caf-mail-in-reply-to",
+                            "conversationtopic",
+                            "in-reply-to",
+                            "internetmessageid",
+                            "message-id",
+                            "thread-index",
+                            "thread-topic"
+                        ],
+                        "hashConfiguration": [{
+                                "name": "Normalized",
+                                "scope": "EMAIL_SPECIFIC",
+                                "fields": [{
+                                        "name": "To",
+                                        "normalizationType": "NAME_ONLY"
+                                    },
+                                    {
+                                        "name": "From",
+                                        "normalizationType": "NAME_ONLY"
+                                    },
+                                    {
+                                        "name": "Body",
+                                        "normalizationType": "REMOVE_WHITESPACE_AND_LINKS"
+                                    }
+                                ],
+                                "hashFunctions": [
+                                    "XXHASH64"
+                                ]
+                            }],
+                        "outputFields": [{
+                                "field": "CONVERSATION_INDEX",
+                                "xPathExpression": "/root/CAF_MAIL_CONVERSATION_INDEX/text()"
+                            },
+                            {
+                                "field": "CONVERSATION_INDEX_JSON",
+                                "xPathExpression": "/root/CAF_MAIL_CONVERSATION_INDEX_PARSED/text()"
+                            },
+                            {
+                                "field": "CONVERSATION_TOPIC",
+                                "xPathExpression": "/root/CAF_MAIL_CONVERSATION_TOPIC/text()"
+                            },
+                            {
+                                "field": "IN_REPLY_TO",
+                                "xPathExpression": "/root/CAF_MAIL_IN_REPLY_TO/text()"
+                            },
+                            {
+                                "field": "IS_EMAIL",
+                                "xPathExpression": "/root/IS_FAMILY_TYPE/text()"
+                            },
+                            {
+                                "field": "MESSAGE_ID",
+                                "xPathExpression": "/root/CAF_MAIL_MESSAGE_ID/text()"
+                            },
+                            {
+                                "field": "PARENT_ID",
+                                "xPathExpression": "/root/CONTENT/email[2]/hash/digest/@value"
+                            },
+                            {
+                                "field": "SECTION_ID",
+                                "xPathExpression": "/root/CONTENT/email[1]/hash/digest/@value"
+                            },
+                            {
+                                "field": "SECTION_SORT",
+                                "xPathExpression": "/root/CONTENT/email[1]/headers/Sent/@dateUtc"
+                            },
+                            {
+                                "field": "THREAD_DATE",
+                                "xPathExpression": "/root/CONTENT/email[last()]/headers/Sent/@dateUtc"
+                            },
+                            {
+                                "field": "THREAD_ID",
+                                "xPathExpression": "/root/CONTENT/email[last()]/hash/digest/@value"
+                            }
+                        ],
+                        "isEmail": true
+                    },
+                    "typeName": "MarkupPolicyType",
+                    "actionConditions": [{
+                            "name": "AND",
+                            "additional": {
+                                "type": "boolean",
+                                "operator": "AND",
+                                "children": [{
+                                        "name": "CONTENTexists",
+                                        "additional": {
+                                            "type": "exists",
+                                            "field": "CONTENT"
+                                        }
+                                    },
+                                    {
+                                        "name": "Mail message",
+                                        "additional": {
+                                            "type": "boolean",
+                                            "operator": "or",
+                                            "children": [{
+                                                    "name": "Outlook",
+                                                    "additional": {
+                                                        "type": "string",
+                                                        "value": "345",
+                                                        "operator": "is",
+                                                        "field": "DOC_FORMAT_CODE",
+                                                        "notes": "DOC_FORMAT_CODE is 345: Outlook"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "SMTP",
+                                                    "additional": {
+                                                        "type": "string",
+                                                        "value": "232",
+                                                        "operator": "is",
+                                                        "field": "DOC_FORMAT_CODE",
+                                                        "notes": "DOC_FORMAT_CODE is 232: SMTP"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "MIME_Fmt",
+                                                    "additional": {
+                                                        "type": "string",
+                                                        "value": "233",
+                                                        "operator": "is",
+                                                        "field": "DOC_FORMAT_CODE",
+                                                        "notes": "DOC_FORMAT_CODE is 233: MIME_Fmt"
+                                                    }
+                                                },
+                                                {
+                                                    "name": "OODF_Text_Fmt",
+                                                    "additional": {
+                                                        "type": "string",
+                                                        "value": "373",
+                                                        "operator": "is",
+                                                        "field": "DOC_FORMAT_CODE",
+                                                        "notes": "DOC_FORMAT_CODE is 373: OODF_Text_Fmt"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }]
+                },
+                {
+                    "name": "MarkupComparisonHashEmail",
+                    "description": "Generate a Comparison Hash for Emails",
+                    "order": 600,
+                    "settings": {
+                        "fields": [
+                            "CHILD_INFO_*_BINARY_HASH_SHA1",
+                            "CONVERSATION_INDEX",
+                            "CONVERSATION_TOPIC",
+                            "IN_REPLY_TO",
+                            "SECTION_ID",
+                            "THREAD_ID",
+                            "cc",
+                            "from",
+                            "priority",
+                            "subject",
+                            "to"
+                        ],
+                        "hashConfiguration": [{
+                                "name": "Family",
+                                "scope": "EMAIL_THREAD",
+                                "fields": [{
+                                    "name": "CHILD_INFO_*_BINARY_HASH_SHA1"
+                                }, {
+                                    "name": "CONVERSATION_INDEX"
+                                }, {
+                                    "name": "CONVERSATION_TOPIC"
+                                }, {
+                                    "name": "IN_REPLY_TO"
+                                }, {
+                                    "name": "SECTION_ID"
+                                }, {
+                                    "name": "THREAD_ID"
+                                }, {
+                                    "name": "cc",
+                                    "normalizationType": "NAME_ONLY"
+                                }, {
+                                    "name": "from",
+                                    "normalizationType": "NAME_ONLY"
+                                }, {
+                                    "name": "priority"
+                                }, {
+                                    "name": "subject"
+                                }, {
+                                    "name": "to",
+                                    "normalizationType": "NAME_ONLY"
+                                }],
+                                "hashFunctions": ["XXHASH64"]
+                            }],
+                        "outputFields": [{
+                                "field": "COMPARISON_HASH",
+                                "xPathExpression": "/root/hash/digest/@value"
+                            }],
+                        "isEmail": false
+                    },
+                    "typeName": "MarkupPolicyType",
+                    "actionConditions": [{
+                            "name": "AND",
+                            "additional": {
+                                "type": "boolean",
+                                "operator": "AND",
+                                "children": [{
+                                        "name": "IS_EMAIL",
+                                        "additional": {
+                                            "type": "string",
+                                            "value": "true",
+                                            "operator": "is",
+                                            "field": "IS_EMAIL"
+                                        }
+                                    },
+                                    {
+                                        "name": "IS_FAMILY_ORIGIN",
+                                        "additional": {
+                                            "type": "not",
+                                            "condition": {
+                                                "name": "In Family But Not Origin",
+                                                "additional": {
+                                                    "type": "string",
+                                                    "value": "false",
+                                                    "operator": "is",
+                                                    "field": "IS_FAMILY_ORIGIN"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }]
+                },
+                {
+                    "name": "MarkupComparisonHashAttachment",
+                    "description": "Generate a Comparison Hash for Email Attachments (or other family-type attachments)",
+                    "order": 610,
+                    "settings": {
+                        "fields": [
+                            "BINARY_HASH_SHA1",
+                            "PARENT_COMPARISON_HASH"
+                        ],
+                        "hashConfiguration": [{
+                                "name": "Comparison",
+                                "scope": "EMAIL_THREAD",
+                                "fields": [{
+                                        "name": "BINARY_HASH_SHA1"
+                                    }, {
+                                        "name": "PARENT_COMPARISON_HASH"
+                                    }],
+                                "hashFunctions": ["XXHASH64"]
+                            }],
+                        "outputFields": [{
+                                "field": "COMPARISON_HASH",
+                                "xPathExpression": "/root/hash/digest/@value"
+                            }],
+                        "isEmail": false
+                    },
+                    "typeName": "MarkupPolicyType",
+                    "actionConditions": [{
+                            "name": "In Family But Not Origin",
+                            "additional": {
+                                "type": "string",
+                                "value": "false",
+                                "operator": "is",
+                                "field": "IS_FAMILY_ORIGIN"
+                            }
+                        }]
+                },
+                {
+                    "name": "MarkupComparisonHashNonEmail",
+                    "description": "Generate a Comparison Hash for Non Emails (which are the head of a family or not in a family)",
+                    "order": 620,
+                    "settings": {
+                        "fields": [
+                            "BINARY_HASH_SHA1"
+                        ],
+                        "hashConfiguration": [{
+                                "name": "Comparison",
+                                "scope": "EMAIL_THREAD",
+                                "fields": [{
+                                        "name": "BINARY_HASH_SHA1"
+                                    }],
+                                "hashFunctions": ["XXHASH64"]
+                            }],
+                        "outputFields": [{
+                                "field": "COMPARISON_HASH",
+                                "xPathExpression": "/root/hash/digest/@value"
+                            }],
+                        "isEmail": false
+                    },
+                    "typeName": "MarkupPolicyType",
+                    "actionConditions": [{
+                            "name": "Not a family child and not an e-mail",
+                            "additional": {
+                                "type": "not",
+                                "condition": {
+                                    "name": "A family child or an e-mail",
+                                    "additional": {
+                                        "type": "boolean",
+                                        "operator": "or",
+                                        "children": [{
+                                                "name": "In Family But Not Origin",
+                                                "additional": {
+                                                    "type": "string",
+                                                    "value": "false",
+                                                    "operator": "is",
+                                                    "field": "IS_FAMILY_ORIGIN"
+                                                }
+                                            },
+                                            {
+                                                "name": "Is E-mail",
+                                                "additional": {
+                                                    "type": "string",
+                                                    "value": "true",
+                                                    "operator": "is",
+                                                    "field": "IS_EMAIL"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }]
+                },
+                {
+                    "name": "Inheritance",
+                    "description": "Extract Metadata and Content of Child Documents and perform Inheritance.",
+                    "order": 700,
+                    "settings": {
+                        "workerName": "inheritanceworker",
+                        "customData": {
+                            "projectId": {
+                                "source": "projectId"
+                            },
+                            "workflowId": {
+                                "source": "workflowId"
+                            },
+                            "outputPartialReference": {
+                                "source": "dataStorePartialReference"
+                            }
+                        }
+                    },
+                    "typeName": "DocumentWorkerHandler",
+                    "actionConditions": []
+                },
+                {
+                    "name": "LangDetect",
+                    "description": "Detects top 3 languages in an uploaded document.",
+                    "order": 800,
+                    "settings": {
+                        "workerName": "langdetectworker",
+                        "fields": ["CONTENT"]
+                    },
+                    "typeName": "DocumentWorkerHandler",
+                    "actionConditions": [{
+                            "name": "CONTENTexists",
+                            "additional": {
+                                "type": "exists",
+                                "field": "CONTENT",
+                                "notes": "CONTENT exists: CONTENTexists"
+                            }
+                        }]
+                },
+                {
+                    "name": "EntityExtract",
+                    "description": "Detects PII in an uploaded document.",
+                    "order": 900,
+                    "settings": {
+                        "workerName": "entityextractworkerhandler",
+                        "fields": ["CONTENT"],
+                        "customData": {
+                            "OPERATION_MODE": "DETECT",
+                            "GRAMMAR_MAP": "{pii.xml: []}"
+                        }
+                    },
+                    "typeName": "DocumentWorkerHandler",
+                    "actionConditions": [{
+                            "name": "CONTENTexists",
+                            "additional": {
+                                "type": "exists",
+                                "field": "CONTENT"
+                            }
+                        }]
+                },
+                {
+                    "name": "Boilerplate",
+                    "description": "Detects Expressions in an uploaded document.",
+                    "order": 1000,
+                    "settings": {
+                        "redactionType": "DO_NOTHING",
+                        "expressionIds": [
+                            "HP old",
+                            "Generic Disclaimer",
+                            "HPE short",
+                            "HPE long",
+                            "HP",
+                            "Hewlett Packard",
+                            "HPE Disclaimer"
+                        ],
+                        "returnMatches": true
+                    },
+                    "typeName": "BoilerplatePolicyType",
+                    "actionConditions": [{
+                            "name": "CONTENTexists",
+                            "additional": {
+                                "type": "exists",
+                                "field": "CONTENT",
+                                "notes": "CONTENT exists: CONTENTexists"
+                            }
+                        }]
+                }
+            ],
+            "ruleConditions": [
+            ]
+        },
+        {
+            "name": "Classify",
+            "description": "Classify processed document.",
+            "priority": 200,
+            "actions": [{
+                    "name": "External Classification",
+                    "description": "Perform external classification on document.",
+                    "order": 100,
+                    "settings": {
+                        "workflowId": "Classification Workflow"
+                    },
+                    "typeName": "ElasticSearchClassificationPolicyType",
+                    "actionConditions": [
+                    ]
+                }],
+            "ruleConditions": [
+            ]
+        },
+        {
+            "name": "Output",
+            "description": "Output processed document.",
+            "priority": 300,
+            "actions": [
+                {
+                    "name": "Field Mapping StorageReference",
+                    "description": "Rename Metadata Fields of Parent Document.",
+                    "order": 90,
+                    "settings": {
+                        "mappings": {
+                            "storageReference": "ARCHIVE_ID"
+                        }
+                    },
+                    "typeName": "FieldMappingPolicyType",
+                    "actionConditions": []
+                },{
+                    "name": "Send to Output Queue",
+                    "description": "Send to Data Processing Output Queue.",
+                    "order": 100,
+                    "settings": {
+                        "workerName": "worker-indexelastic",
+                        "queueName": "worker-indexelastic-in"
+                    },
+                    "typeName": "DocumentWorkerHandler",
+                    "actionConditions": [
+                    ]
+                }],
+            "ruleConditions": [
+            ]
+        }
+    ]
+}
