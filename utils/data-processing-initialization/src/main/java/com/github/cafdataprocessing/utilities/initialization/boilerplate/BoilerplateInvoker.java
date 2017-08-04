@@ -39,9 +39,19 @@ public class BoilerplateInvoker {
     }
 
     /**
-     * Run the configured boilerplate creation.
+     * Run the configured boilerplate creation. Will remove any existing expressions or tags that match the names of those
+     * that will be created.
      */
     public void run(){
-        boilerplateCreator.run();
+        this.run(true);
+    }
+
+    /**
+     * Run the configured boilerplate creation.
+     * @param overwriteExisting Whether any boilerplate expressions and tags with names matching those that are to be created
+     *                          should be removed before creation.
+     */
+    public void run(boolean overwriteExisting){
+        boilerplateCreator.run(overwriteExisting);
     }
 }

@@ -52,15 +52,34 @@ public class Main {
         if(workflowId==null){
             LOGGER.info("No workflow ID passed. Workflow will be created and used in published task messages.");
             //create boilerplate expressions/tags if applicable and set up the boilerplate name resolver
-            BoilerplateNameResolver boilerplateNameResolver = BoilerplateInitializer.initializeBoilerplateIfRequired(properties.getBoilerplateApiUrl(), properties.getProjectId(), properties.getBoilerplateBaseDataInputFile(), properties.getBoilerplateBaseDataOutputFile(), properties.getCreateBoilerplateBaseData());
+            BoilerplateNameResolver boilerplateNameResolver = BoilerplateInitializer.initializeBoilerplateIfRequired(
+                    properties.getBoilerplateApiUrl(),
+                    properties.getProjectId(),
+                    properties.getBoilerplateBaseDataInputFile(),
+                    properties.getBoilerplateBaseDataOutputFile(),
+                    properties.getCreateBoilerplateBaseData(),
+                    properties.getOverwriteExistingBaseData());
 
             //create classification workflow if applicable and set up the classification name resolver
             ClassificationWorkflowNameResolver classificationWorkflowNameResolver =
-                    ClassificationInitializer.initializeClassificationWorkflowIfRequired(properties.getClassificationApiUrl(), properties.getCreateClassificationBaseData(), properties.getClassificationBaseDataInputFile(), properties.getClassificationBaseDataOutputFile(), projectId);
+                    ClassificationInitializer.initializeClassificationWorkflowIfRequired(
+                            properties.getClassificationApiUrl(),
+                            properties.getCreateClassificationBaseData(),
+                            properties.getClassificationBaseDataInputFile(),
+                            properties.getClassificationBaseDataOutputFile(),
+                            projectId,
+                            properties.getOverwriteExistingBaseData());
 
-            WorkflowInitializer workflowInitializer = new WorkflowInitializer(properties.getProcessingApiUrl(), boilerplateNameResolver, new ActionTypeNameResolver(), classificationWorkflowNameResolver);
-            workflowId = workflowInitializer.initializeWorkflowBaseData(properties.getWorkflowBaseDataFile(),
+            WorkflowInitializer workflowInitializer = new WorkflowInitializer(
+                    properties.getProcessingApiUrl(),
+                    boilerplateNameResolver,
+                    new ActionTypeNameResolver(),
+                    classificationWorkflowNameResolver);
+            WorkflowInitializationParams initializationParams = new WorkflowInitializationParams(
+                    properties.getWorkflowBaseDataFile(),
                     properties.getProjectId());
+            initializationParams.setOverwriteExisting(properties.getOverwriteExistingBaseData());
+            workflowId = workflowInitializer.initializeWorkflowBaseData(initializationParams);
             LOGGER.info("Created workflow that will be sent in task messages has ID: "+workflowId);
         }
 

@@ -82,9 +82,11 @@
     </developers>
 
     <properties>
-        <caf.boilerplate.service.version>2.1.0-48</caf.boilerplate.service.version>
-        <caf.classification.service.version>1.1.0-16</caf.classification.service.version>
+        <caf.boilerplate.service.version>2.2.0-SNAPSHOT</caf.boilerplate.service.version>
+        <caf.classification.service.version>1.2.0-SNAPSHOT</caf.classification.service.version>
+        <caf.container.databases.name>${dockerDataProcessingOrg}data-processing-databases${dockerProjectVersion}</caf.container.databases.name>
         <caf.container.policy.admin.name>cafdataprocessing/policy-admin-elasticsearch:1.0.0</caf.container.policy.admin.name>
+        <caf.container.processing.service.name>${dockerDataProcessingOrg}processing-service${dockerProjectVersion}</caf.container.processing.service.name>
         <caf.corepolicy.version>1.0.0-4</caf.corepolicy.version>
         <caf.worker.policy.version>1.3.0-48</caf.worker.policy.version>
         <dockerHubOrganization>cafdataprocessing</dockerHubOrganization>

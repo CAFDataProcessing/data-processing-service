@@ -118,6 +118,10 @@ Indicates whether some classification base data needs to be created. Defaults to
 
 Number of times the application will try to contact an API required for base data creation before exiting during startup environment check. Defaults to -1, meaning the application will continue attempting to contact an API until it responds as healthy.
 
+#### CAF_TASKSUBMITTER_BASEDATA_OVERWRITE_EXISTING
+
+Whether existing data for boilerplate, classification and processing should be overwritten before creating new entries. Existing data that matches the names used for the base data workflows, expressions and tags will be removed if this is true. Defaults to true.
+
 #### CAF_TASKSUBMITTER_BASEDATA_PROCESSING_API_URL
 
 URL to a processing API web service. This will be used to create the processing workflow. Required if no workflow ID is provided.

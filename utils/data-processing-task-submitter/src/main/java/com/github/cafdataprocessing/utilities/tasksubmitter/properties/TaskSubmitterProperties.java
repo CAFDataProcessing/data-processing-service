@@ -48,6 +48,8 @@ public class TaskSubmitterProperties {
             public static final String CREATE_CLASSIFICATION_BASE_DATA = "CAF_TASKSUBMITTER_BASEDATA_CREATE_CLASSIFICATION";
 
             public static final String EXTERNAL_API_READY_RETRY_ATTEMPTS = "CAF_TASKSUBMITTER_BASEDATA_EXTERNAL_API_READY_RETRY_ATTEMPTS";
+            public static final String OVERWRITE_EXISTING = "CAF_TASKSUBMITTER_BASEDATA_OVERWRITE_EXISTING";
+
             public static final String PROCESSING_API_URL = "CAF_TASKSUBMITTER_BASEDATA_PROCESSING_API_URL";
             public static final String WORKFLOW_BASE_DATA_FILE = "CAF_TASKSUBMITTER_BASEDATA_WORKFLOW_INPUT_FILE";
         }
@@ -116,6 +118,14 @@ public class TaskSubmitterProperties {
                     +PropertyNames.BaseData.EXTERNAL_API_READY_RETRY_ATTEMPTS+
                     " to a valid number.");
         }
+    }
+
+    public boolean getOverwriteExistingBaseData(){
+        String overwriteStr =  environment.getProperty(PropertyNames.BaseData.OVERWRITE_EXISTING);
+        if(Strings.isNullOrEmpty(overwriteStr)){
+            return true;
+        }
+        return Boolean.parseBoolean(overwriteStr);
     }
 
     public String getProcessingApiUrl(){

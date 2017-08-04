@@ -1,0 +1,299 @@
+{
+  "name": "Default Workflow",
+  "description": "",
+  "processingRules": [{
+      "name": "Metadata Processing",
+      "description": "Extracts document metadata.",
+      "priority": 100,
+      "actions": [{
+          "name": "Test one",
+          "description": "Returns a SHA-1 digest of the input file.",
+          "order": 100,
+          "settings": {
+            "fieldActions":[{
+              "name":"Travel Documents","action":"ADD_FIELD_VALUE","value":"1"
+            }]
+          },
+          "typeName": "MetadataPolicy",
+          "actionConditions": [{
+            "name": "No Hash",
+            "additional": {
+              "type": "not",
+              "condition": {
+                "name": "BINARY_HASH_SHA1 exists",
+                "additional": {
+                  "type": "exists",
+                  "field": "BINARY_HASH_SHA1"
+                }
+              }
+            }
+          }]
+        },
+        {
+          "name": "Test two",
+          "description": "Extract Metadata and Content of Parent Document.",
+          "order": 200,
+          "settings": {
+            "fieldActions":[{
+              "name":"Travel Documents","action":"ADD_FIELD_VALUE","value":"1"
+            }]
+          },
+          "typeName": "MetadataPolicy",
+          "actionConditions": []
+        },
+        {
+          "name": "Test three",
+          "description": "Extract Text from Images.",
+          "order": 300,
+          "settings": {
+          },
+          "typeName": "MetadataPolicy",
+          "actionConditions": [{
+            "name": "Image",
+            "additional": {
+              "type": "boolean",
+              "operator": "or",
+              "children": [{
+                "name": "Raster Image",
+                "additional": {
+                  "type": "string",
+                  "notes": "DOC_CLASS_CODE is 4",
+                  "operator": "is",
+                  "field": "DOC_CLASS_CODE",
+                  "value": "4"
+                }
+              },
+                {
+                  "name": "fax",
+                  "additional": {
+                    "type": "string",
+                    "operator": "is",
+                    "field": "DOC_CLASS_CODE",
+                    "notes": "DOC_CLASS_CODE is 19:fax",
+                    "value": "19"
+                  }
+                },
+                {
+                  "name": "pdf",
+                  "additional": {
+                    "type": "string",
+                    "value": "230",
+                    "operator": "is",
+                    "field": "DOC_FORMAT_CODE",
+                    "notes": "DOC_FORMAT_CODE is 230"
+                  }
+                },
+                {
+                  "name": "Vector Graphic",
+                  "additional": {
+                    "type": "string",
+                    "value": "5",
+                    "operator": "is",
+                    "field": "DOC_CLASS_CODE",
+                    "notes": "DOC_CLASS_CODE is 5"
+                  }
+                }
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Test four",
+          "description": "Extract Text from Audio or Video files.",
+          "order": 400,
+          "settings": {
+            "fieldActions":[{
+              "name":"Travel Documents","action":"ADD_FIELD_VALUE","value":"1"
+            }]
+          },
+          "typeName": "MetadataPolicy",
+          "actionConditions": [{
+            "name": "Audio/Video",
+            "additional": {
+              "type": "boolean",
+              "operator": "or",
+              "children": [{
+                "name": "Sound",
+                "additional": {
+                  "type": "string",
+                  "value": "9",
+                  "operator": "is",
+                  "field": "DOC_CLASS_CODE",
+                  "notes": "DOC_CLASS_CODE is 9"
+                }
+              },
+                {
+                  "name": "Movie",
+                  "additional": {
+                    "type": "string",
+                    "value": "20",
+                    "operator": "is",
+                    "field": "DOC_CLASS_CODE",
+                    "notes": "DOC_CLASS_CODE is 20"
+                  }
+                }
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Test five",
+          "description": "Markup Emails.",
+          "order": 500,
+          "settings": {
+            "fieldActions":[{
+              "name":"Travel Documents","action":"ADD_FIELD_VALUE","value":"1"
+            }]
+          },
+          "typeName": "MetadataPolicy",
+          "actionConditions": [{
+            "name": "AND",
+            "additional": {
+              "type": "boolean",
+              "operator": "AND",
+              "children": [{
+                "name": "CONTENTexists",
+                "additional": {
+                  "type": "exists",
+                  "field": "CONTENT"
+                }
+              },
+                {
+                  "name": "Mail message",
+                  "additional": {
+                    "type": "boolean",
+                    "operator": "or",
+                    "children": [{
+                      "name": "Outlook",
+                      "additional": {
+                        "type": "string",
+                        "value": "345",
+                        "operator": "is",
+                        "field": "DOC_FORMAT_CODE",
+                        "notes": "DOC_FORMAT_CODE is 345: Outlook"
+                      }
+                    },
+                      {
+                        "name": "SMTP",
+                        "additional": {
+                          "type": "string",
+                          "value": "232",
+                          "operator": "is",
+                          "field": "DOC_FORMAT_CODE",
+                          "notes": "DOC_FORMAT_CODE is 232: SMTP"
+                        }
+                      },
+                      {
+                        "name": "MIME_Fmt",
+                        "additional": {
+                          "type": "string",
+                          "value": "233",
+                          "operator": "is",
+                          "field": "DOC_FORMAT_CODE",
+                          "notes": "DOC_FORMAT_CODE is 233: MIME_Fmt"
+                        }
+                      },
+                      {
+                        "name": "OODF_Text_Fmt",
+                        "additional": {
+                          "type": "string",
+                          "value": "373",
+                          "operator": "is",
+                          "field": "DOC_FORMAT_CODE",
+                          "notes": "DOC_FORMAT_CODE is 373: OODF_Text_Fmt"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Test six",
+          "description": "Extract Metadata and Content of Child Documents and perform Inheritance.",
+          "order": 700,
+          "settings": {
+            "fieldActions":[{
+              "name":"Travel Documents","action":"ADD_FIELD_VALUE","value":"1"
+            }]
+          },
+          "typeName": "MetadataPolicy",
+          "actionConditions": []
+        },
+        {
+          "name": "Test seven",
+          "description": "Detects top 3 languages in an uploaded document.",
+          "order": 800,
+          "settings": {
+            "fieldActions":[{
+              "name":"Travel Documents","action":"ADD_FIELD_VALUE","value":"1"
+            }]
+          },
+          "typeName": "MetadataPolicy",
+          "actionConditions": [{
+            "name": "CONTENTexists",
+            "additional": {
+              "type": "exists",
+              "field": "CONTENT",
+              "notes": "CONTENT exists: CONTENTexists"
+            }
+          }]
+        },
+        {
+          "name": "Test eight",
+          "description": "Detects PII in an uploaded document.",
+          "order": 900,
+          "settings": {
+            "fieldActions":[{
+              "name":"Travel Documents","action":"ADD_FIELD_VALUE","value":"1"
+            }]
+          },
+          "typeName": "MetadataPolicy",
+          "actionConditions": [{
+            "name": "CONTENTexists",
+            "additional": {
+              "type": "exists",
+              "field": "CONTENT"
+            }
+          }]
+        }
+      ],
+      "ruleConditions": [
+      ]
+    },
+    {
+      "name": "Output",
+      "description": "Output processed document.",
+      "priority": 200,
+      "actions": [
+        {
+          "name": "Test nine",
+          "description": "Rename Metadata Fields of Parent Document.",
+          "order": 90,
+          "settings": {
+            "fieldActions":[{
+              "name":"Travel Documents","action":"ADD_FIELD_VALUE","value":"1"
+            }]
+          },
+          "typeName": "MetadataPolicy",
+          "actionConditions": []
+        },{
+          "name": "Test ten",
+          "description": "Send to Data Processing Output Queue.",
+          "order": 100,
+          "settings": {
+            "fieldActions":[{
+              "name":"Travel Documents","action":"ADD_FIELD_VALUE","value":"1"
+            }]
+          },
+          "typeName": "MetadataPolicy",
+          "actionConditions": [
+          ]
+        }],
+      "ruleConditions": [
+      ]
+    }
+  ]
+}

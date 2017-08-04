@@ -18,10 +18,9 @@ import com.github.cafdataprocessing.utilities.initialization.WorkflowCombiner;
 import com.github.cafdataprocessing.utilities.initialization.jsonobjects.ActionJson;
 import com.github.cafdataprocessing.utilities.initialization.jsonobjects.ProcessingRuleJson;
 import com.github.cafdataprocessing.utilities.initialization.jsonobjects.WorkflowJson;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -39,42 +38,41 @@ public class WorkflowCombinerTest
         WorkflowCombiner.combineWorkflows(workflowJson, overlayWorkflow);
 
         ProcessingRuleJson metadataProcessingRule = getProcessingRule(workflowJson.processingRules, "Metadata Processing");
-        assertEquals(13, metadataProcessingRule.actions.size());
+        Assert.assertEquals(13, metadataProcessingRule.actions.size());
 
         ActionJson langDetect = getAction(metadataProcessingRule.actions, "LangDetect");
-        assertEquals((Integer)440, langDetect.order);
-        assertEquals("DocumentWorkerHandler", langDetect.typeName);
-        assertEquals(2, langDetect.settings.size());
-        assertEquals("langdetectworker", langDetect.settings.get("workerName"));
-        assertNotNull(langDetect.settings.get("fields"));
-        assertEquals(1, langDetect.actionConditions.size());
-        assertEquals("CONTENTexists", langDetect.actionConditions.get(0).name);
-        assertNotNull(langDetect.actionConditions.get(0).additional);
+        Assert.assertEquals(langDetect.order, (Integer) 440);
+        Assert.assertEquals(langDetect.typeName, "DocumentWorkerHandler");
+        Assert.assertEquals(langDetect.settings.size(), 2);
+        Assert.assertEquals(langDetect.settings.get("workerName"), "langdetectworker");
+        Assert.assertNotNull(langDetect.settings.get("fields"));
+        Assert.assertEquals(langDetect.actionConditions.size(), 1);
+        Assert.assertEquals(langDetect.actionConditions.get(0).name, "CONTENTexists");
+        Assert.assertNotNull(langDetect.actionConditions.get(0).additional);
 
         ActionJson docIdWorker = getAction(metadataProcessingRule.actions, "DocIdWorker");
-        assertEquals((Integer)900, docIdWorker.order);
-        assertEquals("DocId", docIdWorker.typeName);
-        assertEquals(2, docIdWorker.settings.size());
-        assertEquals("abc", docIdWorker.settings.get("mySettingA"));
-        assertEquals(true, docIdWorker.settings.get("mySettingB"));
-        assertEquals(1, docIdWorker.actionConditions.size());
+        Assert.assertEquals(docIdWorker.order, (Integer) 900);
+        Assert.assertEquals(docIdWorker.typeName, "DocId");
+        Assert.assertEquals(docIdWorker.settings.size(), 2);
+        Assert.assertEquals(docIdWorker.settings.get("mySettingA"), "abc");
+        Assert.assertEquals(docIdWorker.settings.get("mySettingB"), true);
+        Assert.assertEquals(docIdWorker.actionConditions.size(), 1);
 
-        assertEquals("CONTENTexists", docIdWorker.actionConditions.get(0).name);
-        assertNotNull(docIdWorker.actionConditions.get(0).additional);
+        Assert.assertEquals(docIdWorker.actionConditions.get(0).name, "CONTENTexists");
+        Assert.assertNotNull(docIdWorker.actionConditions.get(0).additional);
 
         ProcessingRuleJson outputProcessingRule = getProcessingRule(workflowJson.processingRules, "Output");
-        assertEquals(2, outputProcessingRule.actions.size());
+        Assert.assertEquals(outputProcessingRule.actions.size(), 2);
         ActionJson mappingAction = getAction(outputProcessingRule.actions, "Field Mapping StorageReference");
-        assertEquals(1, mappingAction.settings.size());
+        Assert.assertEquals(mappingAction.settings.size(), 1);
         Map mappings = (Map) mappingAction.settings.get("mappings");
-        assertEquals("ARCHIVE_ID", mappings.get("storageReference"));
-        assertEquals("ANOTHER_MAPPING", mappings.get("anotherMapping"));
+        Assert.assertEquals(mappings.get("storageReference"), "ARCHIVE_ID");
+        Assert.assertEquals(mappings.get("anotherMapping"), "ANOTHER_MAPPING");
 
         ActionJson outputAction = getAction(outputProcessingRule.actions, "Send to Output Queue");
-        assertEquals("GenericQueueHandler", outputAction.typeName);
-        assertEquals(1, outputAction.settings.size());
-        assertEquals("relocator", outputAction.settings.get("queueName"));
-
+        Assert.assertEquals(outputAction.typeName, "GenericQueueHandler");
+        Assert.assertEquals(outputAction.settings.size(), 1);
+        Assert.assertEquals(outputAction.settings.get("queueName"), "relocator");
     }
 
     private ProcessingRuleJson getProcessingRule(List<ProcessingRuleJson> processingRules, String name)

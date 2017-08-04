@@ -31,7 +31,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <caf.container.databases.name>${dockerDataProcessingOrg}data-processing-databases${dockerProjectVersion}</caf.container.databases.name>
+
         <caf.container.javapostgres.name>cafapi/java-postgres:1.11.0-218</caf.container.javapostgres.name>
     </properties>
 

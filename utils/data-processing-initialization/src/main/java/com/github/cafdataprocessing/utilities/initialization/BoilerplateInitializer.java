@@ -34,7 +34,23 @@ public class BoilerplateInitializer
 {
     private static final Logger LOG = LoggerFactory.getLogger(BoilerplateInitializer.class);
 
-    public static BoilerplateNameResolver initializeBoilerplateIfRequired(String boilerplateApiUrl, String projectId, String boilerplateBaseDataInputFile, String boilerplateBaseDataOutputFile, boolean createBoilerplateBaseData)
+    public static BoilerplateNameResolver initializeBoilerplateIfRequired(String boilerplateApiUrl, String projectId,
+                                                                          String boilerplateBaseDataInputFile,
+                                                                          String boilerplateBaseDataOutputFile,
+                                                                          boolean createBoilerplateBaseData){
+        return initializeBoilerplateIfRequired(boilerplateApiUrl,
+                projectId,
+                boilerplateBaseDataInputFile,
+                boilerplateBaseDataOutputFile,
+                createBoilerplateBaseData,
+                true);
+    }
+
+    public static BoilerplateNameResolver initializeBoilerplateIfRequired(String boilerplateApiUrl, String projectId,
+                                                                          String boilerplateBaseDataInputFile,
+                                                                          String boilerplateBaseDataOutputFile,
+                                                                          boolean createBoilerplateBaseData,
+                                                                          boolean overwriteExisting)
     {
         BoilerplateNameResolver nameResolver;
         if(Strings.isNullOrEmpty(boilerplateApiUrl)){
@@ -47,7 +63,8 @@ public class BoilerplateInitializer
             apiClient.setBasePath(boilerplateApiUrl);
             nameResolver = new BoilerplateNameResolver(apiClient);
             if (createBoilerplateBaseData) {
-                initializeBoilerplateBaseData(boilerplateBaseDataInputFile, boilerplateBaseDataOutputFile, boilerplateApiUrl);
+                initializeBoilerplateBaseData(boilerplateBaseDataInputFile, boilerplateBaseDataOutputFile,
+                        boilerplateApiUrl, overwriteExisting);
             }
         }
         if (!Strings.isNullOrEmpty(boilerplateBaseDataOutputFile)) {
@@ -57,10 +74,14 @@ public class BoilerplateInitializer
         return nameResolver;
     }
 
-    private static void initializeBoilerplateBaseData(String boilerplateBaseDataInputFile, String boilerplateBaseDataOutputFile, String boilerplateApiUrl)
+    private static void initializeBoilerplateBaseData(String boilerplateBaseDataInputFile,
+                                                      String boilerplateBaseDataOutputFile, String boilerplateApiUrl,
+                                                      boolean overwriteExisting)
     {
-        BoilerplateInvoker bpInvoker = new BoilerplateInvoker(boilerplateBaseDataInputFile, boilerplateBaseDataOutputFile, boilerplateApiUrl);
-        bpInvoker.run();
+        BoilerplateInvoker bpInvoker = new BoilerplateInvoker(boilerplateBaseDataInputFile,
+                boilerplateBaseDataOutputFile,
+                boilerplateApiUrl);
+        bpInvoker.run(overwriteExisting);
     }
 
     private static CreationResultJson loadBoilerplateOutputFile(String boilerplateBaseDataOutputFile){

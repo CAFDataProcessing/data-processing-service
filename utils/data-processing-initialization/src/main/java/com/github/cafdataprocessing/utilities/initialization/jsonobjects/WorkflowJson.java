@@ -16,15 +16,22 @@
 package com.github.cafdataprocessing.utilities.initialization.jsonobjects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.cafdataprocessing.processing.service.client.model.BaseWorkflow;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * JSON representation of a data processing workflow for use with task submitter application
  */
 public class WorkflowJson {
+    private static final ObjectMapper mapper = new ObjectMapper();
+
     public final String name;
     public final String description;
     public final String notes;
@@ -46,5 +53,40 @@ public class WorkflowJson {
         workflow.setDescription(this.description);
         workflow.setNotes(this.notes);
         return workflow;
+    }
+
+    /**
+     * Reads the contents of the file at the specified location and converts them to a WorkflowJson representation
+     * @param inputFilepath Path to the file with WorkflowJson definition.
+     * @return Converted WorkflowJson object.
+     * @throws IOException If unable to convert file contents.
+     * @throws NullPointerException
+     *          If the <code>inputFilepath</code> argument is <code>null</code>
+     */
+    public static WorkflowJson readInputFile(String inputFilepath) throws IOException, NullPointerException {
+        File baseDataFile = new File(inputFilepath);
+        try {
+            return mapper.readValue(baseDataFile, WorkflowJson.class);
+        } catch (IOException e) {
+            throw new IOException("Failure trying to deserialize the workflow base data input file. Please check the format of the file contents.", e);
+        }
+    }
+
+    /**
+     * Reads the the input stream and converts to a WorkflowJson representation
+     * @param inputStream InputStream of a WorkflowJson definition.
+     * @return Converted WorkflowJson object.
+     * @throws IOException If unable to convert file contents.
+     * @throws NullPointerException
+     *          If the <code>inputStream</code> argument is <code>null</code>
+     */
+    public static WorkflowJson readInputStream(InputStream inputStream) throws IOException, NullPointerException
+    {
+        Objects.requireNonNull(inputStream);
+        try {
+            return mapper.readValue(inputStream, WorkflowJson.class);
+        } catch (IOException e) {
+            throw new IOException("Failure trying to deserialize the workflow base data input stream. Please check the format of the input stream.", e);
+        }
     }
 }

@@ -15,7 +15,6 @@
  */
 package com.github.cafdataprocessing.utilities.initialization;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.cafdataprocessing.processing.service.client.ApiClient;
 import com.github.cafdataprocessing.processing.service.client.ApiException;
 import com.github.cafdataprocessing.processing.service.client.api.*;
@@ -32,7 +31,6 @@ import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -45,14 +43,14 @@ import java.util.List;
 public class WorkflowInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(WorkflowInitializer.class);
 
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final ApiClient apiClient;
     private final WorkflowsApi workflowsApi;
     private final ProcessingRulesApi processingRulesApi;
     private final ActionsApi actionsApi;
     private final ActionTypesApi actionTypesApi;
     private final ActionConditionsApi actionConditionsApi;
     private final ProcessingRulesConditionsApi rulesConditionsApi;
+
+    private final ProcessingApisProvider apisProvider;
 
     private ActionTypeNameResolver actionTypeNameResolver;
     private final BoilerplateNameResolver boilerplateNameResolver;
@@ -69,14 +67,15 @@ public class WorkflowInitializer {
     public WorkflowInitializer(String processingApiUrl, BoilerplateNameResolver boilerplateNameResolver,
                                ActionTypeNameResolver actionTypeNameResolver,
                                ClassificationWorkflowNameResolver classificationWorkflowNameResolver){
-        apiClient = new ApiClient();
+        final ApiClient apiClient = new ApiClient();
         apiClient.setBasePath(processingApiUrl);
-        workflowsApi = new WorkflowsApi(apiClient);
-        processingRulesApi = new ProcessingRulesApi(apiClient);
-        actionsApi = new ActionsApi(apiClient);
-        actionTypesApi = new ActionTypesApi(apiClient);
-        actionConditionsApi = new ActionConditionsApi(apiClient);
-        rulesConditionsApi = new ProcessingRulesConditionsApi(apiClient);
+        apisProvider = new ProcessingApisProvider(apiClient);
+        workflowsApi = apisProvider.getWorkflowsApi();
+        processingRulesApi = apisProvider.getProcessingRulesApi();
+        actionsApi = apisProvider.getActionsApi();
+        actionTypesApi = apisProvider.getActionTypesApi();
+        actionConditionsApi = apisProvider.getActionConditionsApi();
+        rulesConditionsApi = apisProvider.getRulesConditionsApi();
 
         this.actionTypeNameResolver = actionTypeNameResolver;
         this.boilerplateNameResolver = boilerplateNameResolver;
@@ -138,8 +137,8 @@ public class WorkflowInitializer {
         //retrieve action types that this project ID has available
 
         //read in the json representation of the workflow
-        final WorkflowJson workflowToCreate = readInputFile(inputFileName);
-        final WorkflowJson overlayWorkflow = Strings.isNullOrEmpty(overlayFile) ? null : readInputFile(overlayFile);
+        final WorkflowJson workflowToCreate = WorkflowJson.readInputFile(inputFileName);
+        final WorkflowJson overlayWorkflow = Strings.isNullOrEmpty(overlayFile) ? null : WorkflowJson.readInputFile(overlayFile);
 
         //create the workflow and return ID of created workflow
         return createWorkflow(workflowToCreate, overlayWorkflow, projectId);
@@ -159,11 +158,43 @@ public class WorkflowInitializer {
     public long initializeWorkflowBaseData(InputStream workflowBaseDataStream, InputStream workflowOverlayStream, String projectId) throws IOException, ApiException {
 
         //read in the json representation of the workflow
-        final WorkflowJson workflowToCreate = readInputFile(workflowBaseDataStream);
-        final WorkflowJson overlayWorkflow = workflowOverlayStream == null ? null : readInputFile(workflowOverlayStream);
+        final WorkflowJson workflowToCreate = WorkflowJson.readInputStream(workflowBaseDataStream);
+        final WorkflowJson overlayWorkflow = workflowOverlayStream == null ? null : WorkflowJson.readInputStream(workflowOverlayStream);
 
         //create the workflow and return ID of created workflow
         return createWorkflow(workflowToCreate, overlayWorkflow, projectId);
+    }
+
+    /**
+     * Creates a processing workflow derived from the information in the {@code initializationParams} object. Optional extensions or
+     * overrides can be provided in the {@code workflowOverlay} parameter of the {@code initializationParams} parameter.
+     * See {@link WorkflowCombiner} for more information on merging of two {@link WorkflowJson} objects.
+     * @param initializationParams Defines properties to use in workflow creation.
+     * @return Newly created workflow id.
+     * @throws IOException If unable to read the workflow.
+     * @throws ApiException in case of a failure to create a workflow.
+     */
+    public long initializeWorkflowBaseData(WorkflowInitializationParams initializationParams) throws IOException, ApiException {
+        return createWorkflow(initializationParams.getWorkflowBaseDataJson(),
+                initializationParams.getWorkflowOverlayJson(),
+                initializationParams.getProjectId(),
+                initializationParams.getOverwriteExisting());
+    }
+
+    /**
+     * Creates a processing workflow derived from the information in the {@code workflow} object. Optional extensions or
+     * overrides can be provided in the {@code workflowOverlay} parameter.
+     * See {@link WorkflowCombiner} for more information on merging of two {@link WorkflowJson} objects.
+     * This will remove any existing workflows with the same workflow name as the definition from the {@code workflow} parameter for the
+     * specified {@code projectId}.
+     * @param workflow An object describing workflow to be created.
+     * @param workflowOverlay An optional object describing extensions or overrides to the {@code workflow} parameter.
+     * @param projectId A project id to create workflow under.
+     * @return Newly created workflow id.
+     * @throws ApiException in case of a failure to create a workflow.
+     */
+    public long createWorkflow(WorkflowJson workflow, WorkflowJson workflowOverlay, String projectId) throws ApiException {
+        return createWorkflow(workflow, workflowOverlay, projectId, true);
     }
 
     /**
@@ -172,16 +203,21 @@ public class WorkflowInitializer {
      * See {@link WorkflowCombiner} for more information on merging of two {@link WorkflowJson} objects.
      * @param workflow An object describing workflow to be created.
      * @param workflowOverlay An optional object describing extensions or overrides to the {@code workflow} parameter.
-     * @param projectId A project id
+     * @param projectId A project id to create workflow under.
+     * @param overwriteExisting Whether existing workflows under this {@code projectId} with the same name as the provided workflow should be removed.
      * @return Newly created workflow id.
      * @throws ApiException in case of a failure to create a workflow.
      */
-    public long createWorkflow(WorkflowJson workflow, WorkflowJson workflowOverlay, String projectId) throws ApiException {
+    public long createWorkflow(WorkflowJson workflow, WorkflowJson workflowOverlay, String projectId, boolean overwriteExisting) throws ApiException {
 
         //retrieve action types that this project ID has available
         retrieveActionTypeInformation(projectId);
 
         WorkflowCombiner.combineWorkflows(workflow, workflowOverlay);
+
+        if(overwriteExisting){
+            WorkflowRemover.removeMatchingWorkflows(apisProvider, projectId, workflow.name);
+        }
 
         ExistingWorkflow createdWorkflow = workflowsApi.createWorkflow(projectId, workflow.toApiBaseWorkflow());
         long createdWorkflowId = createdWorkflow.getId();
@@ -208,7 +244,7 @@ public class WorkflowInitializer {
         replaceBoilerplateNamesIfRequired(actionToCreate);
         //if this action has classification workflow names instead of IDs, check if matches can be found in the list of known classification workflows
         replaceClassificationWorkflowNamesIfRequired(actionToCreate, projectId);
-        ExistingAction createdAction = null;
+        ExistingAction createdAction;
         try {
             createdAction = actionsApi.createAction(projectId, workflowId, ruleId, actionToCreate);
         }
@@ -227,24 +263,6 @@ public class WorkflowInitializer {
 
     private void createRuleCondition(ConditionJson conditionJson, long workflowId, long ruleId, String projectId) throws ApiException {
         rulesConditionsApi.createRuleCondition(projectId, workflowId, ruleId, conditionJson.toApiCondition());
-    }
-
-    private WorkflowJson readInputFile(String inputFile) throws IOException {
-        File baseDataFile = new File(inputFile);
-        try {
-            return mapper.readValue(baseDataFile, WorkflowJson.class);
-        } catch (IOException e) {
-            throw new IOException("Failure trying to deserialize the workflow base data input file. Please check the format of the file contents.", e);
-        }
-    }
-
-    private WorkflowJson readInputFile(InputStream inputStream) throws IOException
-    {
-        try {
-            return mapper.readValue(inputStream, WorkflowJson.class);
-        } catch (IOException e) {
-            throw new IOException("Failure trying to deserialize the workflow base data input file. Please check the format of the file contents.", e);
-        }
     }
 
     private void replaceBoilerplateNamesIfRequired(Action action){
