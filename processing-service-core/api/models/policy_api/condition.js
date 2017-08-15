@@ -170,7 +170,7 @@ function addChildToCondition(conditionToAddTo, childCondition){
 //Simplified API allows omission of '"type":"condition"' by caller when working with conditions. Add this property to condition (and any children) from caller so that Policy API can understand it. Updates the object passed in.
 function addTypeConditionToCondition(condition){
   if(condition===undefined || condition === null){
-    logger.debug(function(){return "'condition' passed to 'addTypeConditionToCondition' was null or undefined."});
+    logger.debug(function(){return "'condition' passed to 'addTypeConditionToCondition' was null or undefined.";});
     throw new Error("Invalid Condition encountered.");
   }
   
@@ -268,6 +268,22 @@ function getConditionByIdFromActionRootCondition(conditionObject, idToFind){
         return nestedConditionsResult;
       }
     }
+    //if this is a not condition check if the ID is for a condition it negates
+    if(childCondition.additional.type === 'not'){
+      var negatedCondition = childCondition.additional.condition;
+      if(negatedCondition===null || negatedCondition===undefined){
+        return null;
+      }
+      if(negatedCondition.id===idToFind){
+        return negatedCondition;
+      }
+      if(negatedCondition.additional.type === 'boolean'){
+        var nestedNegatedConditionResult = getConditionByIdFromActionRootCondition(negatedCondition, idToFind);
+        if(nestedNegatedConditionResult!==null){
+          return nestedNegatedConditionResult;
+        }
+      }
+    }
   }  
   return null;
 }
@@ -296,6 +312,22 @@ function getConditionByIdFromRuleRootCondition(conditionObject, idToFind){
       var nestedConditionsResult = getConditionByIdFromRuleRootCondition(childCondition, idToFind);
       if(nestedConditionsResult!==null){
         return nestedConditionsResult;
+      }
+    }
+    //if this is a not condition check if the ID is for a condition it negates
+    if(childCondition.additional.type === 'not'){
+      var negatedCondition = childCondition.additional.condition;
+      if(negatedCondition===null || negatedCondition===undefined){
+        return null;
+      }
+      if(negatedCondition.id===idToFind){
+        return negatedCondition;
+      }
+      if(negatedCondition.additional.type === 'boolean'){
+        var nestedNegatedConditionResult = getConditionByIdFromRuleRootCondition(negatedCondition, idToFind);
+        if(nestedNegatedConditionResult!==null){
+          return nestedNegatedConditionResult;
+        }
       }
     }
   }  
