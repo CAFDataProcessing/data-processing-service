@@ -117,352 +117,48 @@
                     "actionConditions": []
                 },
                 {
-                    "name": "MarkupEmails",
-                    "description": "Markup Emails.",
+                    "name": "Markup",
+                    "description": "Markup documents.",
                     "order": 300,
                     "settings": {
                         "fields": [
-                            "CONTENT",
-                            "IS_FAMILY_TYPE",
-                            "caf-mail-conversation-index",
-                            "caf-mail-in-reply-to",
-                            "conversationtopic",
-                            "in-reply-to",
-                            "internetmessageid",
-                            "message-id",
-                            "thread-index",
-                            "thread-topic"
-                        ],
-                        "hashConfiguration": [{
-                                "name": "Normalized",
-                                "scope": "EMAIL_SPECIFIC",
-                                "fields": [{
-                                        "name": "To",
-                                        "normalizationType": "NAME_ONLY"
-                                    },
-                                    {
-                                        "name": "From",
-                                        "normalizationType": "NAME_ONLY"
-                                    },
-                                    {
-                                        "name": "Body",
-                                        "normalizationType": "REMOVE_WHITESPACE_AND_LINKS"
-                                    }
-                                ],
-                                "hashFunctions": [
-                                    "XXHASH64"
-                                ]
-                            }],
-                        "outputFields": [{
-                                "field": "CONVERSATION_INDEX",
-                                "xPathExpression": "/root/CAF_MAIL_CONVERSATION_INDEX/text()"
-                            },
-                            {
-                                "field": "CONVERSATION_INDEX_JSON",
-                                "xPathExpression": "/root/CAF_MAIL_CONVERSATION_INDEX_PARSED/text()"
-                            },
-                            {
-                                "field": "CONVERSATION_TOPIC",
-                                "xPathExpression": "/root/CAF_MAIL_CONVERSATION_TOPIC/text()"
-                            },
-                            {
-                                "field": "IN_REPLY_TO",
-                                "xPathExpression": "/root/CAF_MAIL_IN_REPLY_TO/text()"
-                            },
-                            {
-                                "field": "IS_EMAIL",
-                                "xPathExpression": "/root/IS_FAMILY_TYPE/text()"
-                            },
-                            {
-                                "field": "MESSAGE_ID",
-                                "xPathExpression": "/root/CAF_MAIL_MESSAGE_ID/text()"
-                            },
-                            {
-                                "field": "PARENT_ID",
-                                "xPathExpression": "/root/CONTENT/email[2]/hash/digest/@value"
-                            },
-                            {
-                                "field": "SECTION_ID",
-                                "xPathExpression": "/root/CONTENT/email[1]/hash/digest/@value"
-                            },
-                            {
-                                "field": "SECTION_SORT",
-                                "xPathExpression": "/root/CONTENT/email[1]/headers/Sent/@dateUtc"
-                            },
-                            {
-                                "field": "THREAD_DATE",
-                                "xPathExpression": "/root/CONTENT/email[last()]/headers/Sent/@dateUtc"
-                            },
-                            {
-                                "field": "THREAD_ID",
-                                "xPathExpression": "/root/CONTENT/email[last()]/hash/digest/@value"
-                            }
-                        ],
-                        "isEmail": true
-                    },
-                    "typeName": "MarkupPolicyType",
-                    "actionConditions": [{
-                            "name": "AND",
-                            "additional": {
-                                "type": "boolean",
-                                "operator": "AND",
-                                "children": [{
-                                        "name": "CONTENTexists",
-                                        "additional": {
-                                            "type": "exists",
-                                            "field": "CONTENT"
-                                        }
-                                    },
-                                    {
-                                        "name": "Mail message",
-                                        "additional": {
-                                            "type": "boolean",
-                                            "operator": "or",
-                                            "children": [{
-                                                    "name": "Outlook",
-                                                    "additional": {
-                                                        "type": "string",
-                                                        "value": "345",
-                                                        "operator": "is",
-                                                        "field": "DOC_FORMAT_CODE",
-                                                        "notes": "DOC_FORMAT_CODE is 345: Outlook"
-                                                    }
-                                                },
-                                                {
-                                                    "name": "SMTP",
-                                                    "additional": {
-                                                        "type": "string",
-                                                        "value": "232",
-                                                        "operator": "is",
-                                                        "field": "DOC_FORMAT_CODE",
-                                                        "notes": "DOC_FORMAT_CODE is 232: SMTP"
-                                                    }
-                                                },
-                                                {
-                                                    "name": "MIME_Fmt",
-                                                    "additional": {
-                                                        "type": "string",
-                                                        "value": "233",
-                                                        "operator": "is",
-                                                        "field": "DOC_FORMAT_CODE",
-                                                        "notes": "DOC_FORMAT_CODE is 233: MIME_Fmt"
-                                                    }
-                                                },
-                                                {
-                                                    "name": "OODF_Text_Fmt",
-                                                    "additional": {
-                                                        "type": "string",
-                                                        "value": "373",
-                                                        "operator": "is",
-                                                        "field": "DOC_FORMAT_CODE",
-                                                        "notes": "DOC_FORMAT_CODE is 373: OODF_Text_Fmt"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                ]
-                            }
-                        }]
-                },
-                {
-                    "name": "MarkupComparisonHashEmail",
-                    "description": "Generate a Comparison Hash for Emails",
-                    "order": 400,
-                    "settings": {
-                        "fields": [
+                            "BINARY_HASH_SHA1",
                             "CHILD_INFO_*_BINARY_HASH_SHA1",
+                            "CONTENT",
                             "CONVERSATION_INDEX",
                             "CONVERSATION_TOPIC",
                             "IN_REPLY_TO",
+                            "IS_FAMILY_TYPE",
                             "MESSAGE_ID",
+                            "PARENT_COMPARISON_HASH",
                             "SECTION_ID",
                             "THREAD_ID",
+                            "caf-mail-conversation-index",
+                            "caf-mail-in-reply-to",
                             "cc",
+                            "conversationtopic",
                             "creationtime",
                             "from",
+                            "in-reply-to",
+                            "internetmessageid",
                             "lastmodificationtime",
+                            "message-id",
                             "priority",
                             "received",
                             "sender",
                             "sensitivity",
                             "sent",
                             "subject",
+                            "thread-index",
+                            "thread-topic",
                             "to"
                         ],
-                        "hashConfiguration": [{
-                                "name": "Family",
-                                "scope": "EMAIL_THREAD",
-                                "fields": [{
-                                        "name": "CHILD_INFO_*_BINARY_HASH_SHA1"
-                                    }, {
-                                        "name": "CONVERSATION_INDEX"
-                                    }, {
-                                        "name": "CONVERSATION_TOPIC"
-                                    }, {
-                                        "name": "IN_REPLY_TO"
-                                    }, {
-                                        "name": "MESSAGE_ID"
-                                    }, {
-                                        "name": "SECTION_ID"
-                                    }, {
-                                        "name": "THREAD_ID"
-                                    }, {
-                                        "name": "cc"
-                                    }, {
-                                        "name": "creationtime"
-                                    }, {
-                                        "name": "from"
-                                    }, {
-                                        "name": "lastmodificationtime"
-                                    }, {
-                                        "name": "priority"
-                                    }, {
-                                        "name": "received"
-                                    }, {
-                                        "name": "sender"
-                                    }, {
-                                        "name": "sensitivity"
-                                    }, {
-                                        "name": "sent"
-                                    }, {
-                                        "name": "subject"
-                                    }, {
-                                        "name": "to"
-                                    }],
-                                "hashFunctions": ["XXHASH64"]
-                            }],
-                        "outputFields": [{
-                                "field": "COMPARISON_HASH",
-                                "xPathExpression": "/root/hash/digest/@value"
-                            }],
-                        "isEmail": false
+                        "workerName": "markupworkerhandler",
+                        "customData": {
+                        }
                     },
-                    "typeName": "MarkupPolicyType",
-                    "actionConditions": [{
-                            "name": "AND",
-                            "additional": {
-                                "type": "boolean",
-                                "operator": "AND",
-                                "children": [{
-                                        "name": "IS_EMAIL",
-                                        "additional": {
-                                            "type": "string",
-                                            "value": "true",
-                                            "operator": "is",
-                                            "field": "IS_EMAIL"
-                                        }
-                                    },
-                                    {
-                                        "name": "IS_FAMILY_ORIGIN",
-                                        "additional": {
-                                            "type": "not",
-                                            "condition": {
-                                                "name": "In Family But Not Origin",
-                                                "additional": {
-                                                    "type": "string",
-                                                    "value": "false",
-                                                    "operator": "is",
-                                                    "field": "IS_FAMILY_ORIGIN"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }]
-                },
-                {
-                    "name": "MarkupComparisonHashAttachment",
-                    "description": "Generate a Comparison Hash for Email Attachments (or other family-type attachments)",
-                    "order": 500,
-                    "settings": {
-                        "fields": [
-                            "BINARY_HASH_SHA1",
-                            "PARENT_COMPARISON_HASH"
-                        ],
-                        "hashConfiguration": [{
-                                "name": "Comparison",
-                                "scope": "EMAIL_THREAD",
-                                "fields": [{
-                                        "name": "BINARY_HASH_SHA1"
-                                    }, {
-                                        "name": "PARENT_COMPARISON_HASH"
-                                    }],
-                                "hashFunctions": ["XXHASH64"]
-                            }],
-                        "outputFields": [{
-                                "field": "COMPARISON_HASH",
-                                "xPathExpression": "/root/hash/digest/@value"
-                            }],
-                        "isEmail": false
-                    },
-                    "typeName": "MarkupPolicyType",
-                    "actionConditions": [{
-                            "name": "In Family But Not Origin",
-                            "additional": {
-                                "type": "string",
-                                "value": "false",
-                                "operator": "is",
-                                "field": "IS_FAMILY_ORIGIN"
-                            }
-                        }]
-                },
-                {
-                    "name": "MarkupComparisonHashNonEmail",
-                    "description": "Generate a Comparison Hash for Non Emails (which are the head of a family or not in a family)",
-                    "order": 600,
-                    "settings": {
-                        "fields": [
-                            "BINARY_HASH_SHA1"
-                        ],
-                        "hashConfiguration": [{
-                                "name": "Comparison",
-                                "scope": "EMAIL_THREAD",
-                                "fields": [{
-                                        "name": "BINARY_HASH_SHA1"
-                                    }],
-                                "hashFunctions": ["XXHASH64"]
-                            }],
-                        "outputFields": [{
-                                "field": "COMPARISON_HASH",
-                                "xPathExpression": "/root/hash/digest/@value"
-                            }],
-                        "isEmail": false
-                    },
-                    "typeName": "MarkupPolicyType",
-                    "actionConditions": [{
-                            "name": "Not a family child and not an e-mail",
-                            "additional": {
-                                "type": "not",
-                                "condition": {
-                                    "name": "A family child or an e-mail",
-                                    "additional": {
-                                        "type": "boolean",
-                                        "operator": "or",
-                                        "children": [{
-                                                "name": "In Family But Not Origin",
-                                                "additional": {
-                                                    "type": "string",
-                                                    "value": "false",
-                                                    "operator": "is",
-                                                    "field": "IS_FAMILY_ORIGIN"
-                                                }
-                                            },
-                                            {
-                                                "name": "Is E-mail",
-                                                "additional": {
-                                                    "type": "string",
-                                                    "value": "true",
-                                                    "operator": "is",
-                                                    "field": "IS_EMAIL"
-                                                }
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }]
+                    "typeName": "DocumentWorkerHandler",
+                    "actionConditions": []
                 },
                 {
                     "name": "LangDetect",
