@@ -24,7 +24,7 @@
     <parent>
         <groupId>com.github.cafapi</groupId>
         <artifactId>caf-common</artifactId>
-        <version>1.12.0-232</version>
+        <version>1.13.0-239</version>
         <relativePath />
     </parent>
 
@@ -82,13 +82,13 @@
     </developers>
 
     <properties>
-        <caf.boilerplate.service.version>2.2.0-SNAPSHOT</caf.boilerplate.service.version>
-        <caf.classification.service.version>1.2.0-SNAPSHOT</caf.classification.service.version>
+        <caf.boilerplate.service.version>2.2.0-72</caf.boilerplate.service.version>
+        <caf.classification.service.version>1.2.0-24</caf.classification.service.version>
         <caf.container.databases.name>${dockerDataProcessingOrg}data-processing-databases${dockerProjectVersion}</caf.container.databases.name>
         <caf.container.policy.admin.name>cafdataprocessing/policy-admin-elasticsearch:1.0.0</caf.container.policy.admin.name>
         <caf.container.processing.service.name>${dockerDataProcessingOrg}processing-service${dockerProjectVersion}</caf.container.processing.service.name>
         <caf.corepolicy.version>1.0.0-4</caf.corepolicy.version>
-        <caf.worker.policy.version>1.3.0-48</caf.worker.policy.version>
+        <caf.worker.policy.version>1.4.0-60</caf.worker.policy.version>
         <dockerHubOrganization>cafdataprocessing</dockerHubOrganization>
         <dockerDataProcessingOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerDataProcessingOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
@@ -152,7 +152,7 @@
             <dependency>
                 <groupId>com.github.workerframework</groupId>
                 <artifactId>worker-framework</artifactId>
-                <version>2.0.0-279</version>
+                <version>2.3.1-301</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
