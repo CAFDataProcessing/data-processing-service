@@ -30,7 +30,7 @@
     <groupId>com.github.cafdataprocessing</groupId>
     <artifactId>processing-service-client</artifactId>
     <description>Built as an example only - consumers should generate their own client tailored as required.</description>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.3.0-70</version>
 
     <properties>
         <swagger-contract-artifactId>processing-service-contract</swagger-contract-artifactId>
