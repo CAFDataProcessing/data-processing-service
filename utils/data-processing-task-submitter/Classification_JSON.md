@@ -80,6 +80,7 @@ If using a termlist condition, the name of the term list may be specified in the
 A top level node, classifications can be defined as described in the API contract;
 
 e.g.
+```
 {
   "name": "My classification",
   "description": "An example classification",
@@ -105,6 +106,7 @@ e.g.
     }]
   }
 }
+```
 
 If using a termlist condition, the name of the term list may be specified in the value property and it will be resolved to the appropriate ID.
 
