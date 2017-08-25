@@ -114,17 +114,6 @@ public class AdditionalPropertyComparison {
                     Assert.fail("Expected and retrieved additional properties are not instances of the same type. Retrieved is EXISTS.");
                 }
                 break;
-            case TEXT:
-                if(expectedType.equals(ConditionCommon.TypeEnum.TEXT)) {
-                    compareTextConditionAdditionals(
-                            mapper.convertValue(expectedAdditional, LinkedHashMap.class),
-                            mapper.convertValue(retrievedAdditional, LinkedHashMap.class)
-                    );
-                }
-                else {
-                    Assert.fail("Expected and retrieved additional properties are not instances of the same type. Retrieved is EXISTS.");
-                }
-                break;
             default:
                 Assert.fail("Unrecognized type returned on Classification additional.");
         }
