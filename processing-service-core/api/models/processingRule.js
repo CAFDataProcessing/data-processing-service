@@ -258,7 +258,7 @@ module.exports.updateRule = function(updateRuleParams){
       enabled: updateRuleParams.enabled
     };
     
-    return colSeqModel.update(updateRuleParams.project_id, updateCollectionSequence);
+    return colSeqModel.update(updateRuleParams.project_id, updateCollectionSequence, colSeqModel.defaults.updateBehaviour.add);
   })
   .then(function(updatedCollectionSequence){
     logger.debug('Collection sequence updated as part of updating rule with ID: '+updateRuleParams.id);

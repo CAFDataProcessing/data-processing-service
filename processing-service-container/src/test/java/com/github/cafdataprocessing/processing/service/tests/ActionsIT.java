@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.cafdataprocessing.processing.service.client.ApiClient;
 import com.github.cafdataprocessing.processing.service.client.ApiException;
 import com.github.cafdataprocessing.processing.service.client.api.ActionsApi;
+import com.github.cafdataprocessing.processing.service.client.api.ProcessingRulesApi;
 import com.github.cafdataprocessing.processing.service.client.model.*;
 import com.github.cafdataprocessing.processing.service.tests.utils.ApiClientProvider;
 import com.github.cafdataprocessing.processing.service.tests.utils.ExampleActionTypeDefinition;
@@ -39,6 +40,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ActionsIT {
     private String projectId;
     private static ActionsApi actionsApi;
+    private static ProcessingRulesApi processingRulesApi;
 
     private static ObjectMapper mapper = new ObjectMapper();
 
@@ -46,6 +48,7 @@ public class ActionsIT {
     public static void setup() throws Exception {
         ApiClient apiClient = ApiClientProvider.getApiClient();
         actionsApi = new ActionsApi(apiClient);
+        processingRulesApi = new ProcessingRulesApi(apiClient);
 
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
@@ -317,6 +320,33 @@ public class ActionsIT {
             Assert.assertTrue(e.getMessage().contains("not found on Workflow with ID"),
                     "Expected exception message to mention problem with workflow and rule parents. Message: "+e.getMessage());
         }
+    }
+    
+    @Test(description = "Creates actions, updates their parent rule and checks the actions still exist them through paging. A bug previously"
+        + " existedwhere updating a rule would delete actions under it.")
+    public void updateRuleAndCheckActions() throws ApiException {
+        ExistingWorkflow workflow_1 = ObjectsCreator.createWorkflow(projectId);
+        long workflowId_1 = workflow_1.getId();
+        ExistingProcessingRule rule_1 = ObjectsCreator.createProcessingRule(projectId, workflowId_1, null);
+        long ruleId_1 = rule_1.getId();
+
+        int numberOfActionsToCreate = 21;
+        List<ExistingAction> createdActions = createMultipleActions(numberOfActionsToCreate, workflowId_1, ruleId_1);
+
+        //take a copy of this for use later
+        List<ExistingAction> copyOfFirstActions = new LinkedList<>();
+        copyOfFirstActions.addAll(createdActions);
+
+        //page through actions. Should find all that were created.
+        int pageSize = 5;
+        pageThroughActions(pageSize, workflowId_1, ruleId_1, createdActions, createdActions.size());
+
+        //update processing rule
+        rule_1.setDescription("Updated description.");
+        processingRulesApi.updateRule(projectId, workflowId_1, ruleId_1, rule_1);
+        
+        //check actions are still available
+        pageThroughActions(pageSize, workflowId_1, ruleId_1, copyOfFirstActions, copyOfFirstActions.size());
     }
 
     private void pageThroughActions(int pageSize, long workflowId, long ruleId,
