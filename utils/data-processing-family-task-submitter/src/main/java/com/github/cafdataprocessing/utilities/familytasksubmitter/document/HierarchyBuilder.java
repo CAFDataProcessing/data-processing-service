@@ -16,8 +16,11 @@
 package com.github.cafdataprocessing.utilities.familytasksubmitter.document;
 
 import com.github.cafdataprocessing.utilities.familytasksubmitter.FamilyTaskSubmitterConstants;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.github.cafdataprocessing.worker.policy.shared.Document;
+import com.hpe.caf.util.ref.ReferencedData;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -76,12 +79,26 @@ public class HierarchyBuilder
         return createDocument(subDocReference, subDocumentMap, subfiles);
     }
 
-    private Document createDocument(final String reference, final Multimap<String, String> documentMetadata,
+    private Document createDocument(final String reference, final Multimap<String, String> providedDocumentMetadata,
                                     final Collection<Document> subfiles)
     {
         Document document = new Document();
         document.setDocuments(subfiles);
-        document.setMetadata(documentMetadata);
+        // send the CONTENT field as a metadata reference so we can verify metadata references are handled correctly by
+        // workers operating on a family
+        Multimap<String, String> docMetadataToSend = ArrayListMultimap.create();
+        Multimap<String, ReferencedData> docMetadataRefsToSend = ArrayListMultimap.create();
+        for(Map.Entry<String, String> docMetadataEntry: providedDocumentMetadata.entries()){
+            String metadataKey = docMetadataEntry.getKey();
+            if(metadataKey.equals("CONTENT")){
+                docMetadataRefsToSend.put(metadataKey,
+                        ReferencedData.getWrappedData(docMetadataEntry.getValue().getBytes()));
+                continue;
+            }
+            docMetadataToSend.put(metadataKey, docMetadataEntry.getValue());
+        }
+        document.setMetadata(docMetadataToSend);
+        document.setMetadataReferences(docMetadataRefsToSend);
         document.setReference(reference);
         document.setPolicyDataProcessingRecord(null);
         return document;
