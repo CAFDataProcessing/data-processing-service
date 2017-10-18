@@ -16,10 +16,11 @@
 package com.github.cafdataprocessing.utilities.familytasksubmitter.document;
 
 import com.github.cafdataprocessing.utilities.familytasksubmitter.FamilyTaskSubmitterConstants;
+import com.github.cafdataprocessing.worker.policy.shared.Document;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.github.cafdataprocessing.worker.policy.shared.Document;
 import com.hpe.caf.util.ref.ReferencedData;
+import org.elasticsearch.common.Strings;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,9 +89,13 @@ public class HierarchyBuilder
         // workers operating on a family
         Multimap<String, String> docMetadataToSend = ArrayListMultimap.create();
         Multimap<String, ReferencedData> docMetadataRefsToSend = ArrayListMultimap.create();
+        String contentFieldName = System.getProperty(FamilyTaskSubmitterConstants.CONTENT_FIELD_NAME, System.getenv(FamilyTaskSubmitterConstants.CONTENT_FIELD_NAME));
+        if (Strings.isNullOrEmpty(contentFieldName)) {
+            contentFieldName = FamilyTaskSubmitterConstants.DEFAULT_CONTENT_FIELD_NAME;
+        }
         for(Map.Entry<String, String> docMetadataEntry: providedDocumentMetadata.entries()){
             String metadataKey = docMetadataEntry.getKey();
-            if(metadataKey.equals("CONTENT")){
+            if(metadataKey.equals(contentFieldName)){
                 docMetadataRefsToSend.put(metadataKey,
                         ReferencedData.getWrappedData(docMetadataEntry.getValue().getBytes()));
                 continue;
