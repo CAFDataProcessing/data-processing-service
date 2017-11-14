@@ -33,7 +33,7 @@ public final class FamilyTaskSubmitterConstants
     public static final String OUTPUT_QUEUE_NAME = "OUTPUT_QUEUE_NAME";
     public static final String FAMILY_REFERENCE = "FAMILY_REFERENCE";
     public static final String CONTENT_FIELD_NAME = "CONTENT_FIELD_NAME";
-    public static final String DEFAULT_CONTENT_FIELD_NAME = "DEFAULT_CONTENT_FIELD_NAME";
+    public static final String DEFAULT_CONTENT_FIELD_NAME = "CONTENT_PRIMARY";
 
     public final class RabbitConstants
     {
