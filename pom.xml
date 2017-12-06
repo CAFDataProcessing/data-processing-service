@@ -88,7 +88,6 @@
 
     <properties>
         <caf.boilerplate.service.version>2.2.0-72</caf.boilerplate.service.version>
-        <caf.classification.service.version>1.2.0-24</caf.classification.service.version>
         <caf.container.databases.name>${dockerDataProcessingOrg}data-processing-databases${dockerProjectVersion}</caf.container.databases.name>
         <caf.container.policy.admin.name>cafdataprocessing/policy-admin-elasticsearch:1.0.0</caf.container.policy.admin.name>
         <caf.container.processing.service.name>${dockerDataProcessingOrg}processing-service${dockerProjectVersion}</caf.container.processing.service.name>
@@ -107,16 +106,6 @@
                 <version>${caf.boilerplate.service.version}</version>
                 <classifier>jar-with-dependencies</classifier>
                 <type>jar</type>
-            </dependency>
-            <dependency>
-                <groupId>com.github.cafdataprocessing</groupId>
-                <artifactId>classification-service-client</artifactId>
-                <version>${caf.classification.service.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.cafdataprocessing</groupId>
-                <artifactId>classification-service-creation-util</artifactId>
-                <version>${caf.classification.service.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafdataprocessing</groupId>

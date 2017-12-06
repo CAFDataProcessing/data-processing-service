@@ -2,7 +2,7 @@
 
 ## Detailed Overview
 
-This implementation makes use of concepts in the Policy API to represent the requirements of the data-processing-service-contract. The Policy API is used as it is supported in the Policy Worker project to control the processing of items that the worker receives. This processing can then, based on the objects created in the Policy API, directly perform processing on the item or direct an item to other CAF Workers to provide support for Binary Hashing, Boilerplate text detection, Classification of Items and more. This existing integration makes it desirable to use the Policy API as a back-end, with this project intending to simplify the interactions required with the Policy API to create and manage the Workflow for processing that a Worker will eventually use.
+This implementation makes use of concepts in the Policy API to represent the requirements of the data-processing-service-contract. The Policy API is used as it is supported in the Policy Worker project to control the processing of items that the worker receives. This processing can then, based on the objects created in the Policy API, directly perform processing on the item or direct an item to other CAF Workers to provide support for Binary Hashing, Boilerplate text detection and more. This existing integration makes it desirable to use the Policy API as a back-end, with this project intending to simplify the interactions required with the Policy API to create and manage the Workflow for processing that a Worker will eventually use.
 
 The policy API exposes a large number of configuration options. This simplified API aims to only expose those required for the scenario of data processing thus allowing a reduction in what the user has to provide.
 

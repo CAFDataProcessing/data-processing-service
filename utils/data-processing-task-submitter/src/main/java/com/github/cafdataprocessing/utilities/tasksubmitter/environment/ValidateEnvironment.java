@@ -62,6 +62,5 @@ public class ValidateEnvironment {
 
         ValidateWorkflowProperties.validate(properties);
         ValidateBoilerplateProperties.validate(properties);
-        ValidateClassificationProperties.validate(properties);
     }
 }

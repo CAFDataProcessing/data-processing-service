@@ -18,7 +18,6 @@ banner:
 Rather than a monolithic application aiming to service all processing needs, Data Processing promotes tailored microservices that can be plugged into a deployment as required. The benefits of this approach include:
 
 * A consumer of Data Processing can decide which services their solution requires, thus avoiding unnecessary deployment and setup of irrelevant components. For example:
-  * In a system that only groups the files that have been processed, you would not deploy the classification worker, API and required database.
   * In a system that only ingests text documents, you would not need the OCR and Speech worker to convert content to text.
 
 * Each processing service maintains its own independent input queue and resource allocation. Data sources that require more time to process will not slow the processing of other, less intensive data. For example:
@@ -101,10 +100,6 @@ Text can be analysed to detect and return the top three languages present.
 ### Unique ID Tagging
 
 Each item passed into Data Processing can have a unique identifier assigned that may be used as the ID for the built up data representation when processing completes, for example, as the ID to use when indexing the processing result into an archive platform. Files extracted from archive formats can also be assigned unique identifiers. *Enterprise Edition* only.
-
-### Classification
-
-Data can be compared against defined classifications, which represent sets of conditions. Any matches will be recorded on the data and output at the end of processing, allowing for custom groupings, such as Travel Documents or Receipts, to be built from processed items.
 
 ### Key Content Segregation for Emails.
 

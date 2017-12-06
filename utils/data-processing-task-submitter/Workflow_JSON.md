@@ -120,25 +120,6 @@ Special handling is supported for boilerplate type actions, which require specif
 
 If the expression/tag ID is known then it can be used as the value instead.
 
-#### Classification Actions
-
-Special handling is supported for classification action types (ElasticSearchClassificationPolicyType & ExternalClassificationPolicyType), which specify a workflow ID in the action definition. The name of the classification workflow can be written instead and the submitter will resolve the name to the appropriate ID before creating the action.
-
-```
-{
-  "name": "External Classification",
-  "description": "Perform external classification on document.",
-  "order": 100,
-  "settings": {
-    "workflowId": "Classification Workflow"
-  },
-  "typeName": "ElasticSearchClassificationPolicyType",
-  "actionConditions": []
-}
-```
-
-If the classification workflow ID is known then it can be used as the value instead.
-
 ### Rule and Action Conditions
 
 In the ruleConditions and actionConditions properties, conditions can be defined as detailed in the data processing API contract. Boolean, date, exists, not, number, regex and string conditions are supported.

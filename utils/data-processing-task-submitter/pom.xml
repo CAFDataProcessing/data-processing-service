@@ -31,15 +31,7 @@
     <dependencies>
         <dependency>
             <groupId>com.github.cafdataprocessing</groupId>
-            <artifactId>classification-service-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cafdataprocessing</groupId>
             <artifactId>data-processing-queue-helper</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cafdataprocessing</groupId>
-            <artifactId>data-processing-initialization</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.cafdataprocessing</groupId>

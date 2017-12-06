@@ -16,7 +16,7 @@ banner:
 The Data Processing service is actually a suite of services that form a fully-featured processing solution. It consists of the following:
 
 - Workers, built against the CAF Worker Framework, for processing input data.
-- API's for customizing logic that can be applied during processing, for example, workflows, classifications, and boilerplate expressions.
+- API's for customizing logic that can be applied during processing, for example, workflows and boilerplate expressions.
 
 The sections that follow provide a high-level architectural overview of the various components that make up the Data Processing service and how they interact. Each component is available as a Docker container and the suite can be deployed using the compose file available [here](https://github.com/CAFDataProcessing/data-processing-service-deploy). Instructions on using the compose file can be found on the [Getting Started](./Getting-Started) page.
 
@@ -111,27 +111,6 @@ You create expressions using this web service and then reference them in boilerp
 #### Boilerplate Database
 
 The expressions and tags created through the boilerplate API are stored in a database. The boilerplate worker contacts this database to retrieve expressions and tags using the IDs passed to it on input tasks. The database is included in the databases service launched by the data-processing compose file. This service can also be used to install the database to an external PostgreSQL instance, as documented [here](https://github.com/CAFDataProcessing/data-processing-service/tree/develop/utils/data-processing-databases-container#install-boilerplate-database).
-
-## Classification Worker
-
-Classifications are groups into which a document falls. They are made up of a set of conditions describing the criteria that constitutes membership in the group.
-
-*  For example, a classification called Travel Documents may consist of conditions that the content contain common booking terms or the from field be a known airline email address.
-
-The classification worker receives an input task specifying a workflow by its ID and the document (with its metadata) to check for membership. The worker evaluates the document against the specified workflow stored in the classification database and outputs a result message indicating which classifications on the workflow matched the document.
-
-Classifications can make use of Elasticsearch search syntax in their criteria (via Text Conditions).
-
-### Classification API
-
-The classification API is a web-service that manages classification workflows. The workflows defined using this API are accessed by the classification worker when it is processing a task. It relies on the classification database to store the created objects and retrieve them.
-As with the data processing API this is a NodeJS application that communicates with an instance of the policy API with a dedicated instance of the policy database. Here the infrastructure that policy provides has been utilized with the classification API providing an interface tailored to the subject of classification.
-
-### Classification Database
-
-This database is shared by the classification API and the classification worker, storing the workflows and classifications used in the processing of data. The database is included in the databases service launched by the data-processing compose file. This service can also be used to install the database to an external PostgreSQL instance, as documented [here](https://github.com/CAFDataProcessing/data-processing-service/tree/develop/utils/data-processing-databases-container#install-classification-database).
-
-More information about Classification can be found on the its action page [here](Classification/Main).
 
 ## Entity Extract Worker
 

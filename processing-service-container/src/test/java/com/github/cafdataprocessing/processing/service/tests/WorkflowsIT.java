@@ -100,7 +100,7 @@ public class WorkflowsIT {
             Assert.assertTrue(e.getMessage().contains("Unable to find Workflow with ID: " + createdWorkflow_1.getId()), "Exception message should contain expected message about not finding workflow.");
         }
 
-        //add a classification rule to the remaining workflow and then try to delete it
+        //add a processing rule to the remaining workflow and then try to delete it
         BaseProcessingRule processingRule = ObjectsInitializer.initializeProcessingRule(null);
         processingRulesApi.createRule(projectId, remainingWorkflow.getId(), processingRule);
 

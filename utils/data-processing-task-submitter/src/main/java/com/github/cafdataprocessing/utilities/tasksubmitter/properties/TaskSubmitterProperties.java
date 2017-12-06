@@ -40,12 +40,7 @@ public class TaskSubmitterProperties {
             public static final String BOILERPLATE_BASE_DATA_INPUT_FILE = "CAF_TASKSUBMITTER_BASEDATA_BOILERPLATE_INPUT_FILE";
             public static final String BOILERPLATE_BASE_DATA_OUTPUT_FILE = "CAF_TASKSUBMITTER_BASEDATA_BOILERPLATE_OUTPUT_FILE";
 
-            public static final String CLASSIFICATION_API_URL = "CAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_API_URL";
-            public static final String CLASSIFICATION_BASE_DATA_INPUT_FILE = "CAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_INPUT_FILE";
-            public static final String CLASSIFICATION_BASE_DATA_OUTPUT_FILE = "CAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_OUTPUT_FILE";
-
             public static final String CREATE_BOILERPLATE_BASE_DATA = "CAF_TASKSUBMITTER_BASEDATA_CREATE_BOILERPLATE";
-            public static final String CREATE_CLASSIFICATION_BASE_DATA = "CAF_TASKSUBMITTER_BASEDATA_CREATE_CLASSIFICATION";
 
             public static final String EXTERNAL_API_READY_RETRY_ATTEMPTS = "CAF_TASKSUBMITTER_BASEDATA_EXTERNAL_API_READY_RETRY_ATTEMPTS";
             public static final String OVERWRITE_EXISTING = "CAF_TASKSUBMITTER_BASEDATA_OVERWRITE_EXISTING";
@@ -72,24 +67,8 @@ public class TaskSubmitterProperties {
         return environment.getProperty(PropertyNames.BaseData.BOILERPLATE_BASE_DATA_OUTPUT_FILE);
     }
 
-    public String getClassificationApiUrl(){
-        return environment.getProperty(PropertyNames.BaseData.CLASSIFICATION_API_URL);
-    }
-
-    public String getClassificationBaseDataInputFile(){
-        return environment.getProperty(PropertyNames.BaseData.CLASSIFICATION_BASE_DATA_INPUT_FILE);
-    }
-
-    public String getClassificationBaseDataOutputFile(){
-        return environment.getProperty(PropertyNames.BaseData.CLASSIFICATION_BASE_DATA_OUTPUT_FILE);
-    }
-
     public boolean getCreateBoilerplateBaseData(){
         return Boolean.parseBoolean(environment.getProperty(PropertyNames.BaseData.CREATE_BOILERPLATE_BASE_DATA));
-    }
-
-    public boolean getCreateClassificationBaseData(){
-        return Boolean.parseBoolean(environment.getProperty(PropertyNames.BaseData.CREATE_CLASSIFICATION_BASE_DATA));
     }
 
     public String getDocumentInputDirectory() {

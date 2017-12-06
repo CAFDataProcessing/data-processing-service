@@ -31,7 +31,6 @@ The following operations are available through Data Processing. Some processing 
 - Content redaction.
 - Language detection.
 - Unique ID tagging of files. *Enterprise Edition* only.
-- Classification of data into groups.
 - Key content segregation for emails.
 - Email signature detection.
 - Binary Hash generation for files.

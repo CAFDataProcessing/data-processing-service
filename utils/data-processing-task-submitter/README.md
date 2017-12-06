@@ -76,7 +76,7 @@ Directory to move a file to once it has had its associated task message sent. Th
 
 Data Processing workflow ID to send on submitted messages. If this is not set then it is assumed that a workflow is to be created and used on sent messages, which requires that the appropriate base data properties are set.
 
-The base data properties provide the information required so that the processing workflow to use can be created. If the workflow contains references to boilerplate expressions/tags or classification workflows they can also be created by specifying the required details to create those items.
+The base data properties provide the information required so that the processing workflow to use can be created. If the workflow contains references to boilerplate expressions/tags they can also be created by specifying the required details to create those items.
 
 #### CAF_TASKSUBMITTER_BASEDATA_BOILERPLATE_INPUT_FILE
 
@@ -92,27 +92,9 @@ File path to write details about created boilerplate expressions and tags to. Re
 
 URL to a boilerplate API web service. This will be used to create expressions and tags. Required if 'CAF_TASKSUBMITTER_BASEDATA_CREATE_BOILERPLATE' is true.
 
-#### CAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_API_URL
-
-URL to a classification API web service. This will be used to create the classification workflow. Required if 'CAF_TASKSUBMITTER_BASEDATA_CREATE_CLASSIFICATION' is true.
-
-#### CAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_INPUT_FILE
-
-File path to a JSON definition of the classification workflow that should be created for use in the processing workflow that will be created. Required if 'CAF_TASKSUBMITTER_BASEDATA_CREATE_CLASSIFICATION' is true.
-
-The format of the JSON expected is described [here](./Classification_JSON.md).
-
-#### CAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_OUTPUT_FILE
-
-File path to write details about created classification workflow to. Required if 'CAF_TASKSUBMITTER_BASEDATA_CREATE_CLASSIFICATION' is true.
-
 #### CAF_TASKSUBMITTER_BASEDATA_CREATE_BOILERPLATE
 
 Indicates whether some boilerplate base data needs to be created. Defaults to false.
-
-#### CAF_TASKSUBMITTER_BASEDATA_CREATE_CLASSIFICATION
-
-Indicates whether some classification base data needs to be created. Defaults to false.
 
 #### CAF_TASKSUBMITTER_BASEDATA_EXTERNAL_API_READY_RETRY_ATTEMPTS
 
@@ -120,7 +102,7 @@ Number of times the application will try to contact an API required for base dat
 
 #### CAF_TASKSUBMITTER_BASEDATA_OVERWRITE_EXISTING
 
-Whether existing data for boilerplate, classification and processing should be overwritten before creating new entries. Existing data that matches the names used for the base data workflows, expressions and tags will be removed if this is true. Defaults to true.
+Whether existing data for boilerplate and processing should be overwritten before creating new entries. Existing data that matches the names used for the base data workflows, expressions and tags will be removed if this is true. Defaults to true.
 
 #### CAF_TASKSUBMITTER_BASEDATA_PROCESSING_API_URL
 
@@ -162,10 +144,6 @@ java -DCAF_TASKSUBMITTER_PROJECTID=Default \
   -DCAF_TASKSUBMITTER_BASEDATA_BOILERPLATE_API_URL=http://192.168.56.10:19250/boilerplateapi \
   -DCAF_TASKSUBMITTER_BASEDATA_BOILERPLATE_INPUT_FILE=/createFiles/boilerplate.json \
   -DCAF_TASKSUBMITTER_BASEDATA_BOILERPLATE_OUTPUT_FILE=/createFiles/boilerplate_output.json \
-  -DCAF_TASKSUBMITTER_BASEDATA_CREATE_CLASSIFICATION=true \
-  -DCAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_INPUT_FILE=/createFiles/classification.json \
-  -DCAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_API_URL=http://192.168.56.10:19290/classification/v1 \
-  -DCAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_OUTPUT_FILE=/createFiles/classification_output.json \
   -DCAF_RABBITMQ_PUBLISH_QUEUE=input-queue \
   -DCAF_RABBITMQ_USERNAME=guest \
   -DCAF_RABBITMQ_PASSWORD=guest \

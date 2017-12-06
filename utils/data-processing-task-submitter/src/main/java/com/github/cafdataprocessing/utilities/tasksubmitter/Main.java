@@ -16,9 +16,9 @@
 package com.github.cafdataprocessing.utilities.tasksubmitter;
 
 import com.github.cafdataprocessing.processing.service.client.ApiException;
-import com.github.cafdataprocessing.utilities.initialization.*;
+import com.github.cafdataprocessing.initialization.*;
 import com.github.cafdataprocessing.utilities.tasksubmitter.environment.ValidateEnvironment;
-import com.github.cafdataprocessing.utilities.initialization.boilerplate.BoilerplateNameResolver;
+import com.github.cafdataprocessing.initialization.boilerplate.BoilerplateNameResolver;
 import com.github.cafdataprocessing.utilities.tasksubmitter.properties.TaskSubmitterProperties;
 import com.github.cafdataprocessing.utilities.tasksubmitter.services.Services;
 import com.github.cafdataprocessing.utilities.tasksubmitter.taskmessage.TaskMessagePublisher;
@@ -60,21 +60,10 @@ public class Main {
                     properties.getCreateBoilerplateBaseData(),
                     properties.getOverwriteExistingBaseData());
 
-            //create classification workflow if applicable and set up the classification name resolver
-            ClassificationWorkflowNameResolver classificationWorkflowNameResolver =
-                    ClassificationInitializer.initializeClassificationWorkflowIfRequired(
-                            properties.getClassificationApiUrl(),
-                            properties.getCreateClassificationBaseData(),
-                            properties.getClassificationBaseDataInputFile(),
-                            properties.getClassificationBaseDataOutputFile(),
-                            projectId,
-                            properties.getOverwriteExistingBaseData());
-
             WorkflowInitializer workflowInitializer = new WorkflowInitializer(
                     properties.getProcessingApiUrl(),
                     boilerplateNameResolver,
-                    new ActionTypeNameResolver(),
-                    classificationWorkflowNameResolver);
+                    new ActionTypeNameResolver());
             WorkflowInitializationParams initializationParams = new WorkflowInitializationParams(
                     properties.getWorkflowBaseDataFile(),
                     properties.getProjectId());

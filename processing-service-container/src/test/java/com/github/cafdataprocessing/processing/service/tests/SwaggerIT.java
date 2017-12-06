@@ -30,7 +30,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Integration tests for Swagger related API paths in the Classification Service.
+ * Integration tests for Swagger related API paths in the Data Processing Service.
  */
 public class SwaggerIT {
     private static ApiClient apiClient;
@@ -52,7 +52,7 @@ public class SwaggerIT {
         Assert.assertTrue(contractAsString.contains("title: \"Data Processing Service API\""), "Response should have the data processing service title.");
     }
 
-    @Test(description = "Retrives the swagger UI from the classification service.")
+    @Test(description = "Retrives the swagger UI from the data processing service.")
     public void getUI() throws IOException {
         String uiUrlPath = EnvironmentPropertyProvider.getHost()+"/data-processing-ui";
 

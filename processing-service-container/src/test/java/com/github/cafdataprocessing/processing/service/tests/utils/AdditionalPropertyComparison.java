@@ -26,7 +26,7 @@ import java.util.Optional;
 
 
 /**
- * Performs comparison on the 'additional' property of conditions and classifications.
+ * Performs comparison on the 'additional' property of conditions.
  */
 public class AdditionalPropertyComparison {
     private static ObjectMapper mapper = new ObjectMapper();
@@ -115,13 +115,13 @@ public class AdditionalPropertyComparison {
                 }
                 break;
             default:
-                Assert.fail("Unrecognized type returned on Classification additional.");
+                Assert.fail("Unrecognized property type returned.");
         }
     }
 
     public static void compareBooleanConditionAdditionals(BooleanConditionAdditional expectedAdditional,
                                                     BooleanConditionAdditional retrievedAdditional){
-        //TODO bug in classifications, notes should not be exposed as a field except on children of a boolean condition used in classification.
+        //TODO bug, notes should not be exposed as a field except on children of a boolean condition.
         //Assert.assertEquals(retrievedAdditional.getNotes(), expectedAdditional.getNotes(), "Expecting same notes value on Boolean Condition.");
         Assert.assertEquals(retrievedAdditional.getOrder(), expectedAdditional.getOrder(), "Expecting same order value on Boolean Condition");
         Assert.assertEquals(retrievedAdditional.getOperator(), expectedAdditional.getOperator(),
@@ -151,7 +151,7 @@ public class AdditionalPropertyComparison {
 
     public static void compareNumberConditionAdditionals(NumberConditionAdditional expectedAdditional,
                                                    NumberConditionAdditional retrievedAdditional){
-        //TODO currently a bug in classifications where notes field won't be persisted.
+        //TODO currently a bug where notes field won't be persisted.
         //Assert.assertEquals(retrievedAdditional.getNotes(), expectedAdditional.getNotes(),
         //        "Note on Number condition should be expected value.");
         Assert.assertEquals(retrievedAdditional.getOrder(), expectedAdditional.getOrder(),

@@ -55,14 +55,6 @@
         "en-us": "Actions"
       },
       "children": [
-        {
-          "title": { 
-            "en-us": "Classification"
-          },
-          "url": {
-            "en-us": "pages/en-us/Classification/Main"
-          }
-        },
 		{
           "title": { 
             "en-us": "Creating an Action"

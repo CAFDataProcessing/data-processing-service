@@ -116,7 +116,7 @@ var sendPolicyAPIGetRequest = function(policyApiRequestOptions, policyCallback, 
 };
 
 //Makes a HTTP request to Core Policy API using the specified path and parameters, calls the passed in callback with the response object
-//apiPath                   - path to API method to call e.g. 'classification/retrieve'
+//apiPath                   - path to API method to call
 //requestParams             - JSON object of parameters to submit in body of request
 //policyAPIRequestCallback  - function to call with response from request, will be 
 //                            passed the response and the responseBody as arguments

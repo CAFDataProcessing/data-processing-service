@@ -211,24 +211,6 @@
             ]
         },
         {
-            "name": "Classify",
-            "description": "Classify processed document.",
-            "priority": 200,
-            "actions": [{
-                    "name": "External Classification",
-                    "description": "Perform external classification on document.",
-                    "order": 100,
-                    "settings": {
-                        "workflowId": "Classification Workflow"
-                    },
-                    "typeName": "ElasticSearchClassificationPolicyType",
-                    "actionConditions": [
-                    ]
-                }],
-            "ruleConditions": [
-            ]
-        },
-        {
             "name": "Output",
             "description": "Output processed document.",
             "priority": 300,

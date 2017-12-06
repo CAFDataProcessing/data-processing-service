@@ -59,11 +59,6 @@
         </dependency>
         <dependency>
             <groupId>com.github.cafdataprocessing</groupId>
-            <artifactId>worker-policy-elasticsearch-classification-worker-handler</artifactId>
-            <version>${caf.worker.policy.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cafdataprocessing</groupId>
             <artifactId>worker-policy-document-worker-handler</artifactId>
             <version>${caf.worker.policy.version}</version>
         </dependency>
@@ -231,7 +226,6 @@
                                 </ports>
                                 <env>
                                     <CAF_BOILERPLATE_DB_NAME>boilerplate</CAF_BOILERPLATE_DB_NAME>
-                                    <CAF_CLASSIFICATION_DB_NAME>classification</CAF_CLASSIFICATION_DB_NAME>
                                     <CAF_WORKFLOW_DB_NAME>workflow</CAF_WORKFLOW_DB_NAME>
                                     <POSTGRES_PASSWORD>root</POSTGRES_PASSWORD>
                                     <POSTGRES_USER>postgres</POSTGRES_USER>

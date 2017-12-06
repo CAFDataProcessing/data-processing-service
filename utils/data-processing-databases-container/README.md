@@ -5,7 +5,6 @@
 A Docker container encapsulating the required databases for a Data Processing environment. Open source handlers are also packaged so that they are automatically registered in the workflow database for use as types. The included databases are;
 
 * Workflow database
-* Classification database
 * Boilerplate database 
 
 The included handlers that will be registered in the database are;
@@ -13,7 +12,6 @@ The included handlers that will be registered in the database are;
 * Binary Hash Worker
 * Boilerplate Worker
 * Document Worker
-* Elasticsearch Classification Worker
 * Field Mapping
 * Generic Queue Output
 * Markup Worker
@@ -28,10 +26,6 @@ The following environment variables can be passed to the container to control it
 #### CAF_BOILERPLATE_DB_NAME
 
 The name to use for the installed boilerplate database. Defaults to 'boilerplate'.
-
-#### CAF_CLASSIFICATION_DB_NAME
-
-The name to use for the installed classification database. Defaults to 'classification'.
 
 #### CAF_POSTGRES_HOST
 
@@ -92,37 +86,6 @@ docker run --rm \
 	-e "POSTGRES_PASSWORD=root" \
 	cafdataprocessing/data-processing-databases-1.0.0 \
 	./install_workflow_db.sh -fd -v
-```
-
-### Install Classification Database
-
-The script to install the classification database can be invoked by running the container, passing appropriate environment variables and the location of the install script inside the container, './install_classification_db.sh'. An example is shown below.
-
-```
-docker run --rm \
-	-e "CAF_POSTGRES_HOST=mydatabasehost" \
-	-e "CAF_CLASSIFICATION_DB_NAME=install_classification" \
-	-e "POSTGRES_USER=postgres" \
-	-e "POSTGRES_PASSWORD=root" \
-	cafdataprocessing/data-processing-databases-1.0.0 \
-	./install_classification_db.sh
-```
-
-#### Additional Arguments
-
-The following arguments can also be specified with this command:
-
-fd : Enables the deletion of the existing database for a fresh install, rather than updating the database.
-v : Sets logging level to verbose outputting more detail.
-
-```
-docker run --rm \
-	-e "CAF_POSTGRES_HOST=mydatabasehost" \
-	-e "CAF_CLASSIFICATION_DB_NAME=install_classification" \
-	-e "POSTGRES_USER=postgres" \
-	-e "POSTGRES_PASSWORD=root" \
-	cafdataprocessing/data-processing-databases-1.0.0 \
-	./install_classification_db.sh -fd -v
 ```
 
 ### Install Boilerplate Database

@@ -12,3 +12,8 @@ ${version-number}
   The condition types 'fragment' and 'text' have been removed from the swagger contract for the processing API. Logic behind this is that fragment conditions are too complex to expose to users and text conditions require the processing API to have access to a running Elasticsearch instance which the default Data Processing deployment does not enable for the processing API.
 - [CAF-3328](https://jira.autonomy.com/browse/CAF-3328): Updating a processing rule cleared actions that were set on the rule.
   Fixed an issue in the update logic for a processing rule in the processing API where actions set under a rule were lost following an update request to the rule.
+
+#### Miscellaneous
+- The data-processing-initialization project has been moved into its own repository which can be found [here](https://github.com/CAFDataProcessing/data-processing-initialization).
+
+

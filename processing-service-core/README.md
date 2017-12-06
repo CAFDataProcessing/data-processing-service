@@ -75,7 +75,6 @@ The port that the Policy API is running on. Defaults to 9000.
 
 #### CAF_PROCESSING_SERVICE_POLICY_API_ENTRY_PATH
 The url path that all calls to Policy API should start with. Defaults to '/corepolicy'.
-e.g. To create a classification API would by default be contacted at http://localhost:9000/corepolicy/classification/create/
 
 ### Logging Configuration
 

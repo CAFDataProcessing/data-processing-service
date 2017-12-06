@@ -272,7 +272,6 @@
                                 <env>
                                     <!-- setting base data environment variables to point to default container data locations -->
                                     <CAF_TASKSUBMITTER_BASEDATA_BOILERPLATE_INPUT_FILE>/base-data/example_boilerplate.json</CAF_TASKSUBMITTER_BASEDATA_BOILERPLATE_INPUT_FILE>
-                                    <CAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_INPUT_FILE>/base-data/example_classification_workflow.json</CAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_INPUT_FILE>
                                     <CAF_TASKSUBMITTER_BASEDATA_WORKFLOW_INPUT_FILE>/base-data/example_workflow.json</CAF_TASKSUBMITTER_BASEDATA_WORKFLOW_INPUT_FILE>
                                     <!-- Defaulting this to same value as used in the example boilerplate base data -->
                                     <CAF_TASKSUBMITTER_PROJECTID>Default</CAF_TASKSUBMITTER_PROJECTID>

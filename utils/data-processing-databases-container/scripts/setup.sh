@@ -30,8 +30,6 @@ echo "Installing Data Processing databases."
 
 ./install_workflow_db.sh
 handleFailure $?
-./install_classification_db.sh
-handleFailure $?
 ./install_boilerplate_db.sh
 handleFailure $?
 

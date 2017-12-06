@@ -95,17 +95,15 @@ The default workflow created by the task-submitter service in the compose file p
 - detect the languages used in the file using the Language Detect Worker.
 - scan the file content for personally identifiable information using the Entity Extract Worker.
 - scan the file content for matches to a selection of expressions using the Boilerplate Worker.
-- check the file metadata to see if the file falls into the defined classifications using the Classification Worker.
 - output the processed file metadata
 
 On launch the task-submitter will create this default workflow and begin submitting task messages using the ID of the created workflow. If the workflow that should be used already exists then the environment variable `CAF_TASKSUBMITTER_WORKFLOW_ID` should be set on the taskSubmitter service and that workflow ID will be used on messages instead.
 
 #### Overriding Default Base Data Input Files
 
-The input files used by the task-submitter to define the processing workflow, boilerplate expressions and classification workflow for use on submitted messages can be seen in the task-submitter-container folder of the repository [here](https://github.com/CAFDataProcessing/data-processing-service/tree/develop/utils/data-processing-task-submitter-container/base-data). These files can be modified and passed to the task-submitter service through the base data input environment variables;
+The input files used by the task-submitter to define the processing workflow and boilerplate expressions for use on submitted messages can be seen in the task-submitter-container folder of the repository [here](https://github.com/CAFDataProcessing/data-processing-service/tree/develop/utils/data-processing-task-submitter-container/base-data). These files can be modified and passed to the task-submitter service through the base data input environment variables;
 
 * `CAF_TASKSUBMITTER_BASEDATA_BOILERPLATE_INPUT_FILE`
-* `CAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_INPUT_FILE`
 * `CAF_TASKSUBMITTER_BASEDATA_WORKFLOW_INPUT_FILE`
 
 Add the appropriate environment variable to the taskSubmitter service in the compose file with its value pointing to the location of the JSON file to read the base data definition from. The input file should be located in a volume that the container will be able to access.
@@ -355,7 +353,7 @@ When passed as the WorkflowId on a task to the workflow worker, this workflow sp
 
 #### Message Format
 
-The format of the input task data is described in detail in the GitHub Repository for the policy worker library which is used in the classification and workflow workers [here](https://github.com/CAFDataProcessing/worker-policy) under 'worker-policy-shared'. In the context of data processing the key properties to highlight are;
+The format of the input task data is described in detail in the GitHub Repository for the policy worker library which is used in the workflow worker [here](https://github.com/CAFDataProcessing/worker-policy) under 'worker-policy-shared'. In the context of data processing the key properties to highlight are;
 
 * workflowId, which should be set to the ID of the workflow that document should be processed against.
 * projectId, which should be set to the ID of the tenant that was used in creating the workflow.
