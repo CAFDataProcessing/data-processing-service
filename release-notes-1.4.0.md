@@ -15,5 +15,4 @@ ${version-number}
 
 #### Miscellaneous
 - The data-processing-initialization project has been moved into its own repository which can be found [here](https://github.com/CAFDataProcessing/data-processing-initialization).
-
-
+- Classification Service has been deprecated and all references to it have been removed from this project. This includes the database container no longer has the Classification database pre-installed along with removal of the Classification Service and Classification Worker.
