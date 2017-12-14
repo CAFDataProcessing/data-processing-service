@@ -238,7 +238,7 @@
                             <alias>corepolicy-dbinstaller</alias>
                             <name>policy/dbinstaller</name>
                             <build>
-                                <from>java:8</from>
+                                <from>cafapi/opensuse-jre8:1.2</from>
                                 <tags>
                                     <tag>temporary-item-please-remove</tag>
                                 </tags>

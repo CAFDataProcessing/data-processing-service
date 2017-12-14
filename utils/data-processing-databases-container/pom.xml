@@ -32,7 +32,7 @@
 
     <properties>
 
-        <caf.container.javapostgres.name>cafapi/java-postgres:1.11.0-218</caf.container.javapostgres.name>
+        <caf.container.javapostgres.name>cafapi/java-postgres:1.13</caf.container.javapostgres.name>
     </properties>
 
     <dependencies>

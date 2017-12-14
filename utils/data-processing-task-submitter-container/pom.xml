@@ -235,7 +235,7 @@
                             <alias>data-processing-task-submitter</alias>
                             <name>${caf.container.tasksubmitter}</name>
                             <build>
-                                <from>java:8</from>
+                                <from>cafapi/opensuse-jre8:1.2</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>
