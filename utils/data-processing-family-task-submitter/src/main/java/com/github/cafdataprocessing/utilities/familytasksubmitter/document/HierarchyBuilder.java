@@ -16,6 +16,7 @@
 package com.github.cafdataprocessing.utilities.familytasksubmitter.document;
 
 import com.github.cafdataprocessing.utilities.familytasksubmitter.FamilyTaskSubmitterConstants;
+import com.github.cafdataprocessing.utilities.familytasksubmitter.FamilyTaskSubmitterProperties;
 import com.google.common.collect.Multimap;
 import com.hpe.caf.worker.document.DocumentWorkerDocument;
 import com.hpe.caf.worker.document.DocumentWorkerFieldEncoding;
@@ -85,10 +86,8 @@ public class HierarchyBuilder
         DocumentWorkerDocument document = new DocumentWorkerDocument();
         // send the CONTENT field as a base64 encoded field value so we can verify metadata references are handled correctly by
         // workers operating on a family
-        String contentFieldName = System.getProperty(FamilyTaskSubmitterConstants.CONTENT_FIELD_NAME, System.getenv(FamilyTaskSubmitterConstants.CONTENT_FIELD_NAME));
-        if (Strings.isNullOrEmpty(contentFieldName)) {
-            contentFieldName = FamilyTaskSubmitterConstants.DEFAULT_CONTENT_FIELD_NAME;
-        }
+        String contentFieldName = FamilyTaskSubmitterProperties.getContentFieldName();
+
         Map<String, List<DocumentWorkerFieldValue>> docFieldsToSend = new HashMap<>();
         for(Map.Entry<String, String> docMetadataEntry: providedDocumentMetadata.entries()){
             String metadataKey = docMetadataEntry.getKey();

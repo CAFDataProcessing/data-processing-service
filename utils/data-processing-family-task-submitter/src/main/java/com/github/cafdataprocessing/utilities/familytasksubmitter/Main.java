@@ -48,11 +48,11 @@ public final class Main
 
     public void run() throws CodecException, IOException, ConfigurationException, TimeoutException
     {
-        final String familyReference = getEnvironmentValue(FamilyTaskSubmitterConstants.FAMILY_REFERENCE); 
+        final String familyReference = FamilyTaskSubmitterProperties.getFamilyReference();
         final DocumentWorkerDocument rootDocument = buildDocument(familyReference);
-        final String outputPartialReference = getEnvironmentValue(FamilyTaskSubmitterConstants.Message.OUTPUT_PARTIAL_REFERENCE);
-        final String projectId = getEnvironmentValue(FamilyTaskSubmitterConstants.Message.PROJECT_ID);
-        final long workflowId = Long.parseLong(getEnvironmentValue(FamilyTaskSubmitterConstants.Message.WORKFLOW_ID));
+        final String outputPartialReference = FamilyTaskSubmitterProperties.getOutputPartialReference();
+        final String projectId = FamilyTaskSubmitterProperties.getProjectId();
+        final long workflowId = FamilyTaskSubmitterProperties.getWorkflowId();
         submitTask(rootDocument, outputPartialReference, projectId, workflowId);
     }
 
@@ -77,16 +77,13 @@ public final class Main
         return hierarchyBuilder.convert(documentsMetadataMap, familyReference);
     }
 
-    private static String getEnvironmentValue(final String name)
-    {
-        return System.getProperty(name, System.getenv(name) != null ? System.getenv(name) : "");
-    }
+
 
     private static void submitTask(final DocumentWorkerDocument documentToSend,
                                    final String outputPartialReference,
                                    final String projectId,
                                    final long workflowId) throws IOException, TimeoutException, CodecException {
-        String queueToSendTo = getEnvironmentValue(FamilyTaskSubmitterConstants.OUTPUT_QUEUE_NAME);
+        String queueToSendTo = FamilyTaskSubmitterProperties.getOutputQueueName();
         final RabbitMessageDispatcher messageDispatcher = new RabbitMessageDispatcher();
         messageDispatcher.configure(queueToSendTo);
         Map<String, String> customData = new HashMap<>();

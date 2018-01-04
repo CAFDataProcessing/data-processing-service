@@ -16,6 +16,7 @@
 package com.github.cafdataprocessing.utilities.familytasksubmitter.taskmessage;
 
 import com.github.cafdataprocessing.utilities.familytasksubmitter.FamilyTaskSubmitterConstants;
+import com.github.cafdataprocessing.utilities.familytasksubmitter.FamilyTaskSubmitterProperties;
 import com.hpe.caf.api.*;
 import com.hpe.caf.api.worker.TaskMessage;
 import com.hpe.caf.codec.*;
@@ -41,10 +42,10 @@ public class RabbitMessageDispatcher implements Closeable
     {
         try {
             this.conn = RabbitUtil.createRabbitConnection(
-                getEnvironmentValue(FamilyTaskSubmitterConstants.RabbitConstants.RABBIT_HOST, "localhost"),
-                Integer.parseInt(getEnvironmentValue(FamilyTaskSubmitterConstants.RabbitConstants.RABBIT_PORT, "9549")),
-                getEnvironmentValue(FamilyTaskSubmitterConstants.RabbitConstants.RABBIT_USER, "guest"),
-                getEnvironmentValue(FamilyTaskSubmitterConstants.RabbitConstants.RABBIT_PASSWORD, "guest"));
+                    FamilyTaskSubmitterProperties.getRabbitHost(),
+                    FamilyTaskSubmitterProperties.getRabbitPort(),
+                    FamilyTaskSubmitterProperties.getRabbitUsername(),
+                    FamilyTaskSubmitterProperties.getRabbitPassword());
             this.channel = conn.createChannel();
             this.outputQueueName = outputQueueName;
             //RabbitUtil.declareWorkerQueue(channel, outputQueueName);
@@ -89,10 +90,5 @@ public class RabbitMessageDispatcher implements Closeable
                 LOG.warn("Failed to close connection, ignoring", e);
             }
         }
-    }
-
-    private static String getEnvironmentValue(final String name, final String defaultValue)
-    {
-        return System.getProperty(name, System.getenv(name) != null ? System.getenv(name) : defaultValue);
     }
 }

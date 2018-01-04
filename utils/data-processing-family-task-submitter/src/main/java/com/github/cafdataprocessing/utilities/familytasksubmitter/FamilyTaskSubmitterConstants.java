@@ -21,14 +21,8 @@ package com.github.cafdataprocessing.utilities.familytasksubmitter;
  */
 public final class FamilyTaskSubmitterConstants
 {
-    private FamilyTaskSubmitterConstants()
-    {
+    private FamilyTaskSubmitterConstants() {}
 
-    }
-
-    public static final String IS_FAMILY_ORIGIN = "IS_FAMILY_ORIGIN";
-    public static final String IS_ROOT = "IS_ROOT";
-    public static final String PARENT_REFERENCE = "PARENT_reference";
     public static final String CHILD_INFO_COUNT = "CHILD_INFO_COUNT";
     public static final String OUTPUT_QUEUE_NAME = "OUTPUT_QUEUE_NAME";
     public static final String FAMILY_REFERENCE = "FAMILY_REFERENCE";
@@ -37,9 +31,17 @@ public final class FamilyTaskSubmitterConstants
 
     public final class RabbitConstants
     {
+        public static final String CAF_RABBITMQ_HOST = "CAF_RABBITMQ_HOST";
+        public static final String CAF_RABBITMQ_PASSWORD = "CAF_RABBITMQ_PASSWORD";
+        public static final String CAF_RABBITMQ_PORT = "CAF_RABBITMQ_PORT";
+        public static final String CAF_RABBITMQ_USERNAME = "CAF_RABBITMQ_USERNAME";
+        @Deprecated
         public static final String RABBIT_HOST = "RABBIT_HOST";
+        @Deprecated
         public static final String RABBIT_PORT = "RABBIT_PORT";
+        @Deprecated
         public static final String RABBIT_USER = "RABBIT_USER";
+        @Deprecated
         public static final String RABBIT_PASSWORD = "RABBIT_PASSWORD";
 
     }

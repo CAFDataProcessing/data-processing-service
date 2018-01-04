@@ -26,8 +26,8 @@ docker run --rm \
   -e "OUTPUT_QUEUE_NAME=document-input" \
   -e "OUTPUT_PARTIAL_REFERENCE=/datastore" \
   -e "PROJECT_ID=Default" \
-  -e "RABBIT_HOST=192.168.56.10" \
-  -e "RABBIT_PASSWORD=guest" \
+  -e "CAF_RABBITMQ_HOST=192.168.56.10" \
+  -e "CAF_RABBITMQ_PASSWORD=guest" \
   -e "WORKFLOW_ID=2" \
   -e "entityextractworkerhandler.taskqueue=dataprocessing-fs-entity-extract-in" \
   -e "familyhashingworker.taskqueue=dataprocessing-fs-family-hashing-in" \

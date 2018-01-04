@@ -27,7 +27,7 @@ The project id to use in the new Policy Worker task
 
 The outputPartialReference to use in the new Policy Worker task.
 
-- **DEFAULT:** If this is not set it will be set to `family-submitter-output-1`
+- **DEFAULT:** If this is not set it will be set to an empty value.
 
 **WORKFLOW_ID:**
 
@@ -35,25 +35,25 @@ The Workflow Id to use in the new Policy Worker task message.
 
 - **DEFAULT:** If this is not set it will be set to `1`
 
-**RABBIT_HOST:**
+**CAF_RABBITMQ_HOST:**
 
 The RabbitMq host to use when creating a connection to RabbitMq.
 
 - **DEFAULT:** If this is not set it will be set to `localhost`
 
-**RABBIT_PORT:**
+**CAF_RABBITMQ_PORT:**
 
 The port that should be use for the application to use to communicate with RabbitMq.
 
 - **DEFAULT:** If this is not set it will be set to `9549`
 
-**RABBIT_USER:**
+**CAF_RABBITMQ_USERNAME:**
 
 The username to use when making a connection with RabbitMq.
 
 - **DEFAULT:** If this is not set it will be set to `guest`
 
-**RABBIT_PASSWORD:**
+**CAF_RABBITMQ_PASSWORD:**
 The password to use when making a connection to RabbitMq.
 
 **DEFAULT:** If this is not set it will be set to `guest`
