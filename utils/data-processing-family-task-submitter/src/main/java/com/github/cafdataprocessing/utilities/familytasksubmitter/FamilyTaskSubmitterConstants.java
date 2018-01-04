@@ -46,8 +46,9 @@ public final class FamilyTaskSubmitterConstants
 
     public final class Message
     {
-        public static final String WORKFLOW_ID = "WORKFLOW_ID";
+        public static final String OUTPUT_PARTIAL_REFERENCE = "OUTPUT_PARTIAL_REFERENCE";
         public static final String PROJECT_ID = "PROJECT_ID";
+        public static final String WORKFLOW_ID = "WORKFLOW_ID";
     }
     
     public final class Elastic

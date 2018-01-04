@@ -13,8 +13,8 @@ i.e. `/inputFolder/myTestTextDocument.docx`
 
 **OUTPUT_QUEUE_NAME:**
 
-The Policy Worker queue that the output messages should be sent to.
-i.e. `cloud-ploicyworker-input-1`
+The Workflow Worker queue that the output messages should be sent to.
+i.e. `document-input`
 
 #### Optional:
 **PROJECT_ID:**

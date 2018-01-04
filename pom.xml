@@ -96,6 +96,7 @@
         <dockerHubOrganization>cafdataprocessing</dockerHubOrganization>
         <dockerDataProcessingOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerDataProcessingOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
+        <workerWorkflowVersion>1.0.0-SNAPSHOT</workerWorkflowVersion>
     </properties>
 
     <dependencyManagement>
@@ -110,6 +111,11 @@
             <dependency>
                 <groupId>com.github.cafdataprocessing</groupId>
                 <artifactId>corepolicy-database</artifactId>
+                <version>${caf.corepolicy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>corepolicy-multimap-utils</artifactId>
                 <version>${caf.corepolicy.version}</version>
             </dependency>
             <dependency>
@@ -142,11 +148,16 @@
                 <artifactId>worker-policy-type-registrant</artifactId>
                 <version>${caf.worker.policy.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>worker-workflow-constants</artifactId>
+                <version>${workerWorkflowVersion}</version>
+            </dependency>
             <!-- Dependency manager for all CAF components -->
             <dependency>
-                <groupId>com.github.workerframework</groupId>
-                <artifactId>worker-framework</artifactId>
-                <version>2.3.1-301</version>
+                <groupId>com.github.cafdataprocessing</groupId>
+                <artifactId>worker-document-framework</artifactId>
+                <version>3.3.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

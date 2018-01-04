@@ -15,16 +15,21 @@
  */
 package com.github.cafdataprocessing.utilities.familytasksubmitter;
 
-import com.github.cafdataprocessing.utilities.familytasksubmitter.taskmessage.RabbitMessageDispatcher;
 import com.github.cafdataprocessing.utilities.familytasksubmitter.document.DocumentExtractor;
+import com.github.cafdataprocessing.utilities.familytasksubmitter.document.DocumentWorkerDocumentTaskMessageFactory;
 import com.github.cafdataprocessing.utilities.familytasksubmitter.document.HierarchyBuilder;
 import com.github.cafdataprocessing.utilities.familytasksubmitter.elasticsearch.ElasticQuery;
-import com.github.cafdataprocessing.utilities.familytasksubmitter.taskmessage.Message;
+import com.github.cafdataprocessing.utilities.familytasksubmitter.taskmessage.RabbitMessageDispatcher;
+import com.github.cafdataprocessing.workflow.constants.WorkflowWorkerConstants;
 import com.google.common.collect.Multimap;
-import com.github.cafdataprocessing.worker.policy.shared.Document;
+import com.hpe.caf.api.Codec;
 import com.hpe.caf.api.CodecException;
 import com.hpe.caf.api.ConfigurationException;
+import com.hpe.caf.worker.document.DocumentWorkerDocument;
+import com.hpe.caf.worker.document.util.ServiceFunctions;
+
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
@@ -33,6 +38,7 @@ import java.util.concurrent.TimeoutException;
  */
 public final class Main
 {
+    private static final Codec CODEC = ServiceFunctions.loadService(Codec.class);
 
     public static void main(String[] args) throws ConfigurationException, IOException, CodecException, TimeoutException
     {
@@ -43,20 +49,52 @@ public final class Main
     public void run() throws CodecException, IOException, ConfigurationException, TimeoutException
     {
         final String familyReference = getEnvironmentValue(FamilyTaskSubmitterConstants.FAMILY_REFERENCE); 
-        final ElasticQuery esQuery = new ElasticQuery(familyReference);
+        final DocumentWorkerDocument rootDocument = buildDocument(familyReference);
+        final String outputPartialReference = getEnvironmentValue(FamilyTaskSubmitterConstants.Message.OUTPUT_PARTIAL_REFERENCE);
+        final String projectId = getEnvironmentValue(FamilyTaskSubmitterConstants.Message.PROJECT_ID);
+        final long workflowId = Long.parseLong(getEnvironmentValue(FamilyTaskSubmitterConstants.Message.WORKFLOW_ID));
+        submitTask(rootDocument, outputPartialReference, projectId, workflowId);
+    }
+
+    /**
+     * Builds a family consisting of a root family document and its sub-documents based on provided family reference.
+     * @param familyReference Family Reference field value that represents the family and can be used to build document
+     *                        family.
+     * @return Constructed family of documents.
+     */
+    private static DocumentWorkerDocument buildDocument(String familyReference) {
+        final ElasticQuery esQuery;
+        try {
+            esQuery = new ElasticQuery(familyReference);
+        } catch (ConfigurationException e) {
+            throw new RuntimeException("Failure to configure Elasticsearch query with family reference: "+familyReference,
+                    e);
+        }
         final Map<String, Object> family = esQuery.createFamily(familyReference);
         final DocumentExtractor docBuilder = new DocumentExtractor(family);
-        final Map<String, Multimap<String, String>> documents = docBuilder.convert();
+        final Map<String, Multimap<String, String>> documentsMetadataMap = docBuilder.convert();
         final HierarchyBuilder hierarchyBuilder = new HierarchyBuilder();
-        final Document rootDocument = hierarchyBuilder.convert(documents, familyReference);
-        final Message message = new Message(rootDocument, getEnvironmentValue(FamilyTaskSubmitterConstants.OUTPUT_QUEUE_NAME));
-        final RabbitMessageDispatcher messageDispatcher = new RabbitMessageDispatcher();
-        messageDispatcher.configure(getEnvironmentValue(FamilyTaskSubmitterConstants.OUTPUT_QUEUE_NAME));
-        messageDispatcher.sendMessage(message.createTaskMessage());
+        return hierarchyBuilder.convert(documentsMetadataMap, familyReference);
     }
 
     private static String getEnvironmentValue(final String name)
     {
         return System.getProperty(name, System.getenv(name) != null ? System.getenv(name) : "");
+    }
+
+    private static void submitTask(final DocumentWorkerDocument documentToSend,
+                                   final String outputPartialReference,
+                                   final String projectId,
+                                   final long workflowId) throws IOException, TimeoutException, CodecException {
+        String queueToSendTo = getEnvironmentValue(FamilyTaskSubmitterConstants.OUTPUT_QUEUE_NAME);
+        final RabbitMessageDispatcher messageDispatcher = new RabbitMessageDispatcher();
+        messageDispatcher.configure(queueToSendTo);
+        Map<String, String> customData = new HashMap<>();
+        customData.put(WorkflowWorkerConstants.CustomData.OUTPUT_PARTIAL_REFERENCE, outputPartialReference);
+        customData.put(WorkflowWorkerConstants.CustomData.PROJECT_ID, projectId);
+        customData.put(WorkflowWorkerConstants.CustomData.WORKFLOW_ID, Long.toString(workflowId));
+
+        messageDispatcher.sendMessage(DocumentWorkerDocumentTaskMessageFactory.createTaskMessage(documentToSend,
+                customData, queueToSendTo, CODEC));
     }
 }

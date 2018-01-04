@@ -65,5 +65,6 @@
         <module>data-processing-task-submitter</module>
         <module>data-processing-task-submitter-container</module>
         <module>data-processing-family-task-submitter</module>
+        <module>data-processing-family-task-submitter-container</module>
     </modules>
 </project>

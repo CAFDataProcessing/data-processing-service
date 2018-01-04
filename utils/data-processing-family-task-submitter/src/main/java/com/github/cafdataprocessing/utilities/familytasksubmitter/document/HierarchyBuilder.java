@@ -16,14 +16,16 @@
 package com.github.cafdataprocessing.utilities.familytasksubmitter.document;
 
 import com.github.cafdataprocessing.utilities.familytasksubmitter.FamilyTaskSubmitterConstants;
-import com.github.cafdataprocessing.worker.policy.shared.Document;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.hpe.caf.util.ref.ReferencedData;
+import com.hpe.caf.worker.document.DocumentWorkerDocument;
+import com.hpe.caf.worker.document.DocumentWorkerFieldEncoding;
+import com.hpe.caf.worker.document.DocumentWorkerFieldValue;
 import org.elasticsearch.common.Strings;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,24 +33,21 @@ import java.util.Map;
  */
 public class HierarchyBuilder
 {
-    private Map<String, Multimap<String, String>> documents;
+    private Map<String, Multimap<String, String>> documentsMetadataMap;
 
-    public HierarchyBuilder()
+    public DocumentWorkerDocument convert(final Map<String, Multimap<String, String>> documentsMetadataMap,
+                                          final String familyReference)
     {
-    }
-
-    public Document convert(final Map<String, Multimap<String, String>> documents, final String familyReference)
-    {
-        this.documents = documents;
+        this.documentsMetadataMap = documentsMetadataMap;
         return getRootDocument(familyReference);
     }
 
-    private Document getRootDocument(final String familyReference)
+    private DocumentWorkerDocument getRootDocument(final String familyReference)
     {
-        for (String document : documents.keySet()) {
-            final Multimap<String, String> documentMap = documents.get(document);
+        for (String document : documentsMetadataMap.keySet()) {
+            final Multimap<String, String> documentMap = documentsMetadataMap.get(document);
             if (isFamilyRoot(documentMap, familyReference)) {
-                Collection<Document> subfiles = new ArrayList<>();
+                List<DocumentWorkerDocument> subfiles = new ArrayList<>();
                 for (int i = 0; i < Integer.parseInt(documentMap.get(FamilyTaskSubmitterConstants.CHILD_INFO_COUNT).stream().findFirst()
                      .orElse("0")); i++) {
                     subfiles.add(getSubDocument(i, document));
@@ -59,18 +58,18 @@ public class HierarchyBuilder
         throw new UnsupportedOperationException();
     }
 
-    private Document getSubDocument(final int childOrdinal, final String parentReference) {
+    private DocumentWorkerDocument getSubDocument(final int childOrdinal, final String parentReference) {
         final String subDocReference = parentReference + ":" + childOrdinal;
         return getSubDocument(subDocReference);
     }
 
-    private Document getSubDocument(final String subDocReference)
+    private DocumentWorkerDocument getSubDocument(final String subDocReference)
     {
-        final Multimap<String, String> subDocumentMap = documents.get(subDocReference);
-        Collection<Document> subfiles = new ArrayList<>();
+        final Multimap<String, String> subDocumentMap = documentsMetadataMap.get(subDocReference);
+        List<DocumentWorkerDocument> subfiles = new ArrayList<>();
 
         //get the sub files of this sub document
-        for(Map.Entry<String, Multimap<String, String>> documentEntry: this.documents.entrySet()){
+        for(Map.Entry<String, Multimap<String, String>> documentEntry: this.documentsMetadataMap.entrySet()){
             Multimap<String, String> documentMap = documentEntry.getValue();
             if(documentMap.get("PARENT_REFERENCE") != null && !documentMap.get("PARENT_REFERENCE").isEmpty()
                     && documentMap.get("PARENT_REFERENCE").iterator().next().equals(subDocReference)){
@@ -80,39 +79,43 @@ public class HierarchyBuilder
         return createDocument(subDocReference, subDocumentMap, subfiles);
     }
 
-    private Document createDocument(final String reference, final Multimap<String, String> providedDocumentMetadata,
-                                    final Collection<Document> subfiles)
+    private DocumentWorkerDocument createDocument(final String reference, final Multimap<String, String> providedDocumentMetadata,
+                                    final List<DocumentWorkerDocument> subfiles)
     {
-        Document document = new Document();
-        document.setDocuments(subfiles);
-        // send the CONTENT field as a metadata reference so we can verify metadata references are handled correctly by
+        DocumentWorkerDocument document = new DocumentWorkerDocument();
+        // send the CONTENT field as a base64 encoded field value so we can verify metadata references are handled correctly by
         // workers operating on a family
-        Multimap<String, String> docMetadataToSend = ArrayListMultimap.create();
-        Multimap<String, ReferencedData> docMetadataRefsToSend = ArrayListMultimap.create();
         String contentFieldName = System.getProperty(FamilyTaskSubmitterConstants.CONTENT_FIELD_NAME, System.getenv(FamilyTaskSubmitterConstants.CONTENT_FIELD_NAME));
         if (Strings.isNullOrEmpty(contentFieldName)) {
             contentFieldName = FamilyTaskSubmitterConstants.DEFAULT_CONTENT_FIELD_NAME;
         }
+        Map<String, List<DocumentWorkerFieldValue>> docFieldsToSend = new HashMap<>();
         for(Map.Entry<String, String> docMetadataEntry: providedDocumentMetadata.entries()){
             String metadataKey = docMetadataEntry.getKey();
+            DocumentWorkerFieldValue metadataFieldValue = new DocumentWorkerFieldValue();
             if(metadataKey.equals(contentFieldName)){
-                docMetadataRefsToSend.put(metadataKey,
-                        ReferencedData.getWrappedData(docMetadataEntry.getValue().getBytes()));
-                continue;
+                byte[] dataBytesValue = docMetadataEntry.getValue().getBytes();
+                metadataFieldValue.encoding = DocumentWorkerFieldEncoding.base64;
+                metadataFieldValue.data = Base64.getEncoder().encodeToString(dataBytesValue);
             }
-            docMetadataToSend.put(metadataKey, docMetadataEntry.getValue());
+            else {
+                String dataStrValue = docMetadataEntry.getValue();
+                metadataFieldValue.encoding = DocumentWorkerFieldEncoding.utf8;
+                metadataFieldValue.data = dataStrValue;
+            }
+            if(docFieldsToSend.containsKey(metadataKey)){
+                docFieldsToSend.get(metadataKey).add(metadataFieldValue);
+            }
+            else {
+                List<DocumentWorkerFieldValue> fieldValues = new ArrayList<>();
+                fieldValues.add(metadataFieldValue);
+                docFieldsToSend.put(metadataKey, fieldValues);
+            }
         }
-        document.setMetadata(docMetadataToSend);
-        document.setMetadataReferences(docMetadataRefsToSend);
-        document.setReference(reference);
-        document.setPolicyDataProcessingRecord(null);
+        document.fields = docFieldsToSend;
+        document.reference = reference;
+        document.subdocuments = subfiles;
         return document;
-    }
-
-    private boolean isFamilyOrigin(final Multimap<String, String> documentMap)
-    {
-        final int children = Integer.parseInt(documentMap.get(FamilyTaskSubmitterConstants.CHILD_INFO_COUNT).stream().findFirst().orElse("0"));
-        return children > 0;
     }
 
     private boolean isFamilyRoot(final Multimap<String, String> documentMap, final String familyReference)
