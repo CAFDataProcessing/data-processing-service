@@ -2,7 +2,7 @@
 
 ## Summary
 
-This is an application that submits task messages for files in a folder to a queue, for consumption by a workflow worker. The ID of an existing workflow can be provided for use on the messages or a definition of a workflow can be provided and it will be created for use in the messages.
+This is an application that submits document worker document task messages for files in a folder to a queue, for consumption by a workflow worker. The ID of an existing workflow can be provided for use on the messages or a definition of a workflow can be provided and it will be created for use in the messages.
 
 ## Configuration
 

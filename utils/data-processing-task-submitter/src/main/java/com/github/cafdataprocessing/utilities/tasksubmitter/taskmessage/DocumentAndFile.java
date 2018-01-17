@@ -15,27 +15,27 @@
  */
 package com.github.cafdataprocessing.utilities.tasksubmitter.taskmessage;
 
-import com.github.cafdataprocessing.worker.policy.shared.Document;
+import com.hpe.caf.worker.document.DocumentWorkerDocument;
 import org.apache.commons.vfs2.FileObject;
 
 /**
- * Policy Document representation alongside the FileObject it represents.
+ * Document representation alongside the FileObject it represents.
  */
 public class DocumentAndFile {
-    private final Document document;
+    private final DocumentWorkerDocument document;
     private final FileObject file;
 
     /**
-     * Create new instance for specified Document and associated FileObject.
-     * @param document A Policy Worker Document.
+     * Create new instance for specified DocumentWorkerDocument and associated FileObject.
+     * @param document A Document Worker Document.
      * @param file The File the document is associated with.
      */
-    public DocumentAndFile(Document document, FileObject file){
+    public DocumentAndFile(final DocumentWorkerDocument document, final FileObject file){
         this.document = document;
         this.file = file;
     }
 
-    public Document getDocument(){
+    public DocumentWorkerDocument getDocument(){
         return this.document;
     }
 

@@ -16,23 +16,27 @@
 package com.github.cafdataprocessing.utilities.tasksubmitter.taskmessage;
 
 import com.github.cafdataprocessing.utilities.tasksubmitter.services.Services;
-import com.github.cafdataprocessing.worker.policy.shared.Document;
-import com.github.cafdataprocessing.worker.policy.shared.TaskData;
+import com.github.cafdataprocessing.workflow.constants.WorkflowWorkerConstants;
 import com.hpe.caf.api.Codec;
 import com.hpe.caf.api.CodecException;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.worker.DataStoreException;
 import com.hpe.caf.api.worker.TaskMessage;
 import com.hpe.caf.api.worker.TaskStatus;
+import com.hpe.caf.worker.document.DocumentWorkerConstants;
+import com.hpe.caf.worker.document.DocumentWorkerDocument;
+import com.hpe.caf.worker.document.DocumentWorkerDocumentTask;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Utility Class that creates a Policy Worker TaskMessage for each document in the specified directory.
+ * Utility Class that creates a Document Worker Document TaskMessage for each document in the specified directory.
  */
 public class TaskMessageBuilder {
     private final static Codec codec = Services.getInstance().getCodec();
@@ -52,20 +56,20 @@ public class TaskMessageBuilder {
      * @throws IOException If error occurs accessing files in directory.
      * @throws DataStoreException If error occurs storing data for files.
      */
-    public static List<FileAndTaskMessage> buildTaskMessagesForDirectory(Long workflowId, String projectId,
-                                                                  String directory)
+    public static List<FileAndTaskMessage> buildTaskMessagesForDirectory(final Long workflowId, final String projectId,
+                                                                         final String directory)
             throws ConfigurationException, CodecException, IOException, DataStoreException, InterruptedException {
         if (workflowId == null) {
             throw new ConfigurationException("No workflow Id specified");
         }
 
         // Get list of Document objects which represent each of the files we read from disk
-        List<DocumentAndFile> documentsToSend = PolicyDocumentsBuilder.getDocuments(directory);
+        final List<DocumentAndFile> documentsToSend = DocumentWorkerDocumentsBuilder.getDocuments(directory);
 
-        //Construct a task to send to the policy worker for each document.
-        List<FileAndTaskMessage> messagesToSend = new ArrayList<>();
+        //Construct a task to send to the worker for each document.
+        final List<FileAndTaskMessage> messagesToSend = new ArrayList<>();
         for (DocumentAndFile documentAndFile : documentsToSend) {
-            TaskMessage taskMessage = buildTaskMessage(documentAndFile.getDocument(), workflowId, projectId, dataDir);
+            final TaskMessage taskMessage = buildTaskMessage(documentAndFile.getDocument(), workflowId, projectId, dataDir);
             messagesToSend.add(new FileAndTaskMessage(documentAndFile.getFile(), taskMessage));
         }
         return messagesToSend;
@@ -82,34 +86,33 @@ public class TaskMessageBuilder {
      * @throws IOException If error occurs accessing the file.
      * @throws DataStoreException If error occurs storing data for file.
      */
-    public static FileAndTaskMessage buildTaskMessageForDocument(Long workflowId, String projectId, String documentPath)
+    public static FileAndTaskMessage buildTaskMessageForDocument(final Long workflowId, final String projectId,
+                                                                 final String documentPath)
             throws ConfigurationException, CodecException, IOException, DataStoreException {
         if (workflowId == null) {
             throw new ConfigurationException("No workflow Id specified");
         }
-        //Build Policy document from path to document
-        DocumentAndFile documentAndFile = PolicyDocumentsBuilder.getDocument(documentPath);
-        TaskMessage taskMessage = buildTaskMessage(documentAndFile.getDocument(), workflowId, projectId, dataDir);
+        //Build document from path to document
+        final DocumentAndFile documentAndFile = DocumentWorkerDocumentsBuilder.getDocument(documentPath);
+        final TaskMessage taskMessage = buildTaskMessage(documentAndFile.getDocument(), workflowId, projectId, dataDir);
         return new FileAndTaskMessage(documentAndFile.getFile(), taskMessage);
     }
 
-    private static TaskMessage buildTaskMessage(Document document, long workflowId, String projectId, String storageDirectory)
+    private static TaskMessage buildTaskMessage(final DocumentWorkerDocument document, final long workflowId,
+                                                final String projectId, final String storageDirectory)
             throws CodecException {
-        TaskData taskData = new TaskData();
-        taskData.setDocument(document);
-        taskData.setOutputPartialReference(storageDirectory);
-        taskData.setWorkflowId(String.valueOf(workflowId));
-        taskData.setExecutePolicyOnClassifiedDocuments(true);
-        taskData.setProjectId(projectId);
-        byte[] serializedTaskData = codec.serialise(taskData);
-        TaskMessage taskMessage = new TaskMessage();
-        taskMessage.setTaskData(serializedTaskData);
-        taskMessage.setContext(new HashMap<>());
-        taskMessage.setTaskId(String.valueOf(messageCount.addAndGet(1)) + "-" + document.getReference());
-        taskMessage.setTaskClassifier("PolicyWorker");
-        taskMessage.setTaskApiVersion(1);
-        taskMessage.setTaskStatus(TaskStatus.NEW_TASK);
-        taskMessage.setTo(destinationQueue);
+        final DocumentWorkerDocumentTask taskData = new DocumentWorkerDocumentTask();
+        final Map<String, String> customData = new HashMap<>();
+        customData.put(WorkflowWorkerConstants.CustomData.OUTPUT_PARTIAL_REFERENCE, storageDirectory);
+        customData.put(WorkflowWorkerConstants.CustomData.PROJECT_ID, projectId);
+        customData.put(WorkflowWorkerConstants.CustomData.WORKFLOW_ID, Long.toString(workflowId));
+        taskData.customData = customData;
+        taskData.document = document;
+        final byte[] serializedTaskData = codec.serialise(taskData);
+        final TaskMessage taskMessage = new TaskMessage(String.valueOf(messageCount.addAndGet(1)) + "-" + document.reference,
+                DocumentWorkerConstants.DOCUMENT_TASK_NAME,
+                DocumentWorkerConstants.DOCUMENT_TASK_API_VER, serializedTaskData,
+                TaskStatus.NEW_TASK, Collections.emptyMap(), destinationQueue);
         return taskMessage;
     }
 }

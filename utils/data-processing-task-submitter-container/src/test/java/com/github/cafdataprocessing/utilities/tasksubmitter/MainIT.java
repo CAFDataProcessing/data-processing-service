@@ -19,8 +19,7 @@ import com.github.cafdataprocessing.utilities.queuehelper.MessageHandler;
 import com.github.cafdataprocessing.utilities.queuehelper.QueueConsumerImpl;
 import com.github.cafdataprocessing.utilities.queuehelper.QueueManager;
 import com.github.cafdataprocessing.utilities.queuehelper.RabbitServices;
-import com.github.cafdataprocessing.worker.policy.shared.Document;
-import com.github.cafdataprocessing.worker.policy.shared.TaskData;
+import com.github.cafdataprocessing.workflow.constants.WorkflowWorkerConstants;
 import com.google.common.base.Strings;
 import com.hpe.caf.api.Codec;
 import com.hpe.caf.api.CodecException;
@@ -30,6 +29,10 @@ import com.hpe.caf.codec.JsonCodec;
 import com.hpe.caf.util.rabbitmq.DefaultRabbitConsumer;
 import com.hpe.caf.util.rabbitmq.Event;
 import com.hpe.caf.util.rabbitmq.QueueConsumer;
+import com.hpe.caf.worker.document.DocumentWorkerDocument;
+import com.hpe.caf.worker.document.DocumentWorkerDocumentTask;
+import com.hpe.caf.worker.document.DocumentWorkerFieldEncoding;
+import com.hpe.caf.worker.document.DocumentWorkerFieldValue;
 import com.hpe.caf.worker.queue.rabbit.RabbitWorkerQueueConfiguration;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -105,21 +108,32 @@ public class MainIT {
         }
 
         byte[] taskDataBytes = message.getTaskData();
-        TaskData taskData = codec.deserialise(taskDataBytes, TaskData.class);
-        Assert.assertEquals(taskData.getProjectId(), projectId, "Project ID on task should match that specified in properties.");
-        Assert.assertEquals(taskData.getWorkflowId(), Long.toString(workflowId), "Workflow ID on task should match that specified in properties.");
-        Assert.assertEquals(taskData.getOutputPartialReference(), expectedDataDir,
+        DocumentWorkerDocumentTask taskData = codec.deserialise(taskDataBytes, DocumentWorkerDocumentTask.class);
+        Assert.assertTrue(taskData.customData.containsKey(WorkflowWorkerConstants.CustomData.PROJECT_ID),
+                "Custom data on retrieved task data should have a project ID.");
+        Assert.assertEquals(taskData.customData.get(WorkflowWorkerConstants.CustomData.PROJECT_ID), projectId,
+                "Project ID on task should match that specified in properties.");
+        Assert.assertTrue(taskData.customData.containsKey(WorkflowWorkerConstants.CustomData.WORKFLOW_ID),
+                "Custom data on retrieved task data should have a workflow ID.");
+        Assert.assertEquals(taskData.customData.get(WorkflowWorkerConstants.CustomData.WORKFLOW_ID),
+                Long.toString(workflowId), "Workflow ID on task should match that specified in properties.");
+        Assert.assertTrue(taskData.customData.containsKey(WorkflowWorkerConstants.CustomData.OUTPUT_PARTIAL_REFERENCE),
+                "Custom data on retrieved task data should have an output partial reference.");
+        Assert.assertEquals(taskData.customData.get(WorkflowWorkerConstants.CustomData.OUTPUT_PARTIAL_REFERENCE),
+                expectedDataDir,
                 "Output Partial Reference should match the data directory specified in storage properties.");
-        Document document = taskData.getDocument();
+        DocumentWorkerDocument document = taskData.document;
         Assert.assertNotNull(document, "Document on task data should not be null.");
-        Assert.assertTrue(document.getMetadata().containsKey("storageReference"),
+        Assert.assertTrue(document.fields.containsKey("storageReference"),
                 "Storage reference field should be on document.");
-        String storageReferenceValue = document.getMetadata().get("storageReference").iterator().next();
-        Assert.assertNotNull(storageReferenceValue, "Storage reference field should not be null.");
 
-        Assert.assertFalse(encounteredStorageReferences.contains(storageReferenceValue),
-                "Storage reference on the document should not match any other document encountered so from the queue.");
-        encounteredStorageReferences.add(storageReferenceValue);
+        DocumentWorkerFieldValue storageReferenceValue = document.fields.get("storageReference").iterator().next();
+        Assert.assertNotNull(storageReferenceValue, "Storage reference field should not be null.");
+        Assert.assertEquals(storageReferenceValue.encoding, DocumentWorkerFieldEncoding.storage_ref,
+                "Storage reference field encoding should be expected type.");
+        Assert.assertFalse(encounteredStorageReferences.contains(storageReferenceValue.data),
+                "Storage reference on the document should not match any other document encountered so far from the queue.");
+        encounteredStorageReferences.add(storageReferenceValue.data);
     }
 
     private TestRabbitQueueDetails setupQueueConsumer(int expectedNumMessages) throws IOException, TimeoutException {
