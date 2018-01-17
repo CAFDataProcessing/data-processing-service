@@ -39,11 +39,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.cafdataprocessing</groupId>
-            <artifactId>worker-document</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cafdataprocessing</groupId>
-            <artifactId>worker-workflow-constants</artifactId>
+            <artifactId>worker-policy-shared</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.workerframework</groupId>

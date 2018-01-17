@@ -295,12 +295,7 @@
                                     <time>50000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
-                                <ports>
-                                    <port>${taskSubmitterDebugPort}:5005</port>
-                                </ports>
                                 <env>
-                                    <!--<_JAVA_OPTIONS>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005</_JAVA_OPTIONS>-->
-
                                     <CAF_RABBITMQ_HOST>rabbitmq</CAF_RABBITMQ_HOST>
                                     <CAF_RABBITMQ_PORT>5672</CAF_RABBITMQ_PORT>
                                     <CAF_RABBITMQ_USERNAME>${CAF_RABBITMQ_USERNAME}</CAF_RABBITMQ_USERNAME>
@@ -331,7 +326,6 @@
             <properties>
                 <rabbitmq.node.port>5672</rabbitmq.node.port>
                 <rabbitmq.ctrl.port>15672</rabbitmq.ctrl.port>
-                <taskSubmitterDebugPort>5005</taskSubmitterDebugPort>
             </properties>
         </profile>
         <profile>
