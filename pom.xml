@@ -170,7 +170,6 @@
         <module>processing-service-client</module>
         <module>processing-service-container</module>
         <module>docs</module>
-        <module>utils</module>
     </modules>
 
     <scm>
