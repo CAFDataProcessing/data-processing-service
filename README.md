@@ -49,7 +49,3 @@ Builds the branded swagger UI with the data-processing-service swagger contract 
 ### testcases
 
 QA testcases
-
-### utils
-
-A collection of utility projects. e.g. examples projects that submit and receive tasks, pre-built data processing databases container for testing purposes.
