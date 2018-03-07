@@ -16,26 +16,30 @@ banner:
 The Data Processing service is actually a suite of services that form a fully-featured processing solution. It consists of the following:
 
 - Workers, built against the CAF Worker Framework, for processing input data.
-- API's for customizing logic that can be applied during processing, for example, workflows and boilerplate expressions.
+- APIs for customizing logic that can be applied during processing, for example, workflows and boilerplate expressions.
 
-The sections that follow provide a high-level architectural overview of the various components that make up the Data Processing service and how they interact. Each component is available as a Docker container and the suite can be deployed using the compose file available [here](https://github.com/CAFDataProcessing/data-processing-service-deploy). Instructions on using the compose file can be found on the [Getting Started](./Getting-Started) page.
+The sections that follow provide a high-level architectural overview of the various components that make up the Data Processing service and how they interact. Each component is available as a Docker container and the suite can be deployed using the compose file available [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/tree/deploy). Instructions on using the compose file can be found on the [Getting Started](./Getting-Started) page.
 
 ## Overview
 
-The Data Processing service consists of web service API's, workers built against the Worker Framework and databases to store information. Workers and API's are state-less in this system and thus can scale using the auto-scaler to accommodate the workload at any point in time. Tasks are sent to workers through messages on RabbitMQ queues and the results come as messages to designated queues by each worker.
+The Data Processing service consists of web service APIs, workers built against the Worker Framework and databases to store information. Workers and APIs are state-less in this system and thus can scale using the auto-scaler to accommodate the workload at any point in time. Tasks are sent to workers through messages on RabbitMQ queues and the results come as messages to designated queues by each worker.
 
-The figure below illustrates the overall flow and relationship of components in Data Processing.
+The figure below illustrates the overall flow and relationship of components in Data Processing. For the sake of reducing the size of the diagram only some of the processing workers are represented but all the processing workers should behave in the same fashion. 
 
-![Overall System](../../assets/img/Architecture/overall.png)
+![Overall System](../../assets/img/Architecture/chaining_overall.png)
 
 1. The Data Processing API manages workflows in the database, describing actions that should occur on items passed with specific workflows.
-2. Input messages are passed into the workflow worker input queue specifying a Workflow ID and details representing a document to process.
-3. The workflow worker retrieves the next task from the input queue.
-4. A workflow is retrieved from the workflow database using the ID specified on the task.
-5. The data on the task is evaluated against the actions on the workflow. Each action is evaluated based on the rule and action order until the criteria for an action is met. A task is then created for the matching action type and sent to the appropriate worker for processing.
-6. The processing worker processes the data and returns the result to the input queue of the workflow worker.
-7. The workflow worker picks the input messages from the queue, identifies it as coming from a processing worker and includes information from the result on the data for the task.
-8. Steps 5 through 7 continue until either all actions have been evaluated in the workflow or an action is triggered that outputs the data that has built up from processing actions to an external queue. The document can then be retrieved from this queue by another application awaiting the result of processing.
+2. Before sending any tasks to the workflow worker, a workflow with rules and actions should be created using the Data Processing API.
+3. Input messages are passed into the workflow worker input queue specifying a workflow ID and details representing a document to process.
+4. The workflow worker retrieves the next task from the input queue.
+5. A workflow is retrieved from the workflow database using the ID specified on the task.
+6. The workflow is converted to a JavaScript script that the document can be evaluated against by a Document Worker to determine the workflow action that should be executed for the document.
+7. The data on the task is evaluated against the workflow script. Each action is evaluated based on the rule and action order until the criteria for an action is met. A task is then created for the matching action type and sent to the appropriate processing worker for processing based on the settings of the action. The generated workflow script is passed on this output task so that the next worker may repeat the evaluation when it has finished processing.
+8. Each processing worker processes the data it reads from the input queue, adding/updating/removing any applicable fields. For example the extraction worker will retrieve the task from the queue, retrieve the file using the storage reference on a field of the document and extract metadata for that file, adding this metadata as fields on the document.
+9. After processing the document, it is evaluated against the workflow script passed to determine the next action to execute. If the action requires going to another worker the processing worker sends the task to another queue. Steps 8 & 9 repeat until all actions have been evaluated in the workflow. e.g. In the diagram, extraction worker determines the language detection action should be executed for the document so the message is sent to the language detection worker, which performs language detection and then determines where next to send the worker.
+10. The document should be retrieved from the last queue that it is sent to once all actions on the workflow have been executed.
+
+This design results in a chaining effect where a worker receives a task, performs some processing on the task and then forwards the task to the next worker that should perform processing, with this repeating until the workflow is complete for the task. For example the last action may send the document to the input queue of a worker that will index the document.
 
 ## Data Processing API
 
@@ -49,42 +53,22 @@ You get the benefit of using the policy API, with its robust functionality, exis
 
 ## Workflow Worker
 
-This worker determines the next action for a task, sending the relevant data to the processing worker associated with the action, recording the processing result and then repeating the cycle. This worker relies on the workflow database.
+This worker retrieves a specified workflow and creates a JavaScript representation of the workflow. Documents passed to the worker can be evaluated against this script to determine the first action in the workflow that should be executed against it. This execution will set the queue that the document should be sent to for the action to be executed. This script can then be used by subsequent workers to repeat this evaluation and send the task to the next action until the workflow is fully executed. This worker should be the first stop for any task to be evaluated against a workflow.
 
-The input task sent to this worker specifies a workflow created with the Data Processing API and a document, which may specify some existing metadata and a file location in CAF Storage. The worker retrieves that workflow from the shared database, then evaluates each action on the rules of the workflow. If the data passed on the task meets the criteria set for an action, then that Action is executed. Results from this action are added as fields to the document being processed and are available for subsequent processing actions.
+The input task sent to this worker specifies the ID of a workflow created with the Data Processing API and a document, which may specify some existing metadata and a file location in storage. The worker retrieves that workflow using the Data Processing API, generates a JavaScript representation of the workflow, adds this as a script that should be executed on the task (and also passed when the task is output from the worker) and then executes that script to determine the first action (and thus queue) for the task. 
 
-*  Given a task where the only data originally passed is a storage reference to the file in CAF Storage, a text extract action  extracts the content and metadata of the file, recording them as fields on the current version of the task. From that point, any processing occurring may rely on that extracted metadata or content, for example, conditions based on expected field values, redaction of text from the content.
-
-The worker applies the result returned to the data that was passed in, building up the data as it is evaluated against each action. At the end of a workflow, it either returns a list of all actions that were matched in a workflow or outputs the built-up data representing the processed document to a queue for usage by another application.
-
-### Handlers and Converters
-
-Handlers and converters are plugins that can be passed to a workflow worker during deployment. They describe how to send tasks and handle output to/from processing workers.
-
-Handlers let you send a task to another type of worker from the workflow worker. They specify how to build up the task expected by the recipient worker:
-
-* An action type uses its internal_name to indicate the plugin that should build the task. Its definition describes properties available to actions that can influence the properties that will be set on a task.
-  * For example, the text extract action type definition specifies a property called depth, which may be set on created actions under settings. When set on an action, this value then sets the depth property on the task sent to the extraction worker.
-* The handler also extracts relevant data from the current document that is required by the processing worker.
-  * For example, when sending a message to the extraction worker, the handler sets the source data reference to the location of the file in CAF Storage so it may be retrieved for processing.
-
-The workflow worker then takes the task built by the handler and sends it to the input queue of the appropriate processing worker.
-
-Converters provide the ability to take result messages from processing workers and record the relevant result information as fields on the document moving through the workflow.
-
-* For example, the result from extraction worker outputs to the input queue of the workflow worker. The workflow worker recognizes the message as coming from extraction worker, inspects the result message for values that can be added to the document metadata and then proceeds to the next action in the workflow.
-
-The state of a task as it moves through a workflow is maintained on the message passed between queues so that any workflow worker picking the task from an input queue can resume processing at the correct position.
+In the workflow script if the data passed on the task meets the criteria set for an action, then that Action is executed, which usually involves directing the task message to the input queue of a processing worker tied to the action. The document will then be processed by that worker, and then re-evaluated against the workflow script passed on the task with any fields added during processing now able to influence the action criteria evaluation.
+*  e.g. Given a task where the only data originally passed is a storage reference to the file in storage, a text extract action  extracts the content and metadata of the file, recording them as fields on the current version of the task. From that point, any processing occurring may rely on that extracted metadata or content, for example, conditions based on expected field values, redaction of text from the content.
 
 ## Workflow Database
 
-Information about workflows, rules, actions and action types is stored in the workflow database. The database is included in the databases service launched by the data-processing compose file. This service can also be used to install the database to an external PostgreSQL instance, as documented [here](https://github.com/CAFDataProcessing/data-processing-service/tree/develop/utils/data-processing-databases-container#install-workflow-database).
+Information about workflows, rules, actions and action types is stored in the workflow database. The database is included in the databases service launched by the data-processing compose file. This service can also be used to install the database to an external PostgreSQL instance, as documented [here](https://github.com/CAFDataProcessing/data-processing-service-utils/tree/develop/data-processing-databases-container#install-workflow-database).
 
-This database is used by the Data Processing API (via the policy API that it communicates with) and the workflow worker. The API allows creation of the objects and the workflow worker then accesses them when processing tasks.
+This database is used by the Data Processing API (via the policy API that it communicates with). The API allows creation and retrieval of the workflow objects.
 
 ## Processing Workers
 
-Process workers are sent tasks by the workflow worker. They perform some processing against those tasks. Each processing worker is intended to have a particular processing purpose in line with the micro-service principle. They return their completed tasks to the workflow worker, which records information about the result on the item processed.
+Processing workers are sent tasks to perform some processing against. Each processing worker is intended to have a particular processing purpose in line with the micro-service principle. When they have finished processing they then evaluate the current state of the document against the workflow script that was passed to them and determine the next action to execute on the document. Then they send the document to the queue of the processing worker that can perform that action.
 
 ## Boilerplate Worker
 
@@ -110,7 +94,7 @@ You create expressions using this web service and then reference them in boilerp
 
 #### Boilerplate Database
 
-The expressions and tags created through the boilerplate API are stored in a database. The boilerplate worker contacts this database to retrieve expressions and tags using the IDs passed to it on input tasks. The database is included in the databases service launched by the data-processing compose file. This service can also be used to install the database to an external PostgreSQL instance, as documented [here](https://github.com/CAFDataProcessing/data-processing-service/tree/develop/utils/data-processing-databases-container#install-boilerplate-database).
+The expressions and tags created through the boilerplate API are stored in a database. The boilerplate worker contacts this database to retrieve expressions and tags using the IDs passed to it on input tasks. The database is included in the databases service launched by the data-processing compose file. This service can also be used to install the database to an external PostgreSQL instance, as documented [here](https://github.com/CAFDataProcessing/data-processing-service-utils/tree/develop/data-processing-databases-container#install-boilerplate-database).
 
 ## Entity Extract Worker
 
@@ -128,12 +112,12 @@ Langauge detection receives a message containing data for analysis. The result i
 
 ## OCR Worker
 
-The OCR worker receives a message with a reference to an image file in CAF Storage and performs OCR using ImageServer, returning any text extracted. Also supports extracting text from multi-page files such as PDFs.
+The OCR worker receives a message with a reference to an image file in storage and performs OCR using ImageServer, returning any text extracted. Also supports extracting text from multi-page files such as PDFs.
 
 This worker requires a valid ImageServer license.
 
 ## Speech Worker
 
-The speech worker receives a message with a reference to an audio file in CAF Storage and returns the content as text. Can return time stamps against words also through action configuration.
+The speech worker receives a message with a reference to an audio file in storage and returns the content as text. Can return time stamps against words also through action configuration.
 
 This worker requires a valid Speech Server license.

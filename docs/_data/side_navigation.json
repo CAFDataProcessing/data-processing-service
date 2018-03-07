@@ -55,23 +55,14 @@
         "en-us": "Actions"
       },
       "children": [
-		{
-          "title": { 
-            "en-us": "Creating an Action"
-          },
-          "url": {
-            "en-us": "pages/en-us/Creating_an_Action/Main"
-          }
+      {
+        "title": { 
+          "en-us": "Creating an Action"
         },
-        {
-          "title": { 
-            "en-us": "Text Extract"
-          },
-          "url": {
-            "en-us": "pages/en-us/Text_Extract/Main"
-          }
+        "url": {
+          "en-us": "pages/en-us/Creating_an_Action/Main"
         }
-      ]
+      }]
     },
 		{
 			"title": {

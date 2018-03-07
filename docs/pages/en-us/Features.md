@@ -21,10 +21,10 @@ Rather than a monolithic application aiming to service all processing needs, Dat
   * In a system that only ingests text documents, you would not need the OCR and Speech worker to convert content to text.
 
 * Each processing service maintains its own independent input queue and resource allocation. Data sources that require more time to process will not slow the processing of other, less intensive data. For example:
-  * An hour long audio file requiring conversion to text will have no effect on the throughput of text or image files as the workflow worker will send the audio file to the speech worker's input queue and the others to the text extract and OCR worker queues. While the speech worker is processing that audio file, the other workers continue processing their files and can receive new files allocated to them by the workflow worker.
+  * An hour long audio file requiring conversion to text will have no effect on the throughput of text or image files as the workflow will send the audio file to the speech worker's input queue and the others to the text extract and OCR worker queues. While the speech worker is processing that audio file, the other workers continue processing their files and can receive new files allocated to them by the workflow evaluation.
   
 * New services are created independently of the overall Data Processing package, allowing for faster development, testing and debugging of a component. Integration into the larger suite occurs by following a defined pattern used with existing components. For example:
-  * A new copy worker may be developed using the Worker Framework without setting up the other Data Processing components. Messages can be passed to this worker's input queues through custom test tools and output is similarly verified. On completion of the worker, it may be included in the Data Processing suite and invoked by the workflow worker through the writing of a handler and converter and setting up an appropriate action. Alternatively if the copy worker is implemented as a CAF Document Worker then the document worker handler/converter may be used to communicate with the new worker.
+  * A new copy worker may be developed using the Document Worker Framework without setting up the other Data Processing components. Messages can be passed to this worker's input queues through custom test tools and output is similarly verified. On completion of the worker, it may be included in the Data Processing suite and used as part of a workflow by setting up a `ChainedActionType` action to send a task to the input queue the worker listens on (with any settings the worker should utilize). As a result of being built on the Document Worker Framework the worker will have built-in support for determining the next worker it should send a task to by evaluating a workflow script if one is passed to the worker.
 
 ## Elastic Scaling
 
@@ -36,7 +36,7 @@ Rather than a monolithic application aiming to service all processing needs, Dat
 
 ## Decision-based Processing
 
-Using the Data Processing API and the workflow worker, you can control the operations performed on files using conditions against the data passed in as well as the result of any processing that has occurred to that point. This approach allows a single input entry point for data into the system and puts the responsibility of routing data to the next appropriate processing operation on the workflow worker. A basic processing workflow may consist of an action that: 
+Using the Data Processing API and the workflow worker, you can control the operations performed on files using conditions against the data passed in as well as the result of any processing that has occurred to that point. This approach allows a single input entry point for data into the system and puts the responsibility of routing data to the first appropriate processing operation on the workflow worker. After this first decision a script representing the workflow is passed to all subsequent workers the message is sent to which allows them to determine the next processing that should occur. A basic processing workflow may consist of an action that: 
 
   * extracts content for audio files using the speech worker.
   * extracts the content for image files using the OCR worker.
@@ -46,9 +46,9 @@ Using the Data Processing API and the workflow worker, you can control the opera
   
 The Data Processing API supports a wide variety of conditions to control processing flow, with support for conditions against individual actions or a group of actions in a rule. More detail on the conditions available can be found in the Data Processing API [here](Data_Processing/API) under models.
 
-## Integration with CAF Storage Service
+## Integration with External Storage
 
-Processing data often involves dealing with large pieces of data. To accommodate this requirement, Data Processing workers have support for references to data stored using a CAF storage implementation. Large data values and files themselves can be uploaded to a storage location and a reference to the stored data is then passed into the workers that will retrieve data and perform operations on it.
+Processing data often involves dealing with large pieces of data. To accommodate this requirement, Data Processing workers have support for references to data stored using an external storage implementation. Large data values and files themselves can be uploaded to a storage location and a reference to the stored data is then passed into the workers that will retrieve data and perform operations on it.
 
 ## Variety of Processing Operations
 
@@ -97,10 +97,6 @@ Regular expressions can be used to detect, redact and extract pieces of content.
 
 Text can be analysed to detect and return the top three languages present.
 
-### Unique ID Tagging
-
-Each item passed into Data Processing can have a unique identifier assigned that may be used as the ID for the built up data representation when processing completes, for example, as the ID to use when indexing the processing result into an archive platform. Files extracted from archive formats can also be assigned unique identifiers. *Enterprise Edition* only.
-
 ### Key Content Segregation for Emails.
 
 An email conversation can have its individual message content separated, with support for defining the ranges that make up the primary, secondary and tertiary messages.
@@ -108,7 +104,3 @@ An email conversation can have its individual message content separated, with su
 ### Email Signature Detection.
 
 Support for the detection of signatures in email content and removal of signatures from that content.
-
-## Extensibility with Custom Processing Actions
-
-New processing actions can be developed and added to already deployed systems through deployment of a new worker to service the processing operation and the writing of plugin classes to handle sending a task from the workflow worker to the new worker and to convert the result to fields on the item being processed. Once this is done, new actions can be created that reference the new processing action type and included in existing processing pipelines.

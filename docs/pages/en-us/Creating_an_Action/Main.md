@@ -17,7 +17,6 @@ The output is a series of modifications to the documents metadata.
 
 Creating an action using the Document Worker Framework is achieved by using the Document Worker Archetype.
 The archetype scaffolds a simple example data processing action that can be used as the basis for a new data processing action.
-Further integration tasks such as the creation of a handler and converter are not required.
 
 ## Contents
 
@@ -81,7 +80,7 @@ Document workers have the following advantages:
 
 + A Document Worker is simpler to implement, through utilizing the Document Worker Archetype.
 + Normal workers are task oriented. If tasks align with documents, a Document Worker is better suited because it makes available interfaces which are designed to handle documents.
-+ Document Workers integrate more simply into the the data processing chain. There is no need to write extra components such as a handler and a converter, because these are already written.
++ Document Workers integrate simply into the the data processing chain. They can be added to existing workflow processing rules as Actions using the type `ChainedActionType`.
 
 ### How can a Bulk Document Worker be more Advantageous?
 
