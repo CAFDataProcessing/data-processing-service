@@ -43,6 +43,14 @@ For developers it is recommended to install and run the project with swagger-nod
     swagger project start
     ```    
     
+### Editing Swagger Contract
+
+The swagger CLI provides a browser based swagger editor that can be used to modify the contract.
+
+```
+swagger project edit
+```
+    
 ## UI
 
 An HPE Swagger UI is available based on the UI generated in the data-processing-service-contract repository [here](https://github.com/CAFDataProcessing/data-processing-service/tree/develop/processing-service-contract).
