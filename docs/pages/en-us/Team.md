@@ -60,15 +60,4 @@ team_members:
           icon: hpe-social-email
           url: mailto:philip-crooks@microfocus.com
 
-    - name: Trevor Getty
-      email: trevor.getty@microfocus.com
-      avatar: /assets/img/Team/Trevor.jpg
-      social:
-        - title: GitHub
-          icon: hpe-social-github
-          url: https://github.houston.softwaregrp.net/trevor-getty
-        - title: Email
-          icon: hpe-social-email
-          url: mailto:trevor.getty@microfocus.com
-         
 ---

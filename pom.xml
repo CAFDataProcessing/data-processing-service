@@ -52,37 +52,27 @@
         <developer>
             <id>andyreidz</id>
             <name>Andy Reid</name>
-            <email>andrew.reid@hpe.com</email>
+            <email>andrew.reid@microfocus.com</email>
         </developer>
         <developer>
             <id>dermot-hardy</id>
             <name>Dermot Hardy</name>
-            <email>dermot.hardy@hpe.com</email>
-        </developer>
-        <developer>
-            <id>krzysztof-ploch</id>
-            <name>Krzysztof Ploch</name>
-            <email>krzysztof.ploch@hpe.com</email>
+            <email>dermot.hardy@microfocus.com</email>
         </developer>
         <developer>
             <id>michael-mcalynn</id>
             <name>Michael McAlynn</name>
-            <email>michael.mcalynn@hpe.com</email>
+            <email>michael.mcalynn@microfocus.com</email>
         </developer>
         <developer>
             <id>pcrookshpe</id>
             <name>Philip Crooks</name>
-            <email>philip.crooks@hpe.com</email>
+            <email>philip.crooks@microfocus.com</email>
         </developer>
         <developer>
             <id>tony-mcveigh</id>
             <name>Anthony McVeigh</name>
-            <email>tony.mcveigh@hpe.com</email>
-        </developer>
-        <developer>
-            <id>trevorgetty</id>
-            <name>Trevor Getty</name>
-            <email>trevor.getty@hpe.com</email>
+            <email>tony.mcveigh@microfocus.com</email>
         </developer>
     </developers>
 
