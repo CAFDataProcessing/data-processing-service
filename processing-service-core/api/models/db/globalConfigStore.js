@@ -17,7 +17,7 @@
 
 var Q = require('q');
 var logger = require('../../helpers/loggingHelper.js');
-var globalConfig = [{"ee.grammarMap": "{'pii.xml': []}"}];
+var globalConfig = [{"ee.grammarMap": "{\"pii.xml\": []}"}];
 var apiErrorFactory = require('../errors/apiErrorFactory.js');
 
 module.exports = {
