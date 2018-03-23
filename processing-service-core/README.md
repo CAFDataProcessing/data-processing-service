@@ -12,7 +12,12 @@ An http contactable Core Policy API instance that this API may call.
 
 ## Detailed Overview
 
-A more detailed overview of the implementation is available [here](./Architecture.md).
+The data-processing-service is a NodeJS implementation of the swagger data-processing-service-contract. It implements many of those methods as calls to a Policy API instance, where a single call on the contract may be represented as multiple calls to the Policy API, creating structures that can be used for data processing by components that support the Policy API. This project aims to simplify the interactions required with the Core Policy API to create and manage the objects required for data processing. It also provides management of tenant configurations by communicating directly with a database.
+
+A more detailed overview of the workflow operations is available [here](./Architecture.md).
+
+A more detailed overview of the tenant configuration options is available [here](./tenant-config-options.md).
+
 A more detailed overview of how to use global configurations can be found [here](./global-config-options.md).
 
 ## Quick Start

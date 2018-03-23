@@ -40,6 +40,8 @@ tags:
     description: Workflow operations.
   - name: Global Configuration
     description: Global Configuration operations.
+  - name: Tenant Configuration
+    description: Tenant specific configuration for the workflow.
 schemes:
   - http
 # format of bodies a client can send (Content-Type)
@@ -1032,6 +1034,197 @@ paths:
           schema:
             $ref: "#/definitions/globalConfigs"
 #
+  ##########################
+  ##  Tenant Key Store
+  ##########################
+  /tenants/{tenantId}/config/{key}:
+    x-swagger-router-controller: tenant
+    parameters:
+      - name: tenantId
+        in: path
+        type: string
+        description: The ID of the tenant.
+        required: true
+        maxLength: 40
+      - name: key
+        in: path
+        type: string
+        description: The key to use when searching for a tenant's configuration.
+        required: true
+        maxLength: 255
+    put:
+      tags:
+        - Tenant Configuration
+      parameters:
+        - name: value
+          in: body
+          required: true
+          schema:
+            type: string
+          description: The value to use when setting the custom config for the tenant's key.
+      summary: Creates or updates tenant specific config.
+      description: Creates a custom configuration setting for this key against this tenant if one doesn't exist or updates the currently existing custom configuration setting if it does.
+      operationId: setTenantConfig
+      responses:
+        204:
+          description:  Indicates that the tenant specific configuration was set successfully.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    get:
+      tags:
+        - Tenant Configuration
+      summary: Retrieve tenant specific config.
+      description: Returns the tenant specific config for this key that is stored against this tenant.
+      operationId: getTenantConfig
+      responses:
+        200:
+          schema: 
+            type: string
+            example: "{'pii.xml': []}"
+          description: Returns the tenant specific configuration stored for the supplied key.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: Indicates key was not found.
+    delete:
+      tags:
+        - Tenant Configuration
+      summary: Delete tenant specific config for the provided key.
+      description: Delete tenant specific config for the provided key.
+      operationId: deleteTenantConfig
+      responses:
+        204:
+          description: Indicates the tenant specific config for the provided tenantId & key was deleted.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: Indicates key was not found.
+  #
+  /tenants/{tenantId}/config:
+    x-swagger-router-controller: tenant
+    parameters:
+      - name: tenantId
+        in: path
+        type: string
+        description: The ID of the tenant.
+        required: true
+        maxLength: 40
+    put:
+      tags:
+        - Tenant Configuration
+      parameters:
+        - name: tenantConfigs
+          description: The json string representation key-value pair map of custom tenant configuration.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/tenantConfigs"
+      summary: Bulk method used to set multiple tenant specific configs.
+      description: Sets custom configuration settings for a tenant in bulk.
+      operationId: setTenantConfigs
+      responses:
+        204:
+          description: Indicates that the tenant specific configuration was set successfully.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"        
+    get:
+      tags:
+        - Tenant Configuration
+      summary: Retrieve tenant specific configs as map of key-value pairs.
+      description: Returns all tenant specific configs as a list.
+      operationId: getTenantConfigs
+      responses:
+        200:
+          description: |
+            Returns the map of tenant specific configs.
+          schema:
+            $ref: "#/definitions/tenantConfigs"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    delete:
+      tags:
+        - Tenant Configuration
+      summary: Delete tenant specific configs for the provided tenantId.
+      description: Delete tenant specific config for the provided tenantId.
+      operationId: deleteTenantConfigs
+      responses:
+        204:
+          description: Indicates tenant specific config for the provided tenantId were deleted.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  #
+  /tenants/{tenantId}/effectiveconfig/{key}:
+    x-swagger-router-controller: tenant
+    parameters:
+      - name: tenantId
+        in: path
+        type: string
+        description: The ID of the tenant.
+        required: true
+        maxLength: 40
+      - name: key
+        in: path
+        type: string
+        description: The key to use when searching for a tenant's configuration.
+        required: true
+        maxLength: 255
+    get:
+      tags:
+        - Tenant Configuration
+      summary: Retrieve effective tenant specific config.
+      description: Returns the effective tenant specific config for this key. That can be either a custom value specified for the tenant or the default.
+      operationId: getEffectiveTenantConfig
+      responses:
+        200:
+          description: Returns the effective tenant configurations for this key.
+          schema:
+            $ref: "#/definitions/effectiveTenantConfigValue"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: Indicates no configuration was found for the provided key in either the tenant custom configuration or the global configuration.
+  #
+  #
+  /tenants/{tenantId}/effectiveconfig:
+    x-swagger-router-controller: tenant
+    parameters:
+      - name: tenantId
+        in: path
+        type: string
+        description: The ID tenant.
+        required: true
+        maxLength: 40
+    get:
+      tags:
+        - Tenant Configuration
+      summary: Retrieve effective tenant specific config.
+      description: Returns the effective tenant specific config for this key. That can be either a custom value specified for the tenant or the default.
+      operationId: getEffectiveTenantConfigs
+      responses:
+        200:
+          description: Returns all effective configurations for this tenant.
+          schema:
+            $ref: "#/definitions/effectiveTenantConfigs"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  #
+  #
 definitions:
   globalConfigs:
     type: array
@@ -1061,6 +1254,47 @@ definitions:
       description:
         type: string
         description: The description for the global config key.
+  tenantConfigs:
+    type: array
+    items:
+        $ref: "#/definitions/tenantConfig"
+        description: The collection of custom configurations set for the supplied tenantId.
+  tenantConfig:
+    type: object
+    properties:
+      key:
+        type: string
+        description: The key that used in retrieval of the custom config.
+        maxLength: 255
+      value:
+        type: string
+        description: The value stored for the custom config key.
+  effectiveTenantConfigs:
+    type: array
+    items:
+        $ref: "#/definitions/effectiveTenantConfig"
+        description: The collection of custom configurations set for the supplied tenantId.
+  effectiveTenantConfig:
+    type: object
+    allOf:
+      - $ref: "#/definitions/effectiveTenantConfigValue"
+      - type: object
+        properties:
+           key:
+             type: string
+             description: The key that used in retrieval of the custom config.
+             maxLength: 255
+  effectiveTenantConfigValue:
+      type: object
+      description: The effective value of the tenant configuration requested, this can either be the custom value or the default indicated by the valueType property.
+      properties:
+        value:
+            type: string
+            description: The value stored for the custom config key.
+        valueType:
+            type: string
+            description: The type of value being returned, CUSTOM if it was set specifically for this tenant, or DEFAULT if it cam from the global configs.
+            enum: ["CUSTOM", "DEFAULT"]
   existingWorkflows:
     type: object
     required:

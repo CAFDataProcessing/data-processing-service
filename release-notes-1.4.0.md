@@ -3,6 +3,8 @@ ${version-number}
 
 #### New Features
 - [SCMOD-3477](https://jira.autonomy.com/browse/SCMOD-3477): A new feature to allow the management of global configs.
+- [SCMOD-3111](https://jira.autonomy.com/browse/SCMOD-3111): Tenant configuration store  
+    The Data Processing Service has been enhanced with the facility to store tenant specific configuration.  After a tenant setting has been registered with the service values can then be stored on a per-tenant basis.
 
 #### Bug Fixes
 - [CAF-3352](https://jira.autonomy.com/browse/CAF-3352): Not condition children underneath Not conditions could not be edited.

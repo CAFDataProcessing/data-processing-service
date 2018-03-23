@@ -24,6 +24,7 @@ module.exports = {
   writeCreatePromiseJSONResultToResponse: writeCreatePromiseJSONResultToResponse,
   writeDeletePromiseJSONResultToResponse: writeDeletePromiseJSONResultToResponse,
   writePromiseJSONResultToResponse: writePromiseJSONResultToResponse,
+  writeStringPromiseJSONResultToResponse: writeStringPromiseJSONResultToResponse,
   writeUpdatePromiseJSONResultToResponse: writeUpdatePromiseJSONResultToResponse
 };
 //generic success callback for deferred promises that return HTTP responses.
@@ -94,4 +95,17 @@ function writeDeletePromiseJSONResultToResponse(promise, response){
 
 function writeUpdatePromiseJSONResultToResponse(promise, response){
   writePromiseJSONResultToResponse(promise, response, 204);
+}
+
+function writeStringPromiseJSONResultToResponse(promise, response) {
+    var statusCode = 200;
+    promise.then(function (result) {
+                if (statusCode !== undefined) {
+                    response.status(statusCode);
+                }
+                response.send(result);
+            })
+            .fail(function (errorResponse) {
+                errorResponseHelper.writeErrorToResponseJSON(errorResponse, response);
+            }).done();
 }

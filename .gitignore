@@ -55,3 +55,4 @@ processing-service-contract/src/main/resources/com/github/cafdataprocessing/proc
 # UI is built by processing-service-ui project and copied to the processing-service-core project. These files should not be checked in due to this.
 processing-service-core/ui
 /target/
+/processing-service-core/nbproject/
