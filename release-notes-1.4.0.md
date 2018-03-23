@@ -2,7 +2,7 @@
 ${version-number}
 
 #### New Features
-
+- [SCMOD-3477](https://jira.autonomy.com/browse/SCMOD-3477): A new feature to allow the management of global configs.
 
 #### Bug Fixes
 - [CAF-3352](https://jira.autonomy.com/browse/CAF-3352): Not condition children underneath Not conditions could not be edited.

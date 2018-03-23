@@ -38,6 +38,8 @@ tags:
     description: Operations for Conditions on Processing Rules.
   - name: Workflows
     description: Workflow operations.
+  - name: Global Configuration
+    description: Global Configuration operations.
 schemes:
   - http
 # format of bodies a client can send (Content-Type)
@@ -952,7 +954,113 @@ paths:
           description: The specified Workflow could not be found.
           schema:
             $ref: "#/definitions/errorMessage"    
+  ##########################
+  ##  Default Config Store
+  ##########################
+  /globalConfig/{key}:
+    x-swagger-router-controller: globalConfig
+    parameters:
+      - name: key
+        in: path
+        type: string
+        maxLength: 255
+        description: The unique identifier for the global configuration.
+        required: true
+    put:
+      tags:
+        - Global Config
+      parameters:
+        - name: globalConfig
+          in: body
+          description: The configuration to use when setting the global config.
+          required: true
+          schema:
+            $ref: "#/definitions/globalConfig"
+      summary: Sets global config for the key.
+      description: Creates a global configuration setting for this key or updates the currently existing global configuration setting if it already exists.
+      operationId: setGlobalConfig
+      responses:
+        204:
+          description:  Indicates that the global configuration was set successfully.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    get:
+      tags:
+        - Global Config
+      summary: Returns the global config for the key.
+      description: Returns the global config for the key.
+      operationId: getGlobalConfig
+      responses:
+        200:
+          description: Returns the global configuration stored for the supplied key.
+          schema:
+            $ref: "#/definitions/globalConfig"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: Indicates key was not found.
+    delete:
+      tags:
+        - Global Config
+      summary: Deletes global config for the key.
+      description: Deletes global config for the key.
+      operationId: deleteGlobalConfig
+      responses:
+        204:
+          description: Indicates the global config for the supplied key was deleted.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: Indicates key was not found.
+  /globalConfig/:
+    x-swagger-router-controller: globalConfig
+    get:
+      tags:
+        - Global Config
+      summary: Returns a list of all global configs.
+      description: Returns a list of all global configs.
+      operationId: getGlobalConfigs
+      responses:
+        200:
+          description: Returns all global configurations.
+          schema:
+            $ref: "#/definitions/globalConfigs"
+#
 definitions:
+  globalConfigs:
+    type: array
+    items:
+      $ref: "#/definitions/globalConfigsEntry"
+  globalConfigsEntry:
+    type: object
+    description: The collection of configuration values.
+    allOf:
+      - $ref: "#/definitions/globalConfig"  
+      - type: object      
+        required:
+          - key
+        properties:
+          key:
+            type: string
+            maxLength: 255
+            description: The key of the global config.
+  globalConfig:
+    type: object
+    required:
+      - default
+    properties:
+      default:
+        type: string
+        description: The value for the global config key.
+      description:
+        type: string
+        description: The description for the global config key.
   existingWorkflows:
     type: object
     required:

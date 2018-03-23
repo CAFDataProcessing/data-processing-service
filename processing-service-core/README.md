@@ -13,6 +13,7 @@ An http contactable Core Policy API instance that this API may call.
 ## Detailed Overview
 
 A more detailed overview of the implementation is available [here](./Architecture.md).
+A more detailed overview of how to use global configurations can be found [here](./global-config-options.md).
 
 ## Quick Start
 
