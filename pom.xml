@@ -155,11 +155,11 @@
     </dependencyManagement>
 
     <modules>
+        <module>docs</module>
         <module>processing-service-ui</module>        
         <module>processing-service-contract</module>
         <module>processing-service-client</module>
         <module>processing-service-container</module>
-        <module>docs</module>
     </modules>
 
     <scm>
