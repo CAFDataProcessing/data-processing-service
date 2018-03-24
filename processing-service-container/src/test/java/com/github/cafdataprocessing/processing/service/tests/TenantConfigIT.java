@@ -45,7 +45,7 @@ public class TenantConfigIT
     {
         final String tenantId = "1";
         final String configKey = "ee.grammarMap";
-        final String configValue = "{'pii.xml': []}";
+        final String configValue = "{\"pii.xml\": []}";
         createConfigInStore(configKey, "SomeValue", "Some description of the config for testing");
         TENANTS_API.setTenantConfig(tenantId, configKey, configValue);
         final String tenantConfigValue = TENANTS_API.getTenantConfig(tenantId, configKey);
@@ -63,7 +63,7 @@ public class TenantConfigIT
     {
         final String tenantId = "1";
         final String configKey = "ee.grammarMap";
-        final String firstConfigValue = "{'pii.xml': []}";
+        final String firstConfigValue = "{\"pii.xml\": []}";
         final String secondConfigValue = "{'pii.xml': ['internet.ecr']}";
 
         createConfigInStore(configKey, "SomeValue", "Some description of the config for testing");
@@ -89,7 +89,7 @@ public class TenantConfigIT
         final TenantConfigs tenantConfigs = new TenantConfigs();
         final String tenantId = "1";
         final String configKey = "ee.grammarMap";
-        final String configValue = "{'pii.xml': []}";
+        final String configValue = "{\"pii.xml\": []}";
         for (int i = 0; i < 5; i++) {
             final TenantConfig config = new TenantConfig();
             final String key = configKey + i;
@@ -115,7 +115,7 @@ public class TenantConfigIT
     {
         final String tenantId = "DefaultCheck";
         final String configKey = "ee.grammarMap";
-        final String globalConfigValue = "{'pii.xml': []}";
+        final String globalConfigValue = "{\"pii.xml\": []}";
 
         createConfigInStore(configKey, globalConfigValue, "Some description of the config for testing");
 
@@ -150,7 +150,7 @@ public class TenantConfigIT
     {
         final String tenantId = "1";
         final String configKey = "ee.grammarMap";
-        final String configValue = "{'pii.xml': []}";
+        final String configValue = "{\"pii.xml\": []}";
 
         try {
             TENANTS_API.setTenantConfig(tenantId, configKey, configValue);
@@ -164,7 +164,7 @@ public class TenantConfigIT
     {
         final String tenantId = "EffectiveConfigTest";
         final String configKey = "ee.grammarMap";
-        final String configValue = "{'pii.xml': []}";
+        final String configValue = "{\"pii.xml\": []}";
         createConfigInStore(configKey, configValue, "Some description of the config for testing");
 
         final EffectiveTenantConfigs configs = TENANTS_API.getEffectiveTenantConfigs(tenantId);
@@ -176,7 +176,7 @@ public class TenantConfigIT
     {
         final String tenantId = "EffectiveConfigTest";
         final String configKey = "ee.grammarMap";
-        final String configValue = "{'pii.xml': []}";
+        final String configValue = "{\"pii.xml\": []}";
         final String secondConfigKey = "AnotherTestConfig";
         final String secondConfigValue = "AnotherTestConfigValue";
         createConfigInStore(configKey, configValue, "Some description of the config for testing");
@@ -200,7 +200,7 @@ public class TenantConfigIT
     public void testInvalidParams() throws ApiException
     {
         final String configKey = "ee.grammarMap";
-        final String configValue = "{'pii.xml': []}";
+        final String configValue = "{\"pii.xml\": []}";
         createConfigInStore(configKey, configValue, "Some description of the config for testing");
 
         String tenantId = "";
