@@ -956,7 +956,7 @@
 						"method": "GET",
 						"header": [],
 						"body": {},
-						"url": "http://127.0.0.1:8080/data-processing-service/v1/globalConfigs/",
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/globalConfig/",
 						"description": ""
 					},
 					"response": []
