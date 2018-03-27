@@ -11,8 +11,10 @@
     "express": "^4.12.3",
     "json-bigint": "^0.2.3",
     "node-cache": "^3.2.1",
+    "pg": "^7.4.1",
     "q": "^1.4.1",
     "querystring": "^0.2.0",
+    "sequelize": "^4.36.1",
     "swagger-express-mw": "^0.1.0"
   },
   "devDependencies": {

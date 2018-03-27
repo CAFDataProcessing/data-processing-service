@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 var Q = require('q');
-var store = require('../store/globalConfigStore.js');
+var store = require("./db/globalConfigStore.js");
 var logger = require('../helpers/loggingHelper.js');
 
 module.exports = {

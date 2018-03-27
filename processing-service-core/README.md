@@ -94,6 +94,30 @@ The port that the Policy API is running on. Defaults to 9000.
 #### CAF_PROCESSING_SERVICE_POLICY_API_ENTRY_PATH
 The url path that all calls to Policy API should start with. Defaults to '/corepolicy'.
 
+### Database Configuration
+
+Database connection details are required to allow management of global and tenant configurations.
+
+#### CAF_PROCESSING_SERVICE_DATABASE_HOST
+
+The host that the database can be contacted on. Defaults to 'localhost'.
+
+#### CAF_PROCESSING_SERVICE_DATABASE_NAME
+
+The name of the database containing global and tenant configuration tables. Defaults to 'workflow'.
+
+#### CAF_PROCESSING_SERVICE_DATABASE_PASSWORD
+
+The password to use to access the database. Defaults to an empty value.
+
+#### CAF_PROCESSING_SERVICE_DATABASE_PORT
+
+The port to contact database on. Defaults to 5432.
+
+#### CAF_PROCESSING_SERVICE_DATABASE_USERNAME
+
+The username to use to access the database. Defaults to 'root'.
+
 ### Logging Configuration
 
 #### CAF_LOG_LEVEL

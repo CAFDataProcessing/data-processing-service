@@ -13,12 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//represents the types of errors that can occur in the API logic.
+// defines the structure representing the globalConfig table in the database
+const Sequelize = require("sequelize");
+
+var tableDefinition = {
+    key: {
+        allowNull: false,
+        field: "key",
+        primaryKey: true,
+        type: Sequelize.STRING(255)
+    },
+    default: {
+        allowNull: false,
+        field: "default",
+        type: Sequelize.TEXT
+    },
+    description: {
+        field: "description",
+        type: Sequelize.TEXT
+    }
+};
+
 module.exports = {
-  /**
-   * Describes a general database failure where no more specific error type describes the failure.
-   */
-  DATABASE_UNKNOWN_ERROR: 'DATABASE_UNKNOWN_ERROR',
-  ITEM_NOT_FOUND: 'ITEM_NOT_FOUND',
-  UNKNOWN: 'UNKNOWN'
+    definition: tableDefinition,
+    name: "globalConfig",
+    tableName: "tbl_global_config"
 };

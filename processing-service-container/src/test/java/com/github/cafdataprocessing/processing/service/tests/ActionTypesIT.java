@@ -141,6 +141,7 @@ public class ActionTypesIT {
 
     @Test(description = "Creates some action types then deletes.")
     public void deleteActionType() throws ApiException {
+        final int numberOfDefaultTypes = 4;
         ActionType typeToCreate_1 = ObjectsInitializer.initializeActionType(null);
 
         ExistingActionType createdType_1 = actionTypesApi.createActionType(projectId, typeToCreate_1);
@@ -154,20 +155,21 @@ public class ActionTypesIT {
         //verify that the processing rule no longer exists on the workflow
         ExistingActionTypes actionTypesResult = actionTypesApi.getActionTypes(projectId,
                 1, 100);
-        //NOTE that default Policy database spun up has two policy types by default that are returned we actually have three on the page results.
-        Assert.assertEquals((long) actionTypesResult.getTotalHits(), 3,
-                "Total Hits should be three after deleting an action type.");
-        Assert.assertEquals(actionTypesResult.getActionTypes().size(), 3,
-                "Three action types should be returned in the results.");
+        //NOTE that default Policy database spun up has four policy types by default that are returned we actually have five on
+        // the page results.
+        Assert.assertEquals((long) actionTypesResult.getTotalHits(), 1 + numberOfDefaultTypes,
+                "Total Hits should be five after deleting an action type.");
+        Assert.assertEquals(actionTypesResult.getActionTypes().size(), 1 + numberOfDefaultTypes,
+                "Five action types should be returned in the results.");
 
         //check the default action types are present
         List<ExistingActionType> retrievedActionTypes = actionTypesResult.getActionTypes();
         long numDefaultsFound = retrievedActionTypes.stream()
-                .filter(type -> type.getInternalName().equals("MetadataPolicy") || type.getInternalName().equals("ExternalPolicy"))
+                .filter(type -> type.getInternalName().equals("MetadataPolicy") || type.getInternalName().equals("ExternalPolicy")
+                || type.getInternalName().equals("ChainedActionType") || type.getInternalName().equals("FieldMappingActionType"))
                 .count();
-        Assert.assertEquals(numDefaultsFound, 2, "Expecting to find two default action types returned on get request.");
-
-
+        Assert.assertEquals(numDefaultsFound, numberOfDefaultTypes,
+                "Expecting to find four default action types returned on get request.");
 
         Optional<ExistingActionType> remainingTypeCheck = actionTypesResult.getActionTypes().stream()
                 .filter(type -> type.getId().equals(createdType_2.getId())).findFirst();
@@ -202,22 +204,24 @@ public class ActionTypesIT {
     @Test(description = "Creates action types and then retrieves pages of them.")
     public void getActionTypes() throws ApiException {
         int numberOfTypesToCreate_1 = 28;
+        final int numberOfDefaults = 4;
 
-        //verify that only defaults are returned initially
-        pageThroughTypes(100, new LinkedList<>(), 2);
+        // verify that only defaults are returned initially
+        pageThroughTypes(100, new LinkedList<>(), numberOfDefaults);
 
         List<ExistingActionType> createdTypes_1 = createMultipleActionTypes(numberOfTypesToCreate_1);
 
-        //page through action types. Should find all that were created. Note adding 2 here to accommodate the default policy types that will come back.
+        // page through action types. Should find all that were created. Note adding 4 here to accommodate the default policy
+        // types that will come back.
         int pageSize = 5;
         //creating copy as items will be removed the list during page method.
         LinkedList<ExistingActionType> copyOfCreatedTypes = new LinkedList<>();
         copyOfCreatedTypes.addAll(createdTypes_1);
-        pageThroughTypes(pageSize, copyOfCreatedTypes, createdTypes_1.size() + 2);
+        pageThroughTypes(pageSize, copyOfCreatedTypes, createdTypes_1.size() + numberOfDefaults);
         //change page size to verify that parameter is respected
         pageSize = 30;
 
-        pageThroughTypes(pageSize, createdTypes_1, createdTypes_1.size()+2);
+        pageThroughTypes(pageSize, createdTypes_1, createdTypes_1.size()+numberOfDefaults);
     }
 
     private void pageThroughTypes(int pageSize, List<ExistingActionType> typesToFind,
@@ -265,7 +269,9 @@ public class ActionTypesIT {
                                               List<ExistingActionType> typesToFind){
         for(ExistingActionType retrievedType: retrievedTypes.getActionTypes()){
             if(retrievedType.getInternalName().equals("ExternalPolicy") ||
-                    retrievedType.getInternalName().equals("MetadataPolicy")){
+                    retrievedType.getInternalName().equals("MetadataPolicy")
+                    || retrievedType.getInternalName().equals("ChainedActionType")
+                    || retrievedType.getInternalName().equals("FieldMappingActionType")){
                 //default types in policy database, ignore these and continue
                 continue;
             }

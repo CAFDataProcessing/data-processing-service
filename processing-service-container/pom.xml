@@ -370,6 +370,11 @@
                                     <port>${processing.service.port}:8080</port>
                                 </ports>
                                 <env>
+                                    <CAF_PROCESSING_SERVICE_DATABASE_HOST>corepolicydb-postgres</CAF_PROCESSING_SERVICE_DATABASE_HOST>
+                                    <CAF_PROCESSING_SERVICE_DATABASE_NAME>${hibernate.databasename}</CAF_PROCESSING_SERVICE_DATABASE_NAME>
+                                    <CAF_PROCESSING_SERVICE_DATABASE_PASSWORD>${hibernate.password}</CAF_PROCESSING_SERVICE_DATABASE_PASSWORD>
+                                    <CAF_PROCESSING_SERVICE_DATABASE_PORT>5432</CAF_PROCESSING_SERVICE_DATABASE_PORT>
+                                    <CAF_PROCESSING_SERVICE_DATABASE_USERNAME>${hibernate.user}</CAF_PROCESSING_SERVICE_DATABASE_USERNAME>
                                     <CAF_PROCESSING_SERVICE_PORT>8080</CAF_PROCESSING_SERVICE_PORT>
                                     <CAF_PROCESSING_SERVICE_CACHE_DURATION>${processing.service.cacheduration}</CAF_PROCESSING_SERVICE_CACHE_DURATION>
                                     <CAF_PROCESSING_SERVICE_POLICY_API_HOST>policy-admin</CAF_PROCESSING_SERVICE_POLICY_API_HOST>
@@ -385,6 +390,7 @@
                                     <shutdown>500</shutdown>
                                 </wait>
                                 <links>
+                                    <link>corepolicydb-postgres</link>
                                     <link>policy-admin</link>
                                 </links>
                                 <log>

@@ -125,14 +125,17 @@ function deleteTenantConfigs(tenantId) {
     var deletionPromises = [];
     tenantConfigStoreModel.getTenantConfigs(tenantId)
             .then(function (tenantConfigs) {
-                var tenantConfigsMap = createMap(tenantConfigs);
-                for (var key in tenantConfigsMap) {
-                    deletionPromises.push(tenantConfigStoreModel.deleteTenantConfig(tenantId, key));
+                for (var tenantConfigsIndex = 0; tenantConfigsIndex < tenantConfigs.length; tenantConfigsIndex++) {
+                    var tenantConfigEntry = tenantConfigs[tenantConfigsIndex]
+                    deletionPromises.push(tenantConfigStoreModel.deleteTenantConfig(tenantId, tenantConfigEntry.key));
                 }
                 logger.debug("Successfully deleted tenant specific config for tenant " + tenantId);
+                return deletionPromises;
+            })
+            .all()
+            .then(function(){
                 tenantConfig.resolve();
             })
-            .all(deletionPromises)
             .fail(function (errorResponse) {
                 logger.debug("Unable to remove tenant specific config for tenant {}", tenantId);
                 tenantConfig.reject(errorResponse);
@@ -165,12 +168,8 @@ function getEffectiveTenantConfig(tenantId, key) {
                 if (errorResponse instanceof ApiError && errorResponse.type === apiErrorTypes.ITEM_NOT_FOUND) {
                     globalConfigStoreModel.getGlobalConfig(key)
                             .then(function (tenantDefaultConfig) {
-                                for (var key in tenantDefaultConfig) {
-                                    effectiveConfig.value = tenantDefaultConfig[key];
-                                    effectiveConfig.valueType = "DEFAULT";
-                                    // Breaking out after the first value, there should only be one property with this key.
-                                    break;
-                                }
+                                effectiveConfig.value = tenantDefaultConfig.default;
+                                effectiveConfig.valueType = "DEFAULT";
                                 tenantConfig.resolve(effectiveConfig);
                             })
                             .fail(function (errorResponse) {
@@ -200,14 +199,15 @@ function getEffectiveTenantConfigs(tenantId) {
     var configurations = [];
     tenantConfigStoreModel.getTenantConfigs(tenantId)
             .then(function (tenantConfigurations) {
-                var tenantConfigMap = createMap(tenantConfigurations);
-                for (var key in tenantConfigMap) {
-                    var config = {
-                        key: key,
-                        value: tenantConfigMap[key],
+                for(var tenantConfigurationIndex = 0; tenantConfigurationIndex < tenantConfigurations.length;
+                    tenantConfigurationIndex++) {
+                    var tenantConfigEntry = tenantConfigurations[tenantConfigurationIndex];
+                    var builtTenantConfig = {
+                        key: tenantConfigEntry.key,
+                        value: tenantConfigEntry.value,
                         valueType: "CUSTOM"
                     };
-                    configurations.push(config);
+                    configurations.push(builtTenantConfig);
                 }
                 tenantConfigCallComplete.resolve();
             })
@@ -227,17 +227,16 @@ function getEffectiveTenantConfigs(tenantId) {
             .then(function () {
                 return globalConfigStoreModel.getGlobalConfigs();
             })
-            .then(function (globalConfig) {
-                for (var item in globalConfig) {
-                    for (var key in globalConfig[item]) {
-                        if (containsKey(configurations, key) === false) {
-                            var config = {
-                                key: key,
-                                value: globalConfig[item][key],
-                                valueType: "DEFAULT"
-                            };
-                            configurations.push(config);
-                        }
+            .then(function (globalConfigs) {
+                for (var globalConfigIndex = 0; globalConfigIndex < globalConfigs.length; globalConfigIndex++) {
+                    var globalConfigEntry = globalConfigs[globalConfigIndex];
+                    if (containsKey(configurations, globalConfigEntry.key) === false) {
+                        var builtEffectiveConfig = {
+                            key: globalConfigEntry.key,
+                            value: globalConfigEntry.default,
+                            valueType: "DEFAULT"
+                        };
+                        configurations.push(builtEffectiveConfig);
                     }
                 }
                 tenantConfig.resolve(configurations);
@@ -292,13 +291,12 @@ function getTenantConfigs(tenantId) {
     tenantConfigStoreModel.getTenantConfigs(tenantId)
             .then(function (tenantConfigResult) {
                 for (var i = 0; i < tenantConfigResult.length; i++) {
-                    for (var key in tenantConfigResult[i]) {
-                        var config = {
-                            key: key,
-                            value: tenantConfigResult[i][key]
-                        };
-                        configurations.push(config);
-                    }
+                    var tenantConfigEntry = tenantConfigResult[i];
+                    var config = {
+                      key: tenantConfigEntry.key,
+                      value: tenantConfigEntry.value
+                    };
+                    configurations.push(config);
                 }
                 tenantConfig.resolve(configurations);
             })
@@ -308,22 +306,6 @@ function getTenantConfigs(tenantId) {
             })
             .done();
     return tenantConfig.promise;
-}
-
-/**
- * Convenience method to create a map of key value pairs.
- * 
- * @param {Aray} configArray
- * @returns {Map<String, String>}
- */
-function createMap(configArray) {
-    var map = {};
-    for (var i = 0; i < configArray.length; i++) {
-        for (var config in configArray[i]) {
-            map[config] = configArray[i][config];
-        }
-    }
-    return map;
 }
 
 /**

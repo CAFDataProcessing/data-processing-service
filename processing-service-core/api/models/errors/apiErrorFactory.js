@@ -19,8 +19,13 @@ var ApiError = require('../errors/apiError.js');
 var apiErrorTypes = require('../errors/apiErrorTypes.js');
 
 module.exports = {
+  createDatabaseUnknownError: createDatabaseUnknownError,
   createError: createError,
   createNotFoundError: createNotFoundError  
+}
+
+function createDatabaseUnknownError(message) {
+  return new ApiError(message, apiErrorTypes.DATABASE_UNKNOWN_ERROR);
 }
 
 function createNotFoundError(message){

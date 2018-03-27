@@ -22,8 +22,9 @@ import com.github.cafdataprocessing.processing.service.client.model.GlobalConfig
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfigs;
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfigsEntry;
 import com.github.cafdataprocessing.processing.service.tests.utils.ApiClientProvider;
-import org.junit.After;
 import static org.junit.Assert.*;
+
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -46,7 +47,7 @@ public class GlobalConfigIT
         globalConfigAPI = new GlobalConfigApi(apiClient);
     }
     
-    @After
+    @AfterMethod
     public void cleanUp() throws ApiException 
     {
         //delete all records after tests
@@ -76,10 +77,6 @@ public class GlobalConfigIT
         } catch (ApiException e) {
             assertTrue(e.getCode() == 400);
         }
-        
-        final GlobalConfig expectedConfig = buildGlobalConfig(TEST_VALUE_1, TEST_DESCRIPTION_1);
-        final GlobalConfig actualConfig = globalConfigAPI.getGlobalConfig(TEST_KEY_1);
-        assertEquals(actualConfig, expectedConfig);
     }
     
     @Test
