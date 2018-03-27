@@ -992,7 +992,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"value\": \"{\\\"pii.xml\\\": []}\"}"
+							"raw": "{\"pii.xml\": []}}"
 						},
 						"description": "Set tenant config for key \"ee.grammarMap\" to the value specified in the body."
 					},
