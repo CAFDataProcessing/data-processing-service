@@ -20,14 +20,6 @@ const Q = require('q');
 var logger = require('../../helpers/loggingHelper.js');
 const databaseConfig = require('../../helpers/processingDatabaseConfigHelper.js');
 
-function createConnectionString(host, port, databaseName, username, password) {
-    var connectionString = 'postgres://'+username ;
-    if(password!==null && password.length > 0) {
-        connectionString = connectionString + ':'+password;
-    }
-    return connectionString +'@'+host+':'+port+'/'+databaseName;
-}
-
 function healthCheck() {
     var deferredHealthCheck = Q.defer();
     databaseDefinition.authenticate()
@@ -42,9 +34,15 @@ function healthCheck() {
     return deferredHealthCheck.promise;
 }
 
-const databaseDefinition = new Sequelize(createConnectionString(databaseConfig.host,
-    databaseConfig.port, databaseConfig.name, databaseConfig.username, databaseConfig.password),
-    { logging: logger.debug, operatorsAliases: false });
+const databaseDefinition = new Sequelize(databaseConfig.name, databaseConfig.username, databaseConfig.password,
+    {
+        dialect: 'postgres',
+        host: databaseConfig.host,
+        logging: logger.debug,
+        operatorsAliases: false,
+        port: databaseConfig.port
+    }
+);
 
 healthCheck();
 
