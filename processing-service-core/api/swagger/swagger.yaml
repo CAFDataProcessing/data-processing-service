@@ -1212,7 +1212,7 @@ paths:
       tags:
         - Tenant Configuration
       summary: Retrieve effective tenant specific config.
-      description: Returns the effective tenant specific config for this key. That can be either a custom value specified for the tenant or the default.
+      description: Returns the effective tenant specific config for this tenant. This will be made up of a combination of tenant custom configurations and global configurations.
       operationId: getEffectiveTenantConfigs
       responses:
         200:

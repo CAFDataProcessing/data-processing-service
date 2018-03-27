@@ -975,6 +975,136 @@
 			]
 		},
 		{
+			"name": "Tenant Configs",
+			"description": "",
+			"item": [
+				{
+					"name": "Set Tenant Config",
+					"request": {
+						"url": "http://localhost:8080/data-processing-service/v1/tenants/1/config/ee.grammarMap",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"value\": \"{\\\"pii.xml\\\": []}\"}"
+						},
+						"description": "Set tenant config for key \"ee.grammarMap\" to the value specified in the body."
+					},
+					"response": []
+				},
+				{
+					"name": "Set Tenant Configs",
+					"request": {
+						"url": "http://localhost:8080/data-processing-service/v1/tenants/1/config",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n  {\r\n    \"key\": \"ee.grammarMap\",\r\n    \"value\": \"{\\\"pii.xml\\\": []}\"\r\n  },\r\n  {\r\n    \"key\": \"AnotherTenantSpecificConfig\",\r\n    \"value\": \"AnotherTenantSpecificConfigValue\"\r\n  }\r\n]"
+						},
+						"description": "Set tenant configs for a tenant."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tenant Config",
+					"request": {
+						"url": "http://localhost:8080/data-processing-service/v1/tenants/1/config/ee.grammarMap",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get tenant specific config value for the key \"ee.grammarMap\""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tenant Configs",
+					"request": {
+						"url": "http://localhost:8080/data-processing-service/v1/tenants/1/config",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get the list tenant specific configs."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Effective Tenant Config",
+					"request": {
+						"url": "http://localhost:8080/data-processing-service/v1/tenants/1/effectiveconfig/ee.grammarMap",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get the tenant's effective config for the key supplied in the url, in this example ee.grammarMap."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Effective Tenant Configs",
+					"request": {
+						"url": "http://localhost:8080/data-processing-service/v1/tenants/1/effectiveconfig",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get the list a tenant's effective configs. These are made up from custom tenant configs and the global configs that have not been overriden"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Tenant Config",
+					"request": {
+						"url": "http://localhost:8080/data-processing-service/v1/tenants/1/config/ee.grammarMap",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n  {\r\n    \"key\": \"ee.grammarMap\",\r\n    \"value\": \"{\\\"pii.xml\\\": []}\"\r\n  },\r\n  {\r\n    \"key\": \"AnotherTenantSpecificConfig\",\r\n    \"value\": \"AnotherTenantSpecificConfigValue\"\r\n  }\r\n]"
+						},
+						"description": "Delete tenant config for the supplied key against the supplied tenant."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Tenant Configs",
+					"request": {
+						"url": "http://localhost:8080/data-processing-service/v1/tenants/1/config",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n  {\r\n    \"key\": \"ee.grammarMap\",\r\n    \"value\": \"{\\\"pii.xml\\\": []}\"\r\n  },\r\n  {\r\n    \"key\": \"AnotherTenantSpecificConfig\",\r\n    \"value\": \"AnotherTenantSpecificConfigValue\"\r\n  }\r\n]"
+						},
+						"description": "Delete all tenant configs for the supplied tenant."
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "HealthCheck",
 			"request": {
 				"method": "GET",
