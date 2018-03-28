@@ -55,7 +55,7 @@ A sample **get** request url is as follows:
 
 A request issued to get all global configurations can return:
 
-- **200** status code - when successful and returns a string array of all global configurations or an empty array,
+- **200** status code - when successful and returns an array of all global configurations or an empty array,
 
 ## Deleting global configuration
 
