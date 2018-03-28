@@ -1,13 +1,13 @@
 {
 	"info": {
-		"name": "data-processing-service",
 		"_postman_id": "1f31cfa7-b14e-99dd-48ae-79fb792be88a",
-		"description": "",
+		"name": "data-processing-service",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "ActionTypes",
+			"description": null,
 			"item": [
 				{
 					"name": "CreateActionType",
@@ -148,6 +148,7 @@
 		},
 		{
 			"name": "Actions",
+			"description": null,
 			"item": [
 				{
 					"name": "CreateAction",
@@ -292,6 +293,7 @@
 		},
 		{
 			"name": "Conditions",
+			"description": null,
 			"item": [
 				{
 					"name": "CreateActionCondition",
@@ -599,6 +601,7 @@
 		},
 		{
 			"name": "Rules",
+			"description": null,
 			"item": [
 				{
 					"name": "CreateRule",
@@ -654,10 +657,7 @@
 								"value": "DefaultProjectId"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
+						"body": {},
 						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/42/rules/189"
 					},
 					"response": []
@@ -672,10 +672,7 @@
 								"value": "DefaultProjectId"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
+						"body": {},
 						"url": "http://127.0.0.1:8080/data-processing-service/v1/workflows/6/rules/125565655"
 					},
 					"response": []
@@ -755,6 +752,7 @@
 		},
 		{
 			"name": "Workflow",
+			"description": null,
 			"item": [
 				{
 					"name": "CreateWorkflow",
@@ -932,10 +930,9 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"default\": \"test_value_01\",\n  \"description\": \"test_description_01\"\n}"
+							"raw": "{\n  \"default\": \"test_value_01\",\n  \"description\": \"test_description_01\",\n  \"scope\" : \"TENANT\"\n}"
 						},
-						"url": "http://127.0.0.1:8080/data-processing-service/v1/globalConfig/test_key_01",
-						"description": ""
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/globalConfig/test_key_01"
 					},
 					"response": []
 				},
@@ -945,8 +942,7 @@
 						"method": "GET",
 						"header": [],
 						"body": {},
-						"url": "http://127.0.0.1:8080/data-processing-service/v1/globalConfig/test_key_01",
-						"description": ""
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/globalConfig/test_key_01"
 					},
 					"response": []
 				},
@@ -956,8 +952,7 @@
 						"method": "GET",
 						"header": [],
 						"body": {},
-						"url": "http://127.0.0.1:8080/data-processing-service/v1/globalConfig/",
-						"description": ""
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/globalConfigs/"
 					},
 					"response": []
 				},
@@ -967,8 +962,7 @@
 						"method": "DELETE",
 						"header": [],
 						"body": {},
-						"url": "http://127.0.0.1:8080/data-processing-service/v1/globalConfig/key_01",
-						"description": ""
+						"url": "http://127.0.0.1:8080/data-processing-service/v1/globalConfig/key_01"
 					},
 					"response": []
 				}

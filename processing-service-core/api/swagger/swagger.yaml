@@ -1244,15 +1244,20 @@ definitions:
             maxLength: 255
             description: The key of the global config.
   globalConfig:
-    type: object
-    required:
-      - default
-    properties:
-      default:
-        type: string
-        description: The value for the global config key.
-      description:
-        type: string
+    type: object  
+    required:  
+      - default  
+      - scope  
+    properties:  
+      default:  
+        type: string  
+        description: The value for the global config key.  
+      scope:  
+        type: string  
+        description: Defines the scope of use for the global config key. If the scope is set to 'TENANT' then it may be overridden by tenant configurations.
+        enum: ["TENANT"]
+      description:  
+        type: string  
         description: The description for the global config key.
   tenantConfigs:
     type: array

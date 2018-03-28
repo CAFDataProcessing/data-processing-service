@@ -18,7 +18,6 @@ package com.github.cafdataprocessing.processing.service.tests;
 import com.github.cafdataprocessing.processing.service.client.ApiClient;
 import com.github.cafdataprocessing.processing.service.client.ApiException;
 import com.github.cafdataprocessing.processing.service.client.api.TenantConfigurationApi;
-import com.github.cafdataprocessing.processing.service.client.model.EffectiveTenantConfig;
 import com.github.cafdataprocessing.processing.service.client.model.EffectiveTenantConfigValue;
 import com.github.cafdataprocessing.processing.service.client.model.EffectiveTenantConfigValue.ValueTypeEnum;
 import com.github.cafdataprocessing.processing.service.client.model.EffectiveTenantConfigs;
@@ -38,6 +37,7 @@ public class TenantConfigIT
     public static final TenantConfigurationApi TENANTS_API = new TenantConfigurationApi(API_CLIENT);
     private static final String TEST_DESCRIPTION_PREFIX = "test_description_";
     private static final String TEST_DESCRIPTION_1 = TEST_DESCRIPTION_PREFIX + "1";
+    private static final String TEST_SCOPE = "TENANT";
     private static final GlobalConfigApi GLOBAL_CONFIG_API = new GlobalConfigApi(API_CLIENT);
 
     @AfterMethod
@@ -238,6 +238,7 @@ public class TenantConfigIT
         final GlobalConfig config = new GlobalConfig();
         config.setDefault(value);
         config.setDescription(descrtiption);
+        config.setScope(TEST_SCOPE);
         return config;
     }
 }

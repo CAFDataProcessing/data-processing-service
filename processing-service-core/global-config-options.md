@@ -6,25 +6,28 @@ Parameters required to create or update global configuration:
 
 - **key** (max length = 255) - assigns the global configuration value,
 - **default** - global value to set for the key,
-- **description** (optional) - description for the global configuration.
+- **description** (optional) - description for the global configuration,
+- **scope** - defines the scope of use for the global config key. If the scope is set to 'TENANT' then it may be overridden by tenant configurations. Currently, scope value can be set only to "TENANT".
+
 
 A sample **put** request url is as follows:
 
 	http://<host>:<port>/data-processing-service/v1/globalConfig/{key}
 
-The body of the request would then contain the strings *default* and *description*.
+The body of the request would then contain the strings *default*, *description* and *scope*.
 
 **Sample body:**
 
 	{
 	  "default": "string",
-	  "description": "string"
+	  "description": "string",
+	  "scope": "TENANT"
 	}
 
 A request issued to create or update a global configuration can return:
 
 - **204** status code - when successful and returns no content,
-- **400** status code - when invalid key is used.
+- **400** status code - when invalid key is used or some of required properties is missing in the body of the request.
 
 ## Retrieving global configuration
 
@@ -38,7 +41,7 @@ A sample **get** request url is as follows:
 
 A request issued to get a global configuration can return:
 
-- **200** status code - when successful and returns the string value of the global configuration that exists for the provided key,
+- **200** status code - when successful and returns an object representation of the global configuration that exists for the provided key,
 - **400** status code - when invalid key is used,
 - **404** status code - when the key is not found.
 

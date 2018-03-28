@@ -92,7 +92,8 @@ function getGlobalConfig(key) {
             // caller is interested in rather than letting these DB implementation properties leak out of this layer
             var builtGlobalConfig = {
                 default: findResult.default,
-                description: findResult.description
+                description: findResult.description,
+                scope: "TENANT"
             };
             deferredGet.resolve(builtGlobalConfig);
         })
@@ -126,7 +127,8 @@ function getGlobalConfigs() {
                 var builtGlobalConfig = {
                     key: retrievedGlobalConfig.key,
                     default: retrievedGlobalConfig.default,
-                    description: retrievedGlobalConfig.description
+                    description: retrievedGlobalConfig.description,
+                    scope: "TENANT"
                 };
                 globalConfigsToReturn.push(builtGlobalConfig);
             }

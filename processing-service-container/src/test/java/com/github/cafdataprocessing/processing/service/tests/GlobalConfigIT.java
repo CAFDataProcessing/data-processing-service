@@ -19,11 +19,11 @@ import com.github.cafdataprocessing.processing.service.client.ApiClient;
 import com.github.cafdataprocessing.processing.service.client.ApiException;
 import com.github.cafdataprocessing.processing.service.client.api.GlobalConfigApi;
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfig;
+import com.github.cafdataprocessing.processing.service.client.model.GlobalConfig.ScopeEnum;
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfigs;
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfigsEntry;
 import com.github.cafdataprocessing.processing.service.tests.utils.ApiClientProvider;
 import static org.junit.Assert.*;
-
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -61,7 +61,7 @@ public class GlobalConfigIT
     {
         createConfigInStore("1");
         
-        final GlobalConfig expectedConfig = buildGlobalConfig(TEST_VALUE_1, TEST_DESCRIPTION_1);
+        final GlobalConfig expectedConfig = buildGlobalConfig("1");
         final GlobalConfig actualConfig = globalConfigAPI.getGlobalConfig(TEST_KEY_1);
         assertEquals(actualConfig, expectedConfig);
     }
@@ -69,13 +69,22 @@ public class GlobalConfigIT
     @Test
     public void createGlobalConfigWithKeyLongerThan255() throws ApiException 
     {
-        
         try {
             createConfigInStore("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
                 + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
                 + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         } catch (ApiException e) {
-            assertTrue(e.getCode() == 400);
+            assertEquals(e.getCode(), 400);
+        }
+    }
+    
+    @Test
+    public void createGlobalConfigWithoutScopeParameter() throws ApiException 
+    {
+        try {
+            globalConfigAPI.setGlobalConfig(TEST_KEY_PREFIX, buildGlobalConfig(TEST_VALUE_1, TEST_DESCRIPTION_1, null));
+        } catch (ApiException e) {
+            assertEquals(e.getCode(), 400);
         }
     }
     
@@ -84,14 +93,14 @@ public class GlobalConfigIT
     {
         createConfigInStore("1");
         
-        final GlobalConfig expectedConfig = buildGlobalConfig(TEST_VALUE_1, TEST_DESCRIPTION_1);
+        final GlobalConfig expectedConfig = buildGlobalConfig("1");
         GlobalConfig actualConfig = globalConfigAPI.getGlobalConfig(TEST_KEY_1);
         assertEquals(actualConfig, expectedConfig);
         
         // update only the value
         final String updatedValue = "updated_" + TEST_DESCRIPTION_1;
         
-        globalConfigAPI.setGlobalConfig(TEST_KEY_1, buildGlobalConfig(updatedValue, TEST_DESCRIPTION_1));
+        globalConfigAPI.setGlobalConfig(TEST_KEY_1, buildGlobalConfig(updatedValue, TEST_DESCRIPTION_1, ScopeEnum.TENANT));
         
         expectedConfig.setDefault(updatedValue);
         actualConfig = globalConfigAPI.getGlobalConfig(TEST_KEY_1);
@@ -155,14 +164,20 @@ public class GlobalConfigIT
     private void createConfigInStore(final String id) throws ApiException
     {
         final String testKey = TEST_KEY_PREFIX + id;
-        globalConfigAPI.setGlobalConfig(testKey, buildGlobalConfig(TEST_VALUE_PREFIX + id, TEST_DESCRIPTION_PREFIX + id));
+        globalConfigAPI.setGlobalConfig(testKey, buildGlobalConfig(id));
     }
     
-    private GlobalConfig buildGlobalConfig(String value, String descrtiption)
+    private GlobalConfig buildGlobalConfig(final String id)
+    {
+        return buildGlobalConfig(TEST_VALUE_PREFIX + id, TEST_DESCRIPTION_PREFIX + id, ScopeEnum.TENANT);
+    }
+    
+    private GlobalConfig buildGlobalConfig(final String value, final String descrtiption, final ScopeEnum scope)
     {
         final GlobalConfig config = new GlobalConfig();
         config.setDefault(value);
         config.setDescription(descrtiption);
+        config.setScope(scope);
         return config;
     }
     
