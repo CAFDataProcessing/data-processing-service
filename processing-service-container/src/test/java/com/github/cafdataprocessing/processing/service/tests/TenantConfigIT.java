@@ -26,6 +26,7 @@ import com.github.cafdataprocessing.processing.service.client.model.TenantConfig
 import com.github.cafdataprocessing.processing.service.client.model.TenantConfigs;
 import com.github.cafdataprocessing.processing.service.client.api.GlobalConfigApi;
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfig;
+import com.github.cafdataprocessing.processing.service.client.model.GlobalConfig.ScopeEnum;
 import com.github.cafdataprocessing.processing.service.tests.utils.ApiClientProvider;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -37,7 +38,7 @@ public class TenantConfigIT
     public static final TenantConfigurationApi TENANTS_API = new TenantConfigurationApi(API_CLIENT);
     private static final String TEST_DESCRIPTION_PREFIX = "test_description_";
     private static final String TEST_DESCRIPTION_1 = TEST_DESCRIPTION_PREFIX + "1";
-    private static final String TEST_SCOPE = "TENANT";
+    private static final ScopeEnum TEST_SCOPE = ScopeEnum.TENANT;
     private static final GlobalConfigApi GLOBAL_CONFIG_API = new GlobalConfigApi(API_CLIENT);
 
     @AfterMethod
