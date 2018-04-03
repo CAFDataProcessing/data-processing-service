@@ -100,6 +100,7 @@ function writeUpdatePromiseJSONResultToResponse(promise, response){
 function writeStringPromiseJSONResultToResponse(promise, response) {
     var statusCode = 200;
     promise.then(function (result) {
+        response.contentType('text/plain');
                 if (statusCode !== undefined) {
                     response.status(statusCode);
                 }

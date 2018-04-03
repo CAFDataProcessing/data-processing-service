@@ -34,6 +34,9 @@ function getStatusCodeFromApiErrorType(apiErrorType){
     case apiErrorTypes.ITEM_NOT_FOUND:
       statusCode = 404;
       break;
+    case apiErrorTypes.METHOD_NOT_ALLOWED:
+      statusCode = 405;
+      break;
     default:
       statusCode = 500;
   }

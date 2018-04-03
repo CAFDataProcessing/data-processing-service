@@ -19,6 +19,7 @@ var Q = require('q');
 var logger = require('../helpers/loggingHelper.js');
 var tenantConfigStoreModel = require("./db/tenantConfigStore.js");
 var globalConfigStoreModel = require("./db/globalConfigStore.js");
+var apiErrorFactory = require('./errors/apiErrorFactory.js');
 var apiErrorTypes = require('./errors/apiErrorTypes.js');
 var ApiError = require('./errors/apiError.js');
 
@@ -54,7 +55,9 @@ function setTenantConfig(tenantId, key, value) {
             })
             .fail(function (errorResponse) {
                 logger.debug("Unable to set configuration for key " + key + " for tenant " + tenantId + " with value " + value);
-                tenantConfig.reject(errorResponse);
+                if (errorResponse instanceof ApiError && errorResponse.type === apiErrorTypes.ITEM_NOT_FOUND) {
+                    tenantConfig.reject(apiErrorFactory.createMethodNotAllowedError("No global configuration was found for this key"));
+                }
             })
             .done();
     return tenantConfig.promise;
@@ -199,8 +202,8 @@ function getEffectiveTenantConfigs(tenantId) {
     var configurations = [];
     tenantConfigStoreModel.getTenantConfigs(tenantId)
             .then(function (tenantConfigurations) {
-                for(var tenantConfigurationIndex = 0; tenantConfigurationIndex < tenantConfigurations.length;
-                    tenantConfigurationIndex++) {
+                for (var tenantConfigurationIndex = 0; tenantConfigurationIndex < tenantConfigurations.length;
+                        tenantConfigurationIndex++) {
                     var tenantConfigEntry = tenantConfigurations[tenantConfigurationIndex];
                     var builtTenantConfig = {
                         key: tenantConfigEntry.key,
@@ -293,8 +296,8 @@ function getTenantConfigs(tenantId) {
                 for (var i = 0; i < tenantConfigResult.length; i++) {
                     var tenantConfigEntry = tenantConfigResult[i];
                     var config = {
-                      key: tenantConfigEntry.key,
-                      value: tenantConfigEntry.value
+                        key: tenantConfigEntry.key,
+                        value: tenantConfigEntry.value
                     };
                     configurations.push(config);
                 }

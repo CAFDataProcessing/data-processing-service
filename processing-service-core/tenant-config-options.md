@@ -3,7 +3,7 @@
 ## Setting tenant configurations
 
 A tenant can specify custom values for configuration that can then be used when creating their workflow.
-A tenant can only specify a custom configuration value for a configuration that already has a global counterpart. If a global configuration does not  already exist the service will return a 404 status code with its response to make the user aware that a global configuration must be created first.
+A tenant can only specify a custom configuration value for a configuration that already has a global counterpart. If a global configuration does not  already exist the service will return a 405 status code with its response to make the user aware that a global configuration must be created first.
 If a tenant does not have a custom configuration set for the key provided in this call then one will be created for the tenant, if one does exist then its value will be updated with the value provided.
 
 There are two ways that a tenant's custom configuration can be created, either per configuration, or in bulk.
