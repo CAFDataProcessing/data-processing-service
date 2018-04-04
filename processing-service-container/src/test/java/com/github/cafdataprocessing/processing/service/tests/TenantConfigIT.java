@@ -165,7 +165,7 @@ public class TenantConfigIT
         try {
             TENANTS_API.setTenantConfig(tenantId, configKey, configValue);
         } catch (final ApiException ex) {
-            Assert.assertEquals(ex.getCode(), 404);
+            Assert.assertEquals(ex.getCode(), 405);
         }
     }
 
