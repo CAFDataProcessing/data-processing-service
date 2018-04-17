@@ -15,24 +15,18 @@
  */
 //this fitting will wrap any numbers sent in request in BigNumber object wrappers so that no precision is lost in issuing request
 var JSONbig = require('json-bigint');
-var BigNumber = require('json-bigint/node_modules/bignumber.js');
+var BigNumber = require('bignumber.js');
 
 //override global JSON object with version that understands BigNumber and will convert it to correct string representation when issuing request.
 GLOBAL.JSON = JSONbig;
 
+
 module.exports = function create(fittingDef, pipes) {
   //the swagger validation logic uses z-schema to validate parameters. We need this validation to recognise BigNumber as type 'integer' so that the request is treated as valid after the JSON is parsed and the large numbers become BigNumber objects.
-  var utilCacheName = null;
-  for(var cacheEntry of Object.keys(require.cache)){
-    if(cacheEntry.indexOf('swagger-tools') != -1 && cacheEntry.indexOf('z-schema') != -1 && cacheEntry.indexOf('Utils.js') != -1){
-      utilCacheName = cacheEntry;
-      break;
-    }
-  }
-  if(utilCacheName==null){
+  var Utils = require('z-schema/src/Utils.js');
+  if(Utils==null){
     throw new Error("Error initialising handle64BitNumbers fitting. Could not find 'Utils' library in the cache of modules in order to override its behaviour for 64-bit integer support.");
   }
-  var Utils = require(utilCacheName);
   var originalWhatIs = Utils.whatIs;
   Utils.whatIs = function(what){
     //adding support for BigNumber to be detected as 'integer' type.

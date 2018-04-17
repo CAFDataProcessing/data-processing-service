@@ -31,7 +31,7 @@ Execute the maven install goal on the [processing-service-ui](../processing-serv
 For developers it is recommended to install and run the project with swagger-node directly. This is useful as when changes are made to files the server will be reloaded automatically.
 
 1. Check out the project.
-2. Install NodeJS and NPM (package manager for NodeJS). This project was written against NodeJS 4 and has not been tested with later versions so no assurances can be given regarding usnig the latest major version release of NodeJS.
+2. Install NodeJS and NPM (package manager for NodeJS). This project was written against NodeJS 6 and has not been tested with later versions so no assurances can be given regarding using the latest major version release of NodeJS.
 3. Install swagger-node
 
     ```

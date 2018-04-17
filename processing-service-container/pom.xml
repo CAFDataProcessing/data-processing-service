@@ -327,7 +327,7 @@
                             <alias>processing-service</alias>
                             <name>${caf.container.processing.service.name}</name>
                             <build>
-                                <from>cafinternal/prereleases:opensuse-nodejs4-1.0.0-SNAPSHOT</from>
+                                <from>cafinternal/prereleases:opensuse-nodejs6-1.0.0-SNAPSHOT</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>
