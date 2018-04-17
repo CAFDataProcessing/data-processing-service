@@ -970,7 +970,7 @@ paths:
         required: true
     put:
       tags:
-        - Global Config
+        - Global Configuration
       parameters:
         - name: globalConfig
           in: body
@@ -990,7 +990,7 @@ paths:
             $ref: "#/definitions/errorMessage"
     get:
       tags:
-        - Global Config
+        - Global Configuration
       summary: Returns the global config for the key.
       description: Returns the global config for the key.
       operationId: getGlobalConfig
@@ -1007,7 +1007,7 @@ paths:
           description: Indicates key was not found.
     delete:
       tags:
-        - Global Config
+        - Global Configuration
       summary: Deletes global config for the key.
       description: Deletes global config for the key.
       operationId: deleteGlobalConfig
@@ -1024,7 +1024,7 @@ paths:
     x-swagger-router-controller: globalConfig
     get:
       tags:
-        - Global Config
+        - Global Configuration
       summary: Returns a list of all global configs.
       description: Returns a list of all global configs.
       operationId: getGlobalConfigs
