@@ -17,7 +17,7 @@ package com.github.cafdataprocessing.processing.service.tests;
 
 import com.github.cafdataprocessing.processing.service.client.ApiClient;
 import com.github.cafdataprocessing.processing.service.client.ApiException;
-import com.github.cafdataprocessing.processing.service.client.api.GlobalConfigApi;
+import com.github.cafdataprocessing.processing.service.client.api.GlobalConfigurationApi;
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfig;
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfig.ScopeEnum;
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfigs;
@@ -38,21 +38,21 @@ public class GlobalConfigIT
     private static final String TEST_VALUE_1 = TEST_VALUE_PREFIX + "1";
     private static final String TEST_NOT_EXISTING_KEY = "test_not_existing_key";
     
-    private static GlobalConfigApi globalConfigAPI;
+    private static GlobalConfigurationApi globalConfigurationApi;
     
     @BeforeClass
     public static void setupClass() throws Exception 
     {
         final ApiClient apiClient = ApiClientProvider.getApiClient();
-        globalConfigAPI = new GlobalConfigApi(apiClient);
+        globalConfigurationApi = new GlobalConfigurationApi(apiClient);
     }
     
     @AfterMethod
     public void cleanUp() throws ApiException 
     {
         //delete all records after tests
-        for (GlobalConfigsEntry config : globalConfigAPI.getGlobalConfigs()) {
-            globalConfigAPI.deleteGlobalConfig(config.getKey());
+        for (GlobalConfigsEntry config : globalConfigurationApi.getGlobalConfigs()) {
+            globalConfigurationApi.deleteGlobalConfig(config.getKey());
         }
     }
     
@@ -62,7 +62,7 @@ public class GlobalConfigIT
         createConfigInStore("1");
         
         final GlobalConfig expectedConfig = buildGlobalConfig("1");
-        final GlobalConfig actualConfig = globalConfigAPI.getGlobalConfig(TEST_KEY_1);
+        final GlobalConfig actualConfig = globalConfigurationApi.getGlobalConfig(TEST_KEY_1);
         assertEquals(actualConfig, expectedConfig);
     }
     
@@ -82,7 +82,7 @@ public class GlobalConfigIT
     public void createGlobalConfigWithoutScopeParameter() throws ApiException 
     {
         try {
-            globalConfigAPI.setGlobalConfig(TEST_KEY_PREFIX, buildGlobalConfig(TEST_VALUE_1, TEST_DESCRIPTION_1, null));
+            globalConfigurationApi.setGlobalConfig(TEST_KEY_PREFIX, buildGlobalConfig(TEST_VALUE_1, TEST_DESCRIPTION_1, null));
         } catch (ApiException e) {
             assertEquals(e.getCode(), 400);
         }
@@ -94,16 +94,16 @@ public class GlobalConfigIT
         createConfigInStore("1");
         
         final GlobalConfig expectedConfig = buildGlobalConfig("1");
-        GlobalConfig actualConfig = globalConfigAPI.getGlobalConfig(TEST_KEY_1);
+        GlobalConfig actualConfig = globalConfigurationApi.getGlobalConfig(TEST_KEY_1);
         assertEquals(actualConfig, expectedConfig);
         
         // update only the value
         final String updatedValue = "updated_" + TEST_DESCRIPTION_1;
         
-        globalConfigAPI.setGlobalConfig(TEST_KEY_1, buildGlobalConfig(updatedValue, TEST_DESCRIPTION_1, ScopeEnum.TENANT));
+        globalConfigurationApi.setGlobalConfig(TEST_KEY_1, buildGlobalConfig(updatedValue, TEST_DESCRIPTION_1, ScopeEnum.TENANT));
         
         expectedConfig.setDefault(updatedValue);
-        actualConfig = globalConfigAPI.getGlobalConfig(TEST_KEY_1);
+        actualConfig = globalConfigurationApi.getGlobalConfig(TEST_KEY_1);
         assertEquals(actualConfig, expectedConfig);
     }
     
@@ -111,7 +111,7 @@ public class GlobalConfigIT
     public void getGlobalConfigOnNotExistingRecord() throws ApiException 
     {
         try {
-            globalConfigAPI.getGlobalConfig(TEST_NOT_EXISTING_KEY);
+            globalConfigurationApi.getGlobalConfig(TEST_NOT_EXISTING_KEY);
         } catch (ApiException e) {
             assertTrue(e.getCode() == 404);
         }
@@ -127,35 +127,35 @@ public class GlobalConfigIT
         expectedConfigs.add(buildGlobalConfigEntryWithID("1"));
         expectedConfigs.add(buildGlobalConfigEntryWithID("2"));
         
-        GlobalConfigs actualConfigs = globalConfigAPI.getGlobalConfigs();        
+        GlobalConfigs actualConfigs = globalConfigurationApi.getGlobalConfigs();        
         assertTrue(actualConfigs.equals(expectedConfigs));
     }
     
     @Test(description = "Test that an empty array is returned and not a null.")
     public void getAllGlobalConfigsForEmptyRecords() throws ApiException 
     {
-        assertTrue(globalConfigAPI.getGlobalConfigs().isEmpty());
+        assertTrue(globalConfigurationApi.getGlobalConfigs().isEmpty());
     }
     
     @Test
     public void deleteGlobalConfigOnExistingRecord() throws ApiException 
     {
         createConfigInStore("1");
-        globalConfigAPI.deleteGlobalConfig(TEST_KEY_1);
+        globalConfigurationApi.deleteGlobalConfig(TEST_KEY_1);
         
         final GlobalConfigsEntry deletedConfig = new GlobalConfigsEntry();
         deletedConfig.setKey(TEST_KEY_1);
         deletedConfig.setDefault(TEST_VALUE_1);
         deletedConfig.setDescription(TEST_DESCRIPTION_1);
         
-        assertTrue(!globalConfigAPI.getGlobalConfigs().contains(deletedConfig));
+        assertTrue(!globalConfigurationApi.getGlobalConfigs().contains(deletedConfig));
     }
     
     @Test
     public void deleteGlobalConfigOnNotExistingRecord() 
     {
         try {
-            globalConfigAPI.deleteGlobalConfig(TEST_NOT_EXISTING_KEY);
+            globalConfigurationApi.deleteGlobalConfig(TEST_NOT_EXISTING_KEY);
         } catch (ApiException e) {
             assertTrue(e.getCode() == 404);
         }
@@ -164,7 +164,7 @@ public class GlobalConfigIT
     private void createConfigInStore(final String id) throws ApiException
     {
         final String testKey = TEST_KEY_PREFIX + id;
-        globalConfigAPI.setGlobalConfig(testKey, buildGlobalConfig(id));
+        globalConfigurationApi.setGlobalConfig(testKey, buildGlobalConfig(id));
     }
     
     private GlobalConfig buildGlobalConfig(final String id)

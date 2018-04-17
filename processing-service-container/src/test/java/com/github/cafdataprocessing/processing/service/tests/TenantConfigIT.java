@@ -24,7 +24,7 @@ import com.github.cafdataprocessing.processing.service.client.model.EffectiveTen
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfigsEntry;
 import com.github.cafdataprocessing.processing.service.client.model.TenantConfig;
 import com.github.cafdataprocessing.processing.service.client.model.TenantConfigs;
-import com.github.cafdataprocessing.processing.service.client.api.GlobalConfigApi;
+import com.github.cafdataprocessing.processing.service.client.api.GlobalConfigurationApi;
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfig;
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfig.ScopeEnum;
 import com.github.cafdataprocessing.processing.service.tests.utils.ApiClientProvider;
@@ -39,7 +39,7 @@ public class TenantConfigIT
     private static final String TEST_DESCRIPTION_PREFIX = "test_description_";
     private static final String TEST_DESCRIPTION_1 = TEST_DESCRIPTION_PREFIX + "1";
     private static final ScopeEnum TEST_SCOPE = ScopeEnum.TENANT;
-    private static final GlobalConfigApi GLOBAL_CONFIG_API = new GlobalConfigApi(API_CLIENT);
+    private static final GlobalConfigurationApi GLOBAL_CONFIG_API = new GlobalConfigurationApi(API_CLIENT);
 
     @AfterMethod
     public void cleanUp() throws ApiException
