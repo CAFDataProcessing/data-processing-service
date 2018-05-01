@@ -37,7 +37,7 @@ function setGlobalConfig(req, res, next) {
 
 function getGlobalConfig(req, res, next) {
   var key = req.swagger.params['key'].value;
-  logger.info('Retrieving global configuration using parameters: '+ JSON.stringify(key));
+  logger.info('Retrieving global configuration using parameters: '+ key);
   var getPromise = globalConfigModel.getGlobalConfig(key);
   httpHelper.writePromiseJSONResultToResponse(getPromise, res);
 }
@@ -50,7 +50,7 @@ function getGlobalConfigs(req, res, next) {
 
 function deleteGlobalConfig(req, res, next) {
   var key = req.swagger.params['key'].value;
-  logger.info('Deleting global configuration using parameters: '+ JSON.stringify(key));
+  logger.info('Deleting global configuration using parameters: '+ key);
   var deletePromise = globalConfigModel.deleteGlobalConfig(key);
   httpHelper.writeDeletePromiseJSONResultToResponse(deletePromise, res);
 }

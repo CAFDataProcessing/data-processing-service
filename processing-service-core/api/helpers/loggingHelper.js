@@ -54,7 +54,7 @@ var logToConsole = function(logLevel, logMessage){
   else{
     logOutputMessage += logMessage;
   }
-  console.log(logOutputMessage);
+  console.log(logOutputMessage.replace(new RegExp("\\n", 'g'), ""));
 };
 function logDebug(message){
   logToConsole("DEBUG", message);
