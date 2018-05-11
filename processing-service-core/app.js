@@ -104,10 +104,17 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
           outputErrorMessage += ". "+ validationError.message;
         }
       }
+      //if it was a syntax error e.g. malformed JSON then output this in message
+      else if(err.name === 'SyntaxError') {
+        outputErrorMessage = "Syntax Error: " + outputErrorMessage;
+      }
     }     
     logErrorToConsole(err);
     // Return a JSON representation of #/definitions/ErrorResponse
     res.setHeader('Content-Type', 'application/json');
+    if(err.status !== undefined && err.status !== null) {
+      res.status(err.status)
+    }
     res.json({message: outputErrorMessage});
   });
   
