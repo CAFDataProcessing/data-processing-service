@@ -36,6 +36,7 @@
         <hibernate.password>root</hibernate.password>
         <hibernate.databasename>corepolicy</hibernate.databasename>
 
+        <processing.service.admin.url>http://${docker.host.address}:${processing.service.admin.port}</processing.service.admin.url>
         <processing.service.url>http://${docker.host.address}:${processing.service.port}/data-processing-service/v1</processing.service.url>
         <processing.service.cacheduration>600</processing.service.cacheduration>
         <processing.service.policyapi.entrypath>/corepolicy/</processing.service.policyapi.entrypath>
@@ -48,6 +49,7 @@
                 <policyapi.service.port>9000</policyapi.service.port>
                 <postgres.db.port>5432</postgres.db.port>
                 <processing.service.port>9280</processing.service.port>
+                <processing.service.admin.port>9281</processing.service.admin.port>
             </properties>
         </profile>
         <!-- profile to optionally disable build of a container, you can enable this profile, and run your tests against
@@ -159,6 +161,7 @@
                     </systemPropertyVariables>
                     <environmentVariables>
                         <processing.webservice.host>http://${docker.host.address}:${processing.service.port}</processing.webservice.host>
+                        <PROCESSING_SERVICE_HEALTHCHECK_URL>${processing.service.admin.url}/healthcheck</PROCESSING_SERVICE_HEALTHCHECK_URL>
                     </environmentVariables>
                 </configuration>
             </plugin>
@@ -337,6 +340,7 @@
                                 <optimise>true</optimise>
                                 <ports>
                                     <port>8080</port>
+                                    <port>8081</port>
                                 </ports>
                                 <env>
                                     <NODE_ENV>production</NODE_ENV>
@@ -368,6 +372,7 @@
                             <run>
                                 <ports>
                                     <port>${processing.service.port}:8080</port>
+                                    <port>${processing.service.admin.port}:8081</port>
                                 </ports>
                                 <env>
                                     <CAF_PROCESSING_SERVICE_DATABASE_HOST>corepolicydb-postgres</CAF_PROCESSING_SERVICE_DATABASE_HOST>
@@ -376,6 +381,7 @@
                                     <CAF_PROCESSING_SERVICE_DATABASE_PORT>5432</CAF_PROCESSING_SERVICE_DATABASE_PORT>
                                     <CAF_PROCESSING_SERVICE_DATABASE_USERNAME>${hibernate.user}</CAF_PROCESSING_SERVICE_DATABASE_USERNAME>
                                     <CAF_PROCESSING_SERVICE_PORT>8080</CAF_PROCESSING_SERVICE_PORT>
+                                    <CAF_PROCESSING_SERVICE_ADMIN_PORT>8081</CAF_PROCESSING_SERVICE_ADMIN_PORT>
                                     <CAF_PROCESSING_SERVICE_CACHE_DURATION>${processing.service.cacheduration}</CAF_PROCESSING_SERVICE_CACHE_DURATION>
                                     <CAF_PROCESSING_SERVICE_POLICY_API_HOST>policy-admin</CAF_PROCESSING_SERVICE_POLICY_API_HOST>
                                     <CAF_PROCESSING_SERVICE_POLICY_API_PORT>8080</CAF_PROCESSING_SERVICE_POLICY_API_PORT>
@@ -383,7 +389,7 @@
                                 </env>
                                 <wait>
                                     <http>
-                                        <url>${processing.service.url}/healthcheck</url>
+                                        <url>${processing.service.admin.url}/healthcheck</url>
                                         <method>GET</method>
                                     </http>
                                     <time>40000</time>

@@ -18,11 +18,13 @@ var logger = require('./loggingHelper.js');
 
 //environment variables that config will be pulled from
 var dataProcessingServicePort = "CAF_PROCESSING_SERVICE_PORT";
+var dataProcessingServiceAdminPort = "CAF_PROCESSING_SERVICE_ADMIN_PORT";
 var dataProcessingServiceCacheDuration = "CAF_PROCESSING_SERVICE_CACHE_DURATION";
 
 var dataProcessingServiceConfig = {
   cacheDuration: 600,
-  port: 8080
+  port: 8080,
+  adminPort: 8081
 };
 
 //Get API Port
@@ -30,9 +32,16 @@ var portEnv = process.env[dataProcessingServicePort];
 if(portEnv!==null && portEnv!==undefined){
   dataProcessingServiceConfig.port = portEnv;
 }
+
+var portAdminEnv = process.env[dataProcessingServiceAdminPort];
+if(portAdminEnv!==null && portAdminEnv!==undefined){
+  dataProcessingServiceConfig.adminPort = portAdminEnv;
+}
+
 var cacheDurationEnv = process.env[dataProcessingServiceCacheDuration];
 if(cacheDurationEnv!==null && cacheDurationEnv!==undefined){
   dataProcessingServiceConfig.cacheDuration = cacheDurationEnv;
 }
+
 module.exports = dataProcessingServiceConfig;
 logger.debug(function(){return "Service config is: "+JSON.stringify(dataProcessingServiceConfig);});

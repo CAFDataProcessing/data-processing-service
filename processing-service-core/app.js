@@ -16,16 +16,19 @@
 'use strict';
 var SwaggerExpress = require('swagger-express-mw');
 var app = require('express')();
+var adminApp = require('express')();
 var logger = require('./api/helpers/loggingHelper.js');
 var appConfig = require('./api/helpers/dataProcessingServiceConfigHelper.js');
 var swaggerHelper = require('./api/helpers/swaggerHelper.js');
 var requestProcessing = require('./api/libs/requestProcessing.js');
+var adminController = require('./api/controllers/admin.js');
 
 module.exports = app; // for testing
 
 var config = {
   appRoot: __dirname, // required config
-  serverPort: appConfig.port
+  serverPort: appConfig.port,
+  serverAdminPort: appConfig.adminPort
 };
 
 //TODO move this out of main app to a utility based area
@@ -120,4 +123,9 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   
   app.listen(config.serverPort);
   logger.info('Service listening on port: '+config.serverPort);
+  
+  //create healtcheck app
+  adminApp.use('/healthcheck', adminController.healthCheck);
+  adminApp.listen(config.serverAdminPort);
+  logger.info('Service listening on port: ' + config.serverAdminPort);
 });
