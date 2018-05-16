@@ -87,6 +87,7 @@
         <dockerDataProcessingOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerDataProcessingOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
         <workerWorkflowVersion>1.0.0-SNAPSHOT</workerWorkflowVersion>
+        <gitRepo>https://github.com/CAFDataProcessing/data-processing-service</gitRepo>
     </properties>
 
     <dependencyManagement>
@@ -165,6 +166,6 @@
     <scm>
         <connection>scm:git:https://github.com/CAFDataProcessing/data-processing-service.git</connection>
         <developerConnection>scm:git:https://github.com/CAFDataProcessing/data-processing-service.git</developerConnection>
-        <url>https://github.com/CAFDataProcessing/data-processing-service.git</url>
+        <url>${gitRepo}</url>
     </scm>
 </project>
