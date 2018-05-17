@@ -41,7 +41,7 @@ module.exports.healthCheck = function(onCompleteDeferred){
 
   var healthCheckResult = {
     status: unHealthy,
-    dependencies: [policyApiStatus, databaseStatus]
+    dependencies: [databaseStatus, policyApiStatus]
   }
 
   var policyHealthCheckDeferred = Q.defer();
