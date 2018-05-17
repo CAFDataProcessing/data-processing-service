@@ -56,3 +56,5 @@ processing-service-contract/src/main/resources/com/github/cafdataprocessing/proc
 processing-service-core/ui
 /target/
 /processing-service-core/nbproject/
+processing-service-core/.vscode/launch.json
+processing-service-core/package-lock.json

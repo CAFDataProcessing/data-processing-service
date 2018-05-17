@@ -44,7 +44,7 @@ const databaseDefinition = new Sequelize(databaseConfig.name, databaseConfig.use
     }
 );
 
-healthCheck();
+//healthCheck();
 
 module.exports = {
     definition: databaseDefinition,

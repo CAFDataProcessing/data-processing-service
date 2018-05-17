@@ -15,7 +15,8 @@
     "q": "^1.4.1",
     "querystring": "^0.2.0",
     "sequelize": "^4.36.1",
-    "swagger-express-mw": "^0.1.0"
+    "swagger-express-mw": "^0.1.0",
+    "request": "2.81.0"
   },
   "devDependencies": {
     "mocha": "^2.5.3",

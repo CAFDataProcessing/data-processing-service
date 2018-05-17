@@ -15,74 +15,107 @@
  */
 //administrative functions that give detail about the data processing service.
 var Q = require('q');
-var util = require('util');
-var databaseConnection = require('../models/db/databaseConnection.js')
+var policyConfig = require('../helpers/policyConfigHelper.js').policyConfig;
 var packageJson = require('../../package.json');
-var policyHttpHelper = require('../helpers/policyHttpHelper.js');
 var loggingConfigHelper = require('../helpers/loggingConfigHelper.js');
+var request = require('request');
+var logger = require('../helpers/loggingHelper.js');
+
+const Sequelize = require('sequelize');
+const databaseConfig = require('../helpers/processingDatabaseConfigHelper.js');
 
 const unHealthy = 'UNHEALTHY';
 const healthy = 'HEALTHY';
 
-//Queries the health of the service. Check any external services relied on also. Returns a promise.
-module.exports.healthCheck = function(){
-  var deferredHealthCheckRequest = Q.defer();
-  var dependantStatuses = [];
-  var overallServiceStatus = healthy;
+module.exports.healthCheck = function(onCompleteDeferred){
 
-  //get status of Policy API
-  var policyApiHealthStatusName = 'POLICY_API';
-  var policyHealthCheckComplete = setupHealthCheckPromise(policyHttpHelper.healthCheck(),
-      dependantStatuses, policyApiHealthStatusName);
+  var policyApiStatus = {
+    name: 'POLICY_API',
+    status: unHealthy
+  }; 
 
-  // get status of database connection
-  var databaseHealthStatusName = "PROCESSING_DATABASE";
-  var databaseHealthCheckComplete = setupHealthCheckPromise(databaseConnection.healthCheck(),
-      dependantStatuses, databaseHealthStatusName);
+  var databaseStatus = {
+    name: 'PROCESSING_DATABASE',
+    status: unHealthy
+  };
 
-  Q.all([policyHealthCheckComplete, databaseHealthCheckComplete])
-  .then(function(){
-    //check if dependencies were success or failure
-    if(overallServiceStatus===unHealthy){
-      deferredHealthCheckRequest.reject({
-        status: unHealthy,
-        dependencies: dependantStatuses
-      });
+  var healthCheckResult = {
+    status: unHealthy,
+    dependencies: [policyApiStatus, databaseStatus]
+  }
+
+  var policyHealthCheckDeferred = Q.defer();
+  policyHealthCheckDeferred.promise.then(function(response){
+    var healthStatusCode = (response.statusCode >= 200 && response.statusCode <=299);
+    policyApiStatus.status =  healthStatusCode ? healthy : unHealthy;
+
+    if(!healthStatusCode){
+      policyApiStatus.message = response.statusMessage;
     }
-    else{
-      deferredHealthCheckRequest.resolve({
-        status: healthy,
-        dependencies: dependantStatuses
-      });
-    }    
-  }).done();
-    
-  return deferredHealthCheckRequest.promise;
+  })
+  .fail(function(error){
+    policyApiStatus.message = error;
+  });
+
+  makePolicyHealthCheckRequest(policyHealthCheckDeferred);
+
+  var databaseHealthCheckDeferred = Q.defer();
+  databaseHealthCheckDeferred.promise.then(function(dbHealthResult){
+    databaseStatus.status = dbHealthResult.status;
+    databaseStatus.message = dbHealthResult.message;
+  })
+  .fail(function(error){
+    databaseStatus.message = error;
+  });
+
+  makeDatabaseHealthCheckRequest(databaseHealthCheckDeferred);
+
+  Q.all([policyHealthCheckDeferred.promise, databaseHealthCheckDeferred.promise]).then(function(){
+    healthCheckResult.status = policyApiStatus.status===healthy && databaseStatus.status===healthy ? healthy : unHealthy;
+    onCompleteDeferred.resolve(healthCheckResult);
+  }).fail(function(error){
+    onCompleteDeferred.reject(error);
+  });
 };
 
-function setupHealthCheckPromise(healthRequestPromise, dependantStatuses, serviceName) {
-  var deferredHealthRequestCompletion = Q.defer();
-  healthRequestPromise.then(function(result){
-    if(result !== true){
-      throw "Health Check did not return 'true'. Returned " + result;
+function makePolicyHealthCheckRequest(policyHealthCheckDeferred){
+  var policyHealthCheckRequest = request.get({
+    baseUrl: 'http://' + policyConfig.policyAPIHost + ':' + policyConfig.policyAPIPort + policyConfig.policyAPIEntryPath,
+    uri: 'healthcheck',
+    qs: {
+        project_id: 'healthcheck'
     }
-    dependantStatuses.push({
-      name: serviceName,
-      status: healthy
-    });
-    deferredHealthRequestCompletion.resolve({});
-  })
-  .fail(function(errorResponse){
-    dependantStatuses.push({
-      name: serviceName,
-      message: typeof(errorResponse) === 'string' ? errorResponse : util.inspect(errorResponse),
-      status: unHealthy
-    });
-    overallServiceStatus = unHealthy;
-    deferredHealthRequestCompletion.resolve({});
-  }).done();
+  }, function (error, response, body) {
+    if(error){
+      policyHealthCheckDeferred.reject(error);
+    }
+    else {
+      policyHealthCheckDeferred.resolve(response);
+    }
+  });
+}
 
-  return deferredHealthRequestCompletion.promise;
+function makeDatabaseHealthCheckRequest(databaseHealthCheckDeferred){
+
+  var databaseDefinition = new Sequelize(databaseConfig.name, databaseConfig.username, databaseConfig.password,
+    {
+        dialect: 'postgres',
+        host: databaseConfig.host,
+        logging: logger.debug,
+        operatorsAliases: false,
+        port: databaseConfig.port
+    }
+  );
+
+  databaseDefinition.authenticate()
+  .then(function() {
+    databaseHealthCheckDeferred.resolve({status: healthy});
+  })
+  .catch(function(err) {
+      logger.error('Unable to connect to the database: ' + err);
+      databaseHealthCheckDeferred.resolve({status: unHealthy, message: 'Unable to connect to the database'});
+  });
+
 }
 
 //Retrieves the version of this data-processing-service. In future may return the version of any external services used that provide that information.

@@ -17,6 +17,7 @@ var logger = require('../helpers/loggingHelper.js');
 var adminLib = require('../libs/admin.js');
 var errorResponseHelper = require('../models/errorResponse.js');
 var httpHelper = require('../helpers/httpPromiseHelper.js');
+var Q = require('q');
 
 module.exports = {
   getVersion: getVersion,
@@ -30,8 +31,17 @@ function getVersion(req, res, next){
 }
 
 function healthCheck(req, res, next){
-  var healthPromise = adminLib.healthCheck();
-  httpHelper.writePromiseJSONResultToResponse(healthPromise, res);
+  var onCompleteDeferred = Q.defer();
+
+  onCompleteDeferred.promise.then(function(result){
+    res.status(result.status==='UNHEALTHY' ? 500 : 200);
+    res.json(result)
+  }).fail(function(error){
+    res.status(500);
+    res.json(error)
+  });
+
+  adminLib.healthCheck(onCompleteDeferred);
 }
 
 //TODO expose on contract
