@@ -351,7 +351,7 @@ When passed as the WorkflowId on a task to the workflow worker, this workflow sp
 
 #### Message Format
 
-The format of the input task data is described in detail in the GitHub Repository for the Document Worker Framework [here](https://github.com/CAFDataProcessing/worker-document/tree/v3.3.0/worker-document-shared#composite-document-handling) under 'Composite Document Handling'. The workflow worker specific properties are described [here](https://github.com/CAFDataProcessing/worker-workflow/tree/develop/worker-workflow-container#input-task-custom-data). In the context of data processing the key properties to highlight are;
+The format of the input task data is described in detail in the GitHub Repository for the Document Worker Framework [here](https://github.com/CAFDataProcessing/worker-document/tree/v4.0.0/worker-document-shared#composite-document-handling) under 'Composite Document Handling'. The workflow worker specific properties are described [here](https://github.com/CAFDataProcessing/worker-workflow/tree/develop/worker-workflow-container#input-task-custom-data). In the context of data processing the key properties to highlight are;
 
 * workflowId, which should be set to the ID of the workflow that document should be processed against.
 * projectId, which should be set to the ID of the tenant that was used in creating the workflow.
