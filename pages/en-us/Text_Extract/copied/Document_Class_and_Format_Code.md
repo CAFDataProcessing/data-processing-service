@@ -5,18 +5,17 @@ title: Document Class & Format Code Reference
 
 ## Document Class & Format Code Reference
 
-This page serves as a reference for the DOC_FORMAT_CODE & DOC_CLASS_CODE fields extracted by the Text Extract Worker. This information is taken from the Keyview 10.24 Filter SDK Java Programming Guide.
+This page serves as a reference for the DOC_FORMAT_CODE & DOC_CLASS_CODE fields extracted by the Text Extract Worker. This information is taken from the Keyview 11 Filter SDK Java Programming Guide.
 
 Note: This is not a complete list of file extensions. KeyView returns format codes based on file
 content, which cannot always be predicted from the file extension. Some file extensions may also
 be associated with multiple format numbers.
 
 ### Document Class Codes 
-
 #### (DOC\_CLASS\_CODE)
 
 | Code | Description |
-| ------ | ------------- |
+|------|-------------|
 | -1 | Error Occurred |
 | 0 | No format found |
 | 1 | Word Processor Document |
@@ -514,9 +513,9 @@ be associated with multiple format numbers.
 | MS_Visio_2013_Fmt | 467 | Microsoft Visio 2013 | VSDX, VSTX, VSSX |
 | MS_Visio_2013_Macro_Fmt | 468 | Microsoft Visio 2013 macro | VSDM, VSTM, VSSM |
 | ICHITARO_Compr_Fmt | 469 | ICHITARO Compressed format | JTDC |
-| IWWP13_Fmt | 470 | Apple iWork 2013 Pages format |   |
-| IWSS13_Fmt | 471 | Apple iWork 2013 Numbers format |   |
-| IWPG13_Fmt | 472 | Apple iWork 2013 Keynote format |   |
+| IWWP13_Fmt | 470 | Apple iWork 2013 Pages format | IWA  |
+| IWSS13_Fmt | 471 | Apple iWork 2013 Numbers format | IWA |
+| IWPG13_Fmt | 472 | Apple iWork 2013 Keynote format | IWA |
 | XZ_Fmt | 473 | XZ archive format | XZ |
 | Sony_WAVE64_Fmt | 474 | Sony Wave64 format | W64 |
 | Conifer_WAVPACK_Fmt | 475 | Conifer Wavpack format | WV |
@@ -525,4 +524,8 @@ be associated with multiple format numbers.
 | MS_Visio_2013_Stencil_Macro_Fmt | 478 | MS Visio 2013 stencil Macro format | VSSM |
 | MS_Visio_2013_Template_Fmt | 479 | MS Visio 2013 template format | VSTX |
 | MS_Visio_2013_Template_Macro_Fmt | 480 | MS Visio 2013 template Macro format | VSTM |
+| Borland_Reflex_2_Fmt | 481 | Borland Reflex 2 format | R2D |
+| PKCS_12_Fmt | 482 | PKCS #12 (p12) format | P12, PFX |
+| B1_Fmt | 483 | B1 format | B1 |
+| ISO_IEC_MPEG_4_Fmt | 484 | ISO/IEC MPEG-4 format | MP4 |
 

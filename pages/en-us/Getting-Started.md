@@ -15,9 +15,7 @@ banner:
 
 ## Deploying Data Processing
 
-The recommended method for deploying data processing components is through a [Docker Compose](https://docs.docker.com/compose/) file. Two compose files are available;
-
-* The open source Data Processing compose file [here](https://github.com/CAFDataProcessing/data-processing-service-deploy) uses the open source data processing components e.g. Binary Hash, Markup, Boilerplate, Language Detection.
+The recommended method for deploying data processing components is through a [Docker Compose](https://docs.docker.com/compose/) file.
 
 * A compose file for Enterprise Edition to deploy the full suite of data processing services is available [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy). This includes actions that require a license such as Metadata Extraction, Speech to Text, Entity Extraction and more. Details on obtaining a license for Enterprise Edition can be found on the [Overview](./Overview) page.
 
@@ -81,7 +79,7 @@ docker-compose -f docker-compose.yml -f docker-compose-debug.yml up -d
 
 ### Submitting Files
 
-The compose file will by default look in a directory './input', relative to the compose file directory, for files that should be submitted to data processing. The results of data processing will by default be output to a folder './output', also relative to the compose file location. These locations can be controlled via the `INPUT_DOCUMENTS_LOCAL_FOLDER` and `OUTPUT_DOCUMENTS_LOCAL_FOLDER` environment variables. Details on how the files are output can be found in the repository for the task-receiver service [here](https://github.com/CAFDataProcessing/data-processing-service/tree/develop/utils/data-processing-task-receiver#task-message-output). Any files present in the input directory on launch of the services will be submitted and any files added to the folder later will also be submitted.
+The compose file will by default look in a directory './input', relative to the compose file directory, for files that should be submitted to data processing. The input location can be controlled via the `INPUT_DOCUMENTS_LOCAL_FOLDER` environment variable. The results of data processing will by default be indexed into an Elasticsearch instance stood up by the compose file. If a failure occurs during the generation of the workflow script by the workflow worker, the failure will be output to a folder './output' relative to the compose file directory. Any files present in the input directory on launch of the services will be submitted and any files added to the folder later will also be submitted.
 
 ### Default Workflow
 
@@ -90,22 +88,20 @@ The default workflow created by the task-submitter service in the compose file p
 - extract metadata and content of the file using the Extract Worker.
 - if the file is an image then extract text from the image using the OCR Worker.
 - if the file is an audio file then convert the audio to a text representation using the Speech Worker.
-- perform field normalisation operations on the file using the Markup Worker with differing behaviour for emails and non-emails.
+- extract hashes and other data based on metadata of the file using the Family Hashing Worker with differing behaviour for emails and non-emails.
 - extract metadata and content of any child documents inside the file using the Extract Worker
 - detect the languages used in the file using the Language Detect Worker.
 - scan the file content for personally identifiable information using the Entity Extract Worker.
 - scan the file content for matches to a selection of expressions using the Boilerplate Worker.
-- check the file metadata to see if the file falls into the defined classifications using the Classification Worker.
-- output the processed file metadata
+- index the processed file metadata
 
 On launch the task-submitter will create this default workflow and begin submitting task messages using the ID of the created workflow. If the workflow that should be used already exists then the environment variable `CAF_TASKSUBMITTER_WORKFLOW_ID` should be set on the taskSubmitter service and that workflow ID will be used on messages instead.
 
 #### Overriding Default Base Data Input Files
 
-The input files used by the task-submitter to define the processing workflow, boilerplate expressions and classification workflow for use on submitted messages can be seen in the task-submitter-container folder of the repository [here](https://github.com/CAFDataProcessing/data-processing-service/tree/develop/utils/data-processing-task-submitter-container/base-data). These files can be modified and passed to the task-submitter service through the base data input environment variables;
+The input files used by the task-submitter to define the processing workflow and boilerplate expressions for use on submitted messages can be seen in the internal deploy repository [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/tree/deploy/end-to-end-workflow). These files can be modified and passed to the task-submitter service through the base data input environment variables;
 
 * `CAF_TASKSUBMITTER_BASEDATA_BOILERPLATE_INPUT_FILE`
-* `CAF_TASKSUBMITTER_BASEDATA_CLASSIFICATION_INPUT_FILE`
 * `CAF_TASKSUBMITTER_BASEDATA_WORKFLOW_INPUT_FILE`
 
 Add the appropriate environment variable to the taskSubmitter service in the compose file with its value pointing to the location of the JSON file to read the base data definition from. The input file should be located in a volume that the container will be able to access.
@@ -143,17 +139,17 @@ In the default workflow, the main processing actions that build up metadata abou
 3. Enter the ID of the default workflow in the workflowId field.
 4. Click Try it out. The result output should return the rules currently under the workflow. One of them should be 'Metadata Processing', make note of its ID.
 
-![Get Meta Processing Rule ID in Data Processing API Swagger UI](../../assets/img/Getting_Started/add_action_default_workflow_2.png)
+![Get Processing Rule ID in Data Processing API Swagger UI](../../assets/img/Getting_Started/add_action_default_workflow_2.png)
 
 ##### Get the Action Type ID
 
-When we add the action to the processing rule we will need to specify an action type ID that indicates how to execute the action. For this example the action type we will use is the DocumentWorkerHandler type which will be included by default with the compose file services. Use the 'Get Action Types' call to retrieve the current action types in the system.
+When we add the action to the processing rule we will need to specify an action type ID that indicates how to execute the action. For this example the action type we will use is the `ChainedActionType` type which will be included by default with the compose file services. Use the 'Get Action Types' call to retrieve the current action types in the system.
 
 1. Under Action Types, expand the GET operation /actionTypes/.
 2. Enter a value in the project_id field, the default value used by the compose file is 'Default'.
-3. Click Try it out. The result output should return the action types. Search the results for the action type with 'internal_name' set to 'DocumentWorkerHandler' and note the ID.
+3. Click Try it out. The result output should return the action types. Search the results for the action type with 'internal_name' set to 'ChainedActionType' and note the ID.
 
-![Get Document Worker Action Type ID in Data Processing API Swagger UI](../../assets/img/Getting_Started/add_action_default_workflow_3.png)
+![Get Chained Action Type ID in Data Processing API Swagger UI](../../assets/img/Getting_Started/add_action_default_workflow_3.png)
 
 ##### Creating the Action
 
@@ -177,7 +173,7 @@ The definition of the action we will send is shown below;
 }
 ```
 
-* The typeId is set to the DocumentWorkerHandler action type ID.
+* The typeId is set to the `ChainedActionType` action type ID.
 * The order field is set to 1100, a higher value than the existing actions on the rule, so that the action will occur after all currently defined actions on the processing rule.
 * The settings property contains the action type specific properties, here being the name of the worker to use, the queue that worker is listening to and a custom property that the worker is expected to understand.
 
@@ -187,13 +183,13 @@ The definition of the action we will send is shown below;
 3. Set the newAction property to te definition of the action to create.
 4. Click Try it out. The result should return the details of the created Action.
 
-![Create Document Worker Action in Data Processing API Swagger UI](../../assets/img/Getting_Started/add_action_default_workflow_4.png)
+![Create Chained Action in Data Processing API Swagger UI](../../assets/img/Getting_Started/add_action_default_workflow_4.png)
 
 At this point the action has been added to the processing rule on the default workflow. When evaluating the workflow this action will by default be executed for all documents, sending them to the specified worker queue for processing by that worker.
 
 ##### Submit Documents
 
-Documents submitted to the workflow worker will use the updated workflow once the cache expires. By default this should be five minutes. For a shorter cache duration the debug compose file can be used as an override, which sets a cache duration of fifteen seconds. Submit files to the worker by adding them to the input folder being monitored by the taskSubmitter service.
+Documents submitted to the workflow worker will use the updated workflow once the previously cached version of the workflow script expires. By default this should be five minutes. For a shorter cache duration the debug compose file can be used as an override, which sets a cache duration of fifteen seconds. Submit files to the worker by adding them to the input folder being monitored by the taskSubmitter service.
 
 ### Manually Setting up a Processing Workflow
 
@@ -249,7 +245,7 @@ The first action we add to the rule will extract metadata from an item and the t
 3. Click on the example value box on the right to fill in the new action body.
 4. Click on Model for an explanation of each property.
 5. On a system deployed using the compose file, it is not necessary to specify the queueName under settings for action. You can delete it because the environment configuration defaults the sending of messages to the appropriate queue for the action type. For this example, we will use all of the default settings for the action so the settings property may be removed.
-6. Set the name of the action to Extract Action and the typeId to the ID of the Text Extract action type. Add a description property.
+6. Set the name of the action to Extract Action and the typeId to the ID of the chained action type. Add a description property.
 7. Click Try it out. The call will return code 201 for successful creation along with the successfully created action and an ID.
 
 ![Create Action Extract in Data Processing API Swagger UI](../../assets/img/Getting_Started/4_createaction_extract.png)
@@ -258,7 +254,7 @@ The first action we add to the rule will extract metadata from an item and the t
 An action to perform OCR against image files will extract text from images onto the output result.
 
 1. Repeat steps 1 to 5 from [Create Extract Action](#create-extract-action).
-2. Set the name of the action to OCR Action and the typeId to the ID of the OCR action type. Add a description property.
+2. Set the name of the action to OCR Action and the typeId to the ID of the chained action type. Add a description property.
 3. We want this action to occur after the Extract Action has completed in order that we may use the metadata from that action. Set the order property to 200.
 4. Click Try it out. The call will return (code 201 for successful creation) with the successfully created action and an ID.
 
@@ -311,7 +307,7 @@ To avoid OCR being unnecessarily performed on non-image based items like .txt fi
 With text content extracted for both text and image files, you can perform language detection to pick out the most prevalent languages in that content. As with extract, no condition is set on this action, which causes it to always execute against an item as long as it is not prohibited by any rule condition.
 
 1. Repeat steps 1 to 5 from [Create Extract Action](#create-extract-action).
-2. Set the name of the action to Language Detection Action and the typeId to the ID of the Language Detection action type. Add a description property.
+2. Set the name of the action to Language Detection Action and the typeId to the ID of the chained action type. Add a description property.
 3. We want this action to occur after the extract and OCR actions in order that we can use the text content extracted by both. Set the order property to 300 for this purpose.
 4. Click Try it out. The call will return code 201 for successful creation along with the successfully created action and an ID.
 
@@ -326,17 +322,17 @@ All actions to this point were added to a single rule. We will add a second rule
 4. Click on the example value box on the right to fill in the new rule body.
 5. Edit the name field to reflect the rule purpose, for example, Output. Add a description property.
 6. This rule needs to be evaluated after the extraction in order that the result will be output. Set the priority to a value higher than that of the first rule, for example, 10.
-7. Click Try it out!. The resulting code shows whether the addition of the rule succeeds or not (201 for successful creation), along with an ID for the newly created workflow.
+7. Click Try it out. The resulting code shows whether the addition of the rule succeeds or not (201 for successful creation), along with an ID for the newly created workflow.
 
 ![Create Output Rule in Data Processing API Swagger UI](../../assets/img/Getting_Started/8_createrule_output.png)
 
-##### Create an Output Action
-To output the built up result from the processing actions, use the Generic Queue action, which can send the processing rule with all of its added fields to any specified queue.
+##### Create an Action to Index the Output Result
+To output the built up result from the processing actions, create an action to send the processed task to the indexing worker, which can send the file with all of its added fields to any specified queue.
 1. Under Actions, expand the POST operation /workflows/{workflowId}/rules/{ruleId}/action.
 2. Set project_id, workflowId to the values from previous calls. Set ruleId to the ID of the second rule created.
 3. Click on the example value box on the right to fill in the new action body.
-4. Set the name of the action to output action and the typeId to the ID of the Generic Queue action type. Change the queueName settings value to a queue from which output will be retrieved, for example, output-queue. The queue will be created if it does not exist. Add a description property.
-5. Click Try it out!. The call will return code 201 for successful creation with the successfully created action and an ID.
+4. Set the name of the action to output action and the typeId to the ID of the chained action type. Change the queueName settings value to the queue the index worker listens on i.e. 'worker-indexelastic-in'.
+5. Click Try it out. The call will return code 201 for successful creation with the successfully created action and an ID.
 
 ![Create Output Rule in Data Processing API Swagger UI](../../assets/img/Getting_Started/9_createaction_output.png)
 
@@ -351,26 +347,26 @@ When passed as the WorkflowId on a task to the workflow worker, this workflow sp
 * An item should have its metadata extracted (including text for text-based files).
 * If it is an image, then the item will have OCR performed to extract its text.
 * Then the text will have its language detected.
-* The result describing the processed item should then be output to a queue so that the result may be examined.
+* The result describing the processed item should then be indexed into Elasticsearch so that the result may be examined.
 
 #### Message Format
 
-The format of the input task data is described in detail in the GitHub Repository for the policy worker library which is used in the classification and workflow workers [here](https://github.com/CAFDataProcessing/worker-policy) under 'worker-policy-shared'. In the context of data processing the key properties to highlight are;
+The format of the input task data is described in detail in the GitHub Repository for the Document Worker Framework [here](https://github.com/CAFDataProcessing/worker-document/tree/v4.0.0/worker-document-shared#composite-document-handling) under 'Composite Document Handling'. The workflow worker specific properties are described [here](https://github.com/CAFDataProcessing/worker-workflow/tree/develop/worker-workflow-container#input-task-custom-data). In the context of data processing the key properties to highlight are;
 
 * workflowId, which should be set to the ID of the workflow that document should be processed against.
 * projectId, which should be set to the ID of the tenant that was used in creating the workflow.
 * outputPartialReference, should point to the data store folder to use during processing.
 * document, this is a document object that the workflow worker can interact with. The metadata properties on this will be populated by the workflow worker as the task moves through processing and new data is extracted. A field 'storageReference' on metadata should be passed that contains the reference to the document in CAF storage for the workers to access.
 
-This should then be base64 encoded and set as the task data of a caf worker task message. The taskClassifier property should be set to PolicyWorker. An example task message is shown below;
+This should then be base64 encoded and set as the task data of a caf worker task message. The taskClassifier property should be set to `DocumentWorkerTask`. An example task message is shown below;
 
 ```
 {
 	"version": 3,
 	"taskId": "0-Bad team.docx",
-	"taskClassifier": "PolicyWorker",
+	"taskClassifier": "DocumentWorkerTask",
 	"taskApiVersion": 1,
-	"taskData": "eyJwcm9qZWN0SWQiOiJEZWZhdWx0UHJvamVjdElkX2N1cnJlbnQiLCJjb2xsZWN0aW9uU2VxdWVuY2VzIjpbXSwiZG9jdW1lbnQiOnsibWV0YWRhdGEiOnsic3RvcmFnZVJlZmVyZW5jZSI6WyI2NmQxYzMzZWM4Yzc0ZmVlOTlkMjA3ZTc1MjFhOTNlYy9lZWUzMDkwODUxNWI0YmVjOWUyZDY2OGQyYjVlYzc3ZSJdfSwibWV0YWRhdGFSZWZlcmVuY2VzIjp7fSwicG9saWN5RGF0YVByb2Nlc3NpbmdSZWNvcmQiOm51bGwsInJlZmVyZW5jZSI6IkJhZCB0ZWFtLmRvY3giLCJkb2N1bWVudHMiOm51bGx9LCJleGVjdXRlUG9saWN5T25DbGFzc2lmaWVkRG9jdW1lbnQiOnRydWUsInBvbGljaWVzVG9FeGVjdXRlIjpudWxsLCJvdXRwdXRQYXJ0aWFsUmVmZXJlbmNlIjoiNjZkMWMzM2VjOGM3NGZlZTk5ZDIwN2U3NTIxYTkzZWMiLCJ3b3JrZmxvd0lkIjoiNjgifQ==",
+	"taskData": "ew0KCSJkb2N1bWVudCI6IHsNCgkJInJlZmVyZW5jZSI6ICIvaW5wdXRGb2xkZXIvRW50aXR5X0V4dHJhY3Rpb24ucGRmIiwNCgkJImZpZWxkcyI6IHsNCgkJCSJGSUxFTkFNRSI6IFt7DQoJCQkJImRhdGEiOiAiRW50aXR5X0V4dHJhY3Rpb24ucGRmIiwNCgkJCQkiZW5jb2RpbmciOiAidXRmOCINCgkJCX1dLA0KCQkJIkFSQ0hJVkVfSUQiOiBbew0KCQkJCSJkYXRhIjogImIzMmNhNjFhLWU5OTYtNDcxNy1hYzdlLTlkZjk0MTVhMzllYiIsDQoJCQkJImVuY29kaW5nIjogInV0ZjgiDQoJCQl9XQ0KCQl9LA0KCQkic3ViZG9jdW1lbnRzIjogW10NCgl9LA0KCSJjdXN0b21EYXRhIjogew0KCQkib3V0cHV0UGFydGlhbFJlZmVyZW5jZSI6ICIvZGF0YVN0b3JlIiwNCgkJInByb2plY3RJZCI6ICJEZWZhdWx0UHJvamVjdElkIiwNCgkJIndvcmtmbG93SWQiOiAiMSINCgl9DQp9",
 	"taskStatus": "NEW_TASK",
 	"context": {		
 	},
@@ -384,23 +380,25 @@ And an example of the decoded task data that the workflow worker will execute ag
 
 ```
 {
-	"projectId": "DefaultProjectId_current",
-	"collectionSequences": [],
 	"document": {
-		"metadata": {
-			"storageReference": ["66d1c33ec8c74fee99d207e7521a93ec/eee30908515b4bec9e2d668d2b5ec77e"]
+		"reference": "/inputFolder/Entity_Extraction.pdf",
+		"fields": {
+			"FILENAME": [{
+				"data": "Entity_Extraction.pdf",
+				"encoding": "utf8"
+			}],
+			"ARCHIVE_ID": [{
+				"data": "b32ca61a-e996-4717-ac7e-9df9415a39eb",
+				"encoding": "utf8"
+			}]
 		},
-		"metadataReferences": {
-			
-		},
-		"policyDataProcessingRecord": null,
-		"reference": "Bad team.docx",
-		"documents": null
+		"subdocuments": []
 	},
-	"executePolicyOnClassifiedDocument": true,
-	"policiesToExecute": null,
-	"outputPartialReference": "66d1c33ec8c74fee99d207e7521a93ec",
-	"workflowId": "68"
+	"customData": {
+		"outputPartialReference": "/dataStore",
+		"projectId": "DefaultProjectId",
+		"workflowId": "1"
+	}
 }
 ```
 

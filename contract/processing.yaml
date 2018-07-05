@@ -1,6 +1,6 @@
 #THIS FILE SHOULD NOT BE EDITED. THIS FILE IS COPIED FROM THE ACTUAL CONTRACT LOCATION AND WILL BE OVERRIDEN ON DOCUMENTATION REBUILD. REFER TO GRUNTFILE FOR ORIGINAL CONTRACT LOCATION.
 #
-# Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
+# Copyright 2017-2018 Micro Focus or one of its affiliates.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 swagger: "2.0"
 info:
   title: "Data Processing Service API"
-  version: "1.0.0"
+  version: "1.1.0"
   description: |
     The Data Processing API allows for the creation of Processing pipelines that describe the operations (Actions) to perform against data. The decision of which Actions to perform can be controlled by Conditions.
 # basePath prefixes all resource paths 
@@ -1312,7 +1312,7 @@ definitions:
     properties:
       type:
         description: The type of a condition. Affects the behaviour of the condition in evaluation and the properties that can be set on the condition to control that behaviour. Set to the appropriate type for the condition.
-        enum: [ "boolean", "regex", "date", "fragment", "lexicon", "not", "number", "string", "exists", "text" ]
+        enum: [ "boolean", "regex", "date", "lexicon", "not", "number", "string", "exists" ]
         title: Condition Type
         type: string
       order:

@@ -16,7 +16,7 @@ features:
           subtitle: Processing Workflows can be created allowing data to be fed into the system and Data Processing to determine how it should be processed based on the established Workflow.
         - image: 'assets/img/Landing_Page_Icons/wide-processing-icon.png'
           title: Wide Range of Processing Operations
-          subtitle: Data Processing supports a large variety of processing operations on data, including OCR, Speech to Text, Archive Extraction, Metadata Extraction, Entity Detection, Redaction & Classification.
+          subtitle: Data Processing supports a large variety of processing operations on data, including OCR, Speech to Text, Archive Extraction, Metadata Extraction, Entity Detection & Redaction.
         - image: 'assets/img/Landing_Page_Icons/elastic-icon.png'
           title: Elastic Scaling
           subtitle: Processing components can scale up and down at an individual level to accommodate the tasks at hand. Providing optimal resources to each process to get the job done quickly and safely.

@@ -13,7 +13,6 @@ Additional workers may be added to the default Data Processing workflow.
 + [Adding a Worker to the Docker Compose File](#adding-a-worker-to-the-docker-compose-file)
 + [Updating the Debug Docker Compose File](#updating-the-debug-docker-compose-file)
 + [Updating the Data Processing Workflow Definition](#updating-the-data-processing-workflow-definition)
-+ [Updating the Minimal Data Processing Deployment](#updating-the-minimal-data-processing-deployment)
 + [Additional Documentation](#additional-documentation)
 
 
@@ -25,16 +24,14 @@ The process of adding a worker to the default Data Processing workflow consists 
 + Update the Docker Compose overlay file that provides additional debug settings for Data Processing services.
 + Update the Data Processing workflow definition to include the new worker.
 
-A compose file that deploys only open source components is available [here](https://github.com/CAFDataProcessing/data-processing-service-deploy). If the new worker is open source then it may be added to this file if required. Otherwise it should be added to the Enterprise Edition compose file [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy).
-
-For Enterprise Edition, in addition to the default data Processing workflow, there is also a "minimal" form of the workflow which may also be updated with the new worker if required.
+A compose file that deploys components is available [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/tree/deploy) (requires Enterprise Edition license).
 
 
 ## Adding a Worker to the Docker Compose File
 
-The stack of services that are used in the default Data Processing workflow is defined by the default workflow's Docker Compose file which can be found [here](https://github.com/CAFDataProcessing/data-processing-service-deploy).
+The stack of services that are used in the default Data Processing workflow is defined by the default workflow's Docker Compose file which can be found [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/tree/deploy).
 
-In order for the new worker to be usable in the default Data Processing workflow, a new section will have to be added for the worker in this Docker Compose file. A useful starting point is to identify a worker that is already defined in this file and copy its definition; then make changes to the copy to suit the new worker.
+In order for the new worker to be usable in the default Data Processing workflow it must be a Document Worker (or accept a Document Worker Composite task message) and a new section will have to be added for the worker in this Docker Compose file. A useful starting point is to identify a worker that is already defined in this file and copy its definition; then make changes to the copy to suit the new worker.
 
 The `langDetectWorker` definition is a straightforward example to copy:
  
@@ -75,7 +72,7 @@ If this worker has additional configuration settings that may be controlled by e
 
 ## Updating the Debug Docker Compose File
 
-To aid the monitoring of running services in a default Data Processing deployment, the default Docker Compose file has an associated overlay file that defines certain port mappings and logging settings. This Docker Compose overlay file can be found [here](https://github.com/CAFDataProcessing/data-processing-service-deploy/blob/develop/docker-compose.debug.yml).
+To aid the monitoring of running services in a default Data Processing deployment, the default Docker Compose file has an associated overlay file that defines certain port mappings and logging settings. This Docker Compose overlay file can be found [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/blob/deploy/end-to-end-workflow/docker-compose.debug.yml).
 
 Again, copy and paste the section relating to the `langDetectWorker` and modify it for the new worker to ensure that the worker's admin port is accessible externally and that it logs at the desired log level.
 
@@ -91,7 +88,7 @@ In the port mapping, be careful to set its external port to one that is not in u
 
 ## Updating the Data Processing Workflow Definition
 
-Adding the new worker to the Docker Compose files makes the worker available for use in Data Processing but to actually direct documents through the worker we must add a section to the Data Processing workflow definition. The default Data Processing workflow definition can be found [here](https://github.com/CAFDataProcessing/data-processing-service-deploy/blob/develop/processing-workflow.json).
+Adding the new worker to the Docker Compose files makes the worker available for use in Data Processing but to actually direct documents through the worker we must add a section to the Data Processing workflow definition. The default Data Processing workflow definition can be found [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/blob/deploy/end-to-end-workflow/processing-workflow.json).
 
 Again, the simplest approach is to copy the relevant workflow section for the `LangDetect` worker:
 
@@ -105,7 +102,7 @@ Again, the simplest approach is to copy the relevant workflow section for the `L
         "queueName": "dataprocessing-fs-langdetect-in",
         "fields": ["CONTENT"]
     },
-    "typeName": "DocumentWorkerHandler",
+    "typeName": "ChainedActionType",
     "actionConditions": [{
             "name": "CONTENTexists",
             "additional": {
@@ -131,7 +128,7 @@ In the case of our translation worker, let's say that we would like it to perfor
         "queueName": "dataprocessing-fs-translation-in",
         "fields": ["CONTENT"]
     },
-    "typeName": "DocumentWorkerHandler",
+    "typeName": "ChainedActionType",
     "actionConditions": [{
             "name": "CONTENTexists",
             "additional": {
@@ -143,33 +140,9 @@ In the case of our translation worker, let's say that we would like it to perfor
 },
 ```
 
-The `typeName` in this definition must be the "short" name of the Policy Handler for this type of worker, which is registered as the `internal_name` of the corresponding Action Type. It is likely that your new worker will have been developed as a Document Worker, in which case the correct handler typeName to specify here will be `DocumentWorkerHandler`.
+The `typeName` in this definition must be `ChainedActionType`, which is registered as the `internal_name` of the Action Type used to chain Document Worker actions together.
 
 If your worker has any preconditions that must be satisfied for it to perform its work on a document then these may be specified in the `actionConditions` section. In the above example, the Translation worker requires a CONTENT value to be present on the document.
-
-## Updating the Minimal Data Processing Deployment
-
-For Enterprise Edition, in addition to the default Data Processing workflow and the services that it requires, there is also a minimal Data Processing workflow.
-
-If it is desirable to include the new worker in the minimal workflow as well as the default workflow, then similar changes need to be made in the minimal workflow definitions. The minimal Data Processing definitions can be found [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/tree/develop/minimal).
-
-### Add the worker to the minimal workflow's Docker Compose file
-
-The minimal Data Processing workflow's Docker Compose file can be found [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/blob/develop/minimal/docker-compose.yml).
-
-The changes to make in this file are analogous to those made for the default definition, as described in [Adding a Worker to the Docker Compose File](#adding-a-worker-to-the-docker-compose-file).
-
-### Add the worker to the minimal workflow's debug Docker Compose file
-
-The minimal Data Processing workflow's debug Docker Compose overlay file can be found [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/blob/develop/minimal/docker-compose.debug.yml).
-
-The changes to make in this file are analogous to those made for the default definition, as described in [Updating the Debug Docker Compose File](#updating-the-debug-docker-compose-file).
-
-### Add the worker to the minimal workflow's definition
-
-The minimal Data Processing workflow definition can be found [here](https://github.houston.softwaregrp.net/caf/data-processing-service-internal-deploy/blob/develop/minimal/processing-workflow.json).
-
-The changes to make in this file are analogous to those made for the default workflow definition, as described in [Updating the Data Processing Workflow Definition](#updating-the-data-processing-workflow-definition).
 
 ## Additional Documentation
 
