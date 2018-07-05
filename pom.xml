@@ -83,7 +83,6 @@
         <dockerHubOrganization>cafdataprocessing</dockerHubOrganization>
         <dockerDataProcessingOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerDataProcessingOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
-        <workerWorkflowVersion>1.0.0-SNAPSHOT</workerWorkflowVersion>
         <gitRepo>https://github.com/CAFDataProcessing/data-processing-service</gitRepo>
     </properties>
 
@@ -135,11 +134,6 @@
                 <groupId>com.github.cafdataprocessing</groupId>
                 <artifactId>worker-policy-type-registrant</artifactId>
                 <version>${caf.worker.policy.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.cafdataprocessing</groupId>
-                <artifactId>worker-workflow-constants</artifactId>
-                <version>${workerWorkflowVersion}</version>
             </dependency>
             <!-- Dependency manager for all CAF components -->
             <dependency>
