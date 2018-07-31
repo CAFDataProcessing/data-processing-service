@@ -13,34 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// defines the structure representing the globalConfig table in the database
+// defines the structure representing the repositoryConfig table in the database
 const Sequelize = require("sequelize");
 
 var tableDefinition = {
+    tenantId: {
+        allowNull: false,
+        field: "tenant_id",
+        primaryKey: true,
+        type: Sequelize.STRING(40)
+    },
+    repositoryId: {
+        allowNull: false,
+        field: "repository_id",
+        primaryKey: true,
+        type: Sequelize.STRING(40)
+    },
     key: {
         allowNull: false,
         field: "key",
         primaryKey: true,
         type: Sequelize.STRING(255)
     },
-    default: {
+    value: {
         allowNull: false,
-        field: "default",
+        field: "value",
         type: Sequelize.TEXT
-    },
-    description: {
-        field: "description",
-        type: Sequelize.TEXT
-    },
-    scope: {
-        allowNull: false,
-        field: "scope",
-        type: Sequelize.SMALLINT
     }
 };
 
 module.exports = {
     definition: tableDefinition,
-    name: "globalConfig",
-    tableName: "tbl_global_config"
+    name: "repositoryConfig",
+    tableName: "tbl_repository_config"
 };

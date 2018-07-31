@@ -25,7 +25,8 @@ module.exports = {
     deleteGlobalConfig: deleteGlobalConfig,
     getGlobalConfig: getGlobalConfig,
     getGlobalConfigs: getGlobalConfigs,
-    setGlobalConfig: setGlobalConfig
+    setGlobalConfig: setGlobalConfig,
+    setGlobalConfigWithScope: setGlobalConfigWithScope
 }
 
 const tableDefinition = globalConfigTableDetails.definition;
@@ -159,6 +160,43 @@ function setGlobalConfig(key, defaultValue, description) {
         key: key,
         default: defaultValue,
         description: description
+    };
+    globalConfigTable.upsert(setParam)
+        .then(function(upsertResult) {
+            if(upsertResult) {
+                logger.debug("Created global config in database successfully for key '" + key + "'.");
+            }
+            else {
+                logger.debug("Updated global config in database successfully for key '" + key+"'.");
+            }
+            deferredSet.resolve({});
+        })
+        .catch(function(errorResponse) {
+            logger.error("Failure occurred trying to create global config for key '"+key+"': " + errorResponse.toString());
+            deferredSet.reject(apiErrorFactory.createDatabaseUnknownError('Failure during creation of global config.'));
+        })
+        .done();
+    return deferredSet.promise;
+}
+
+/**
+ * Version that allows also the "scope" parameter to be set or updated.
+ * 
+ * Creates or updates a global config using the provided parameters.
+ * @param key {String} the key to set for the global config. If this key is not already present for any existing global config
+ * then it will be added as a new entry. Otherwise the global config with this key value will be updated.
+ * @param defaultValue {String} the default to set on the global config.
+ * @param description {String} the description to set on the global config.
+ * @returns {*|d.promise|Function|promise|a|h} a promise that will be resolved or rejected based on the result of create/update.
+ *  Resolved promise will pass an empty object. Rejected promise will pass an ApiError with type set to DATABASE_UNKNOWN_ERROR.
+ */
+function setGlobalConfigWithScope(key, defaultValue, description, scope) {
+    var deferredSet = Q.defer();
+    var setParam = {
+        key: key,
+        default: defaultValue,
+        description: description,
+        scope: scope
     };
     globalConfigTable.upsert(setParam)
         .then(function(upsertResult) {
