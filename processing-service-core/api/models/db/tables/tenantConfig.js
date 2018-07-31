@@ -43,6 +43,6 @@ var tableDefinition = {
 
 module.exports = {
     definition: tableDefinition,
-    name: "globalConfig",
+    name: "tenantConfig",
     tableName: "tbl_tenant_config"
 };
