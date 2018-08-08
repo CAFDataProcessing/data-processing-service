@@ -1342,7 +1342,7 @@ paths:
     get:
       tags:
         - Repository Configuration
-      summary: Retrieve repositor specific configs as map of key-value pairs.
+      summary: Retrieve repository specific configs as map of key-value pairs.
       description: Returns all repository specific configs as a list.
       operationId: getRepositoryConfigs
       responses:
