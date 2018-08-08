@@ -80,7 +80,7 @@ function deleteGlobalConfig(key) {
 function getGlobalConfig(key) {
     var deferredGet = Q.defer();
     globalConfigTable.findOne({
-            attributes: [tableDefinition.default.field, tableDefinition.description.field],
+            attributes: [tableDefinition.default.field, tableDefinition.description.field, tableDefinition.scope.field],
             where: { key: key}
         })
         .then(function(findResult) {
@@ -91,10 +91,22 @@ function getGlobalConfig(key) {
             }
             // the object returned can have additional properties specific to the database model, only return properties that
             // caller is interested in rather than letting these DB implementation properties leak out of this layer
+            var retrievedScope;
+            switch(findResult.scope){
+                case 0: 
+                    retrievedScope = "TENANT";
+                    break;
+                case 1: 
+                    retrievedScope = "REPOSITORY";
+                    break;
+                default:
+                    throw new Error("The scope retrieved is invalid");
+                    break;
+            }
             var builtGlobalConfig = {
                 default: findResult.default,
                 description: findResult.description,
-                scope: "TENANT"
+                scope: retrievedScope
             };
             deferredGet.resolve(builtGlobalConfig);
         })
@@ -125,11 +137,23 @@ function getGlobalConfigs() {
             var globalConfigsToReturn = [];
             for(var globalConfigIndex = 0; globalConfigIndex < retrievedGlobalConfigs.length; globalConfigIndex++ ) {
                 var retrievedGlobalConfig = retrievedGlobalConfigs[globalConfigIndex];
+                var retrievedScope;
+                switch(retrievedGlobalConfig.scope){
+                    case 0: 
+                        retrievedScope = "TENANT";
+                        break;
+                    case 1: 
+                        retrievedScope = "REPOSITORY";
+                        break;
+                    default:
+                        throw new Error("The scope retrieved is invalid");
+                        break;
+                }
                 var builtGlobalConfig = {
                     key: retrievedGlobalConfig.key,
                     default: retrievedGlobalConfig.default,
                     description: retrievedGlobalConfig.description,
-                    scope: "TENANT"
+                    scope: retrievedScope
                 };
                 globalConfigsToReturn.push(builtGlobalConfig);
             }
@@ -192,11 +216,25 @@ function setGlobalConfig(key, defaultValue, description) {
  */
 function setGlobalConfigWithScope(key, defaultValue, description, scope) {
     var deferredSet = Q.defer();
+    var processedScope;
+    switch(scope){
+        case "REPOSITORY":
+            processedScope = 1;
+            logger.debug("Scope set to 1");
+            break;
+        case "TENANT":
+            processedScope = 0;
+            logger.debug("Scope set to 0");
+            break;
+        default:
+            throw new Error("The scope passed is invalid!");
+            break;
+    }
     var setParam = {
         key: key,
         default: defaultValue,
         description: description,
-        scope: scope
+        scope: processedScope
     };
     globalConfigTable.upsert(setParam)
         .then(function(upsertResult) {

@@ -32,10 +32,11 @@ module.exports = {
  */
 function setGlobalConfig(globalConfigParams){
   return executeConfig(
-    store.setGlobalConfig(
+    store.setGlobalConfigWithScope(
       globalConfigParams.key,
       globalConfigParams.default,
-      globalConfigParams.description
+      globalConfigParams.description,
+      globalConfigParams.scope
     ),
     'Created global configuration',
     'Failed to create global configuration'

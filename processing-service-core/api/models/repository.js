@@ -18,8 +18,7 @@
 var Q = require('q');
 var logger = require('../helpers/loggingHelper.js');
 var repositoryConfigStoreModel = require("./db/repositoryConfigStore.js");
-var tenantConfigStoreModel = require("./db/tenantConfigStore.js");
-var globalConfigStoreModel = require("./db/globalConfigStore.js");
+var tenantConfigModel = require("./tenant.js");
 var apiErrorFactory = require('./errors/apiErrorFactory.js');
 var apiErrorTypes = require('./errors/apiErrorTypes.js');
 var ApiError = require('./errors/apiError.js');
@@ -61,7 +60,8 @@ function setRepositoryConfig(tenantId, repositoryId, key, value) {
             logger.debug("Unable to set configuration for key " + key + " for tenant " + tenantId + " for repository " + repositoryId
                 + " with value " + value);
             if (errorResponse instanceof ApiError && errorResponse.type === apiErrorTypes.ITEM_NOT_FOUND) {
-                repositoryConfig.reject(apiErrorFactory.createMethodNotAllowedError("No global configuration was found for this key"));
+                repositoryConfig.reject(apiErrorFactory.createMethodNotAllowedError("No global configuration was found for this key" +
+                    " or the scope was not valid."));
             }
         })
         .done();
@@ -185,29 +185,13 @@ function getEffectiveRepositoryConfig(tenantId, repositoryId, key) {
                 + key + " was found, I am going to try with a tenant specific one"
                 + "value");
             if (errorResponse instanceof ApiError && errorResponse.type === apiErrorTypes.ITEM_NOT_FOUND) {
-                tenantConfigStoreModel.getTenantConfig(tenantId, key)
+                tenantConfigModel.getEffectiveTenantConfig(tenantId, key)
                     .then(function (tenantConfigResult) {
-                        effectiveConfig.value = tenantConfigResult;
-                        effectiveConfig.valueType = "CUSTOM";
-                        repositoryConfig.resolve(effectiveConfig);
+                        repositoryConfig.resolve(tenantConfigResult);
                     })
                     .fail(function (errorResponse) {
-                        logger.debug("No tenant specific config for tenant " + tenantId + " with key " + key
-                            + " was found, returning default value");
-                        if (errorResponse instanceof ApiError && errorResponse.type === apiErrorTypes.ITEM_NOT_FOUND) {
-                            globalConfigStoreModel.getGlobalConfig(key)
-                                .then(function (tenantDefaultConfig) {
-                                    effectiveConfig.value = tenantDefaultConfig.default;
-                                    effectiveConfig.valueType = "DEFAULT";
-                                    repositoryConfig.resolve(effectiveConfig);
-                                })
-                                .fail(function (errorResponse) {
-                                    repositoryConfig.reject(errorResponse);
-                                })
-                                .done();
-                        } else {
-                            repositoryConfig.reject(errorResponse);
-                        }
+                        logger.debug("Error retreving effective tenant config for tenant " + tenantId + " with key " + key);
+                        repositoryConfig.reject(errorResponse);
                     })
                     .done();
             } else {
@@ -262,18 +246,13 @@ function getEffectiveRepositoryConfigs(tenantId, repositoryId) {
      */
     repositoryConfigCallComplete.promise
         .then(function () {
-            return tenantConfigStoreModel.getTenantConfigs(tenantId);
+            return tenantConfigModel.getEffectiveTenantConfigs(tenantId);
         })
-        .then(function (tenantConfigs) {
-            for (var tenantConfigIndex = 0; tenantConfigIndex < tenantConfigs.length; tenantConfigIndex++) {
-                var tenantConfigEntry = tenantConfigs[tenantConfigIndex];
-                if (containsKey(configurations, tenantConfigEntry.key) === false) {
-                    var builtEffectiveConfig = {
-                        key: tenantConfigEntry.key,
-                        value: tenantConfigEntry.default,
-                        valueType: "DEFAULT"
-                    };
-                    configurations.push(builtEffectiveConfig);
+        .then(function (configs) {
+            for (var configIndex = 0; configIndex < configs.length; configIndex++) {
+                var configEntry = configs[configIndex];
+                if (containsKey(configurations, configEntry.key) === false) {
+                    configurations.push(configEntry);
                 }
             }
             repositoryConfig.resolve(configurations);
@@ -282,40 +261,7 @@ function getEffectiveRepositoryConfigs(tenantId, repositoryId) {
             /** Taking no action if errorResponse is undefined as that will happen in a case where an error occured during the call for
              tenant specific configs.*/
             if (errorResponse !== undefined) {
-                logger.debug("Unable to retrieve effective repository config for tenant " + tenantId + " repository " + repositoryId);
-                repositoryConfigCallComplete.reject();
-                repositoryConfig.reject(errorResponse);
-                return repositoryConfig.promise;
-            }
-        })
-        .done();
-
-    /** 
-     * Using a third promise that calls the globalconfigs.
-     */
-    repositoryConfigCallComplete.promise
-        .then(function () {
-            return globalConfigStoreModel.getGlobalConfigs();
-        })
-        .then(function (globalConfigs) {
-            for (var globalConfigIndex = 0; globalConfigIndex < globalConfigs.length; globalConfigIndex++) {
-                var globalConfigEntry = globalConfigs[globalConfigIndex];
-                if (containsKey(configurations, globalConfigEntry.key) === false) {
-                    var builtEffectiveConfig = {
-                        key: globalConfigEntry.key,
-                        value: globalConfigEntry.default,
-                        valueType: "DEFAULT"
-                    };
-                    configurations.push(builtEffectiveConfig);
-                }
-            }
-            repositoryConfig.resolve(configurations);
-        })
-        .fail(function (errorResponse) {
-            /** Taking no action if errorResponse is undefined as that will happen in a case where an error occured during the call for
-             tenant specific configs.*/
-            if (errorResponse !== undefined) {
-                logger.debug("Unable to retrieve effective tenant config for tenant " + tenantId + " and repository " + repositoryId);
+                logger.debug("Unable to retrieve effective tenant config for tenant " + tenantId);
                 repositoryConfig.reject(errorResponse);
             }
         })

@@ -16,6 +16,8 @@ The data-processing-service is a NodeJS implementation of the swagger data-proce
 
 A more detailed overview of the workflow operations is available [here](./Architecture.md).
 
+A more detailed overview of the repository configuration options is available [here](./repository-config-options.md).
+
 A more detailed overview of the tenant configuration options is available [here](./tenant-config-options.md).
 
 A more detailed overview of how to use global configurations can be found [here](./global-config-options.md).

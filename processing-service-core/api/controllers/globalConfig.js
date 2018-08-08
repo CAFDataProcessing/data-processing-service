@@ -28,7 +28,8 @@ function setGlobalConfig(req, res, next) {
   var globalConfigParams = {
     key: req.swagger.params['key'].value,
     default: req.swagger.params.globalConfig.value.default,
-    description: req.swagger.params.globalConfig.value.description
+    description: req.swagger.params.globalConfig.value.description,
+    scope: req.swagger.params.globalConfig.value.scope
   };
   logger.info('Creating global configuration using parameters: '+ JSON.stringify(globalConfigParams));
   var setPromise = globalConfigModel.setGlobalConfig(globalConfigParams);

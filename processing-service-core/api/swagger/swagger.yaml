@@ -42,6 +42,8 @@ tags:
     description: Global Configuration operations.
   - name: Tenant Configuration
     description: Tenant specific configuration for the workflow.
+  - name: Repository Configuration
+    description: Repository specific configuration for the workflow.
 schemes:
   - http
 # format of bodies a client can send (Content-Type)
@@ -1224,6 +1226,219 @@ paths:
           schema:
             $ref: "#/definitions/errorMessage"
   #
+  ##########################
+  ##  Repository Key Store
+  ##########################
+  /tenants/{tenantId}/repositories/{repositoryId}/config/{key}:
+    x-swagger-router-controller: repository
+    parameters:
+      - name: tenantId
+        in: path
+        type: string
+        description: The ID of the tenant.
+        required: true
+        maxLength: 40
+      - name: repositoryId
+        in: path
+        type: string
+        description: The ID of the repository.
+        required: true
+        maxLength: 40
+      - name: key
+        in: path
+        type: string
+        description: The key to use when searching for a repository's configuration.
+        required: true
+        maxLength: 255
+    put:
+      tags:
+        - Repository Configuration
+      parameters:
+        - name: value
+          in: body
+          required: true
+          schema:
+            type: string
+          description: The value to use when setting the custom config for the repository's key.
+      summary: Creates or updates repository specific config.
+      description: Creates a custom configuration setting for this key against the repository/tenant if one doesn't exist or updates the currently existing custom configuration setting if it does.
+      operationId: setRepositoryConfig
+      responses:
+        204:
+          description:  Indicates that the repository specific configuration was set successfully.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    get:
+      tags:
+        - Repository Configuration
+      summary: Retrieve repository specific config.
+      description: Returns the repository specific config for this key that is stored against this repository/tenant.
+      operationId: getRepositoryConfig
+      responses:
+        200:
+          schema: 
+            type: string
+            example: "{'pii.xml': []}"
+          description: Returns the repository specific configuration stored for the supplied key.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: Indicates key was not found.
+    delete:
+      tags:
+        - Repository Configuration
+      summary: Delete repository specific config for the provided key.
+      description: Delete repository specific config for the provided key.
+      operationId: deleteRepositoryConfig
+      responses:
+        204:
+          description: Indicates the repository specific config for the provided tenantId/repositoryId & key was deleted.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: Indicates key was not found.
+  #
+  /tenants/{tenantId}/repositories/{repositoryId}/config:
+    x-swagger-router-controller: repository
+    parameters:
+      - name: tenantId
+        in: path
+        type: string
+        description: The ID of the tenant.
+        required: true
+        maxLength: 40
+      - name: repositoryId
+        in: path
+        type: string
+        description: The ID of the repository.
+        required: true
+        maxLength: 40
+    put:
+      tags:
+        - Repository Configuration
+      parameters:
+        - name: repositoryConfigs
+          description: The json string representation key-value pair map of custom tenant/repository configuration.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/repositoryConfigs"
+      summary: Bulk method used to set multiple repository specific configs.
+      description: Sets custom configuration settings for a repository in bulk.
+      operationId: setRepositoryConfigs
+      responses:
+        204:
+          description: Indicates that the repository specific configuration was set successfully.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    get:
+      tags:
+        - Repository Configuration
+      summary: Retrieve repositor specific configs as map of key-value pairs.
+      description: Returns all repository specific configs as a list.
+      operationId: getRepositoryConfigs
+      responses:
+        200:
+          description: |
+            Returns the map of repository specific configs.
+          schema:
+            $ref: "#/definitions/repositoryConfigs"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+    delete:
+      tags:
+        - Repository Configuration
+      summary: Delete repository specific configs for the provided tenantId/repositoryId.
+      description: Delete repository specific config for the provided tenantId/repositoryid.
+      operationId: deleteRepositoryConfigs
+      responses:
+        204:
+          description: Indicates repository specific config for the provided tenantId/repositoryId were deleted.
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+  #
+  /tenants/{tenantId}/repositories/{repositoryId}/effectiveconfig/{key}:
+    x-swagger-router-controller: repository
+    parameters:
+      - name: tenantId
+        in: path
+        type: string
+        description: The ID of the tenant.
+        required: true
+        maxLength: 40
+      - name: repositoryId
+        in: path
+        type: string
+        description: The ID of the repository.
+        required: true
+        maxLength: 40
+      - name: key
+        in: path
+        type: string
+        description: The key to use when searching for a repository's configuration.
+        required: true
+        maxLength: 255
+    get:
+      tags:
+        - Repository Configuration
+      summary: Retrieve effective repository specific config.
+      description: Returns the effective repository specific config for this key. That can be either a custom value specified for the repository, for the tenant or the default one.
+      operationId: getEffectiveRepositoryConfig
+      responses:
+        200:
+          description: Returns the effective repository configurations for this key.
+          schema:
+            $ref: "#/definitions/effectiveRepositoryConfigValue"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
+        404:
+          description: Indicates no configuration was found for the provided key in either the repository custom configuration, the tenant one, or the global configuration.
+  #
+  #
+  /tenants/{tenantId}/repositories/{repositoryId}/effectiveconfig:
+    x-swagger-router-controller: repository
+    parameters:
+      - name: tenantId
+        in: path
+        type: string
+        description: The ID tenant.
+        required: true
+        maxLength: 40
+      - name: repositoryId
+        in: path
+        type: string
+        description: The ID repository.
+        required: true
+        maxLength: 40
+    get:
+      tags:
+        - Repository Configuration
+      summary: Retrieve effective repository specific config.
+      description: Returns the effective repository specific config for this repository. This will be made up of a combination of repository custom configuration, the tenant custom configurations and global configurations.
+      operationId: getEffectiveRepositoryConfigs
+      responses:
+        200:
+          description: Returns all effective configurations for this repository.
+          schema:
+            $ref: "#/definitions/effectiveRepositoryConfigs"
+        400:
+          description: Indicates invalid parameter was passed.
+          schema:
+            $ref: "#/definitions/errorMessage"
   #
 definitions:
   globalConfigs:
@@ -1254,8 +1469,8 @@ definitions:
         description: The value for the global config key.  
       scope:  
         type: string  
-        description: Defines the scope of use for the global config key. If the scope is set to 'TENANT' then it may be overridden by tenant configurations.
-        enum: ["TENANT"]
+        description: Defines the scope of use for the global config key. If the scope is set to 'TENANT' then it may be overridden by tenant configurations. If the scope is set to 'RESPOSITORY' then it may be overridden either by tenant configurations or by repository configurations.
+        enum: ["TENANT", "REPOSITORY"]
       description:  
         type: string  
         description: The description for the global config key.
@@ -1265,6 +1480,21 @@ definitions:
         $ref: "#/definitions/tenantConfig"
         description: The collection of custom configurations set for the supplied tenantId.
   tenantConfig:
+    type: object
+    properties:
+      key:
+        type: string
+        description: The key that used in retrieval of the custom config.
+        maxLength: 255
+      value:
+        type: string
+        description: The value stored for the custom config key.
+  repositoryConfigs:
+    type: array
+    items:
+        $ref: "#/definitions/repositoryConfig"
+        description: The collection of custom configurations set for the supplied repositoryId.
+  repositoryConfig:
     type: object
     properties:
       key:
@@ -1299,6 +1529,32 @@ definitions:
         valueType:
             type: string
             description: The type of value being returned, CUSTOM if it was set specifically for this tenant, or DEFAULT if it cam from the global configs.
+            enum: ["CUSTOM", "DEFAULT"]
+  effectiveRepositoryConfigs:
+    type: array
+    items:
+        $ref: "#/definitions/effectiveRepositoryConfig"
+        description: The collection of custom configurations set for the supplied repositoryId.
+  effectiveRepositoryConfig:
+    type: object
+    allOf:
+      - $ref: "#/definitions/effectiveRepositoryConfigValue"
+      - type: object
+        properties:
+           key:
+             type: string
+             description: The key that used in retrieval of the custom config.
+             maxLength: 255
+  effectiveRepositoryConfigValue:
+      type: object
+      description: The effective value of the repository configuration requested, this can either be the custom value or the default indicated by the valueType property.
+      properties:
+        value:
+            type: string
+            description: The value stored for the custom config key.
+        valueType:
+            type: string
+            description: The type of value being returned, CUSTOM if it was set specifically for this tenant/repository, or DEFAULT if it comes from the global configs.
             enum: ["CUSTOM", "DEFAULT"]
   existingWorkflows:
     type: object
