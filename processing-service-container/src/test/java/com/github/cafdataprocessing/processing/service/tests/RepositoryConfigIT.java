@@ -66,30 +66,6 @@ public class RepositoryConfigIT
         }
     }
 
-    @Test(description = "Check creation and retrieval of global config with different scopes")
-    public void creationAndRetrievalOfGlobalConfig() throws ApiException
-    {
-        createConfigInStore("key_1", "value_1", "description_1", ScopeEnum.TENANT);
-        final GlobalConfig globalConfig = GLOBAL_CONFIG_API.getGlobalConfig("key_1");
-        Assert.assertEquals(globalConfig.getDescription(), "description_1");
-        // second attempt but with REPOSITORY scope
-        createConfigInStore("key_2", "value_2", "description_2", ScopeEnum.REPOSITORY);
-        final GlobalConfig globalConfig2 = GLOBAL_CONFIG_API.getGlobalConfig("key_2");
-        Assert.assertEquals(globalConfig2.getDescription(), "description_2");
-    }
-
-    @Test(description = "Check scope value")
-    public void checkScopeValues() throws ApiException
-    {
-        createConfigInStore("key_1", "value_1", "description_1", ScopeEnum.TENANT);
-        final GlobalConfig globalConfig = GLOBAL_CONFIG_API.getGlobalConfig("key_1");
-        Assert.assertEquals(globalConfig.getScope(), ScopeEnum.TENANT);
-        // second attempt but with REPOSITORY scope
-        createConfigInStore("key_2", "value_2", "description_2", ScopeEnum.REPOSITORY);
-        final GlobalConfig globalConfig2 = GLOBAL_CONFIG_API.getGlobalConfig("key_2");
-        Assert.assertEquals(globalConfig2.getScope(), ScopeEnum.REPOSITORY);
-    }
-
     @Test(description = "Simple creation of a repository config and check the scope of the underlying global config")
     public void simpleRepositoryConfig() throws ApiException
     {
@@ -374,6 +350,90 @@ public class RepositoryConfigIT
         }
 
     }
+    
+    @Test(description = "Test that 404 is returned if the key, tenantId and repositoryId are all non-existing")
+    public void testNonExistingKeys(){
+        final String tenantId = "EffectiveConfigTest";
+        final String configKey = "ee.grammarMap";
+        final String repositoryId = "123456";
+
+        try {
+            REPOSITORY_API.getRepositoryConfig(tenantId, repositoryId, configKey);
+        } catch (final ApiException ex) {
+            Assert.assertEquals(ex.getCode(), 404);
+        }
+    }
+    
+    @Test(description = "Test that 404 is returned if the global key does not exist, but tenantId and repositoryId are existing.")
+    public void testNonExistingGlobalKey() throws ApiException{
+        final String tenantId = "tenantId_1_testNonExistingGlobalKey";
+        final String configKey = "ee.grammarMap";
+        final String configValue = "{\"pii.xml\": []}";
+        final String repositoryId = "123456";
+
+        createConfigInStore(configKey, configValue, "Some description of the config for testing", ScopeEnum.REPOSITORY);
+        REPOSITORY_API.setRepositoryConfig(tenantId, repositoryId, configKey, configValue);
+
+        try {
+            REPOSITORY_API.getRepositoryConfig(tenantId, repositoryId, "nonExistingKey");
+        } catch (final ApiException ex) {
+            Assert.assertEquals(ex.getCode(), 404);
+        }
+        REPOSITORY_API.deleteRepositoryConfig(tenantId, repositoryId, configKey);
+        Assert.assertTrue(REPOSITORY_API.getRepositoryConfigs(tenantId, repositoryId).isEmpty());
+    }
+    
+    @Test(description = "Test that 404 is returned if the global key and the repositoryId exist, but tenantId does not.")
+    public void testNonExistingTenantKey() throws ApiException{
+        final String tenantId = "tenantId_1_testNonExistingTenantKey";
+        final String configKey = "ee.grammarMap";
+        final String configValue = "{\"pii.xml\": []}";
+        final String repositoryId = "123456";
+
+        createConfigInStore(configKey, configValue, "Some description of the config for testing", ScopeEnum.REPOSITORY);
+        REPOSITORY_API.setRepositoryConfig(tenantId, repositoryId, configKey, configValue);
+
+        try {
+            REPOSITORY_API.getRepositoryConfig("nonExistingTenant", repositoryId, configKey);
+        } catch (final ApiException ex) {
+            Assert.assertEquals(ex.getCode(), 404);
+        }
+        REPOSITORY_API.deleteRepositoryConfig(tenantId, repositoryId, configKey);
+        Assert.assertTrue(REPOSITORY_API.getRepositoryConfigs(tenantId, repositoryId).isEmpty());
+    }
+    
+    @Test(description = "Test that 404 is returned if the global key and the tenantId exist, but repositoryId does not.")
+    public void testNonExistingRepositoryKey() throws ApiException{
+        final String tenantId = "tenantId_1_testNonExistingGlobalKey";
+        final String configKey = "ee.grammarMap";
+        final String configValue = "{\"pii.xml\": []}";
+        final String repositoryId = "123456";
+
+        createConfigInStore(configKey, configValue, "Some description of the config for testing", ScopeEnum.REPOSITORY);
+        REPOSITORY_API.setRepositoryConfig(tenantId, repositoryId, configKey, configValue);
+
+        try {
+            REPOSITORY_API.getRepositoryConfig(tenantId, "nonExistingRepository", configKey);
+        } catch (final ApiException ex) {
+            Assert.assertEquals(ex.getCode(), 404);
+        }
+        REPOSITORY_API.deleteRepositoryConfig(tenantId, repositoryId, configKey);
+        Assert.assertTrue(REPOSITORY_API.getRepositoryConfigs(tenantId, repositoryId).isEmpty());
+    }
+    
+    @Test(description = "Test that 404 is returned if the key, tenantId and repositoryId are all non-existing")
+    public void testNonExistingKeyInGetEffectiveRepository(){
+        final String tenantId = "EffectiveConfigTest";
+        final String configKey = "ee.grammarMap";
+        final String repositoryId = "123456";
+
+        try {
+            REPOSITORY_API.getEffectiveRepositoryConfig(tenantId, repositoryId, configKey);
+        } catch (final ApiException ex) {
+            Assert.assertEquals(ex.getCode(), 404);
+        }
+    }
+
 
     private void createConfigInStore(final String key, final String value, final String description, final ScopeEnum scope)
         throws ApiException

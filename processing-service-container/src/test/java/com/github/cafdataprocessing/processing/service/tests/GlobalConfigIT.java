@@ -24,6 +24,7 @@ import com.github.cafdataprocessing.processing.service.client.model.GlobalConfig
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfigsEntry;
 import com.github.cafdataprocessing.processing.service.tests.utils.ApiClientProvider;
 import static org.junit.Assert.*;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -161,10 +162,40 @@ public class GlobalConfigIT
         }
     }
     
+    @Test(description = "Check creation and retrieval of global config with different scopes")
+    public void creationAndRetrievalOfGlobalConfig() throws ApiException
+    {
+        createConfigInStore("key_1", "value_1", "description_1", ScopeEnum.TENANT);
+        final GlobalConfig globalConfig = globalConfigurationApi.getGlobalConfig("key_1");
+        Assert.assertEquals(globalConfig.getDescription(), "description_1");
+        // second attempt but with REPOSITORY scope
+        createConfigInStore("key_2", "value_2", "description_2", ScopeEnum.REPOSITORY);
+        final GlobalConfig globalConfig2 = globalConfigurationApi.getGlobalConfig("key_2");
+        Assert.assertEquals(globalConfig2.getDescription(), "description_2");
+    }
+
+    @Test(description = "Check scope value")
+    public void checkScopeValues() throws ApiException
+    {
+        createConfigInStore("key_1", "value_1", "description_1", ScopeEnum.TENANT);
+        final GlobalConfig globalConfig = globalConfigurationApi.getGlobalConfig("key_1");
+        Assert.assertEquals(globalConfig.getScope(), ScopeEnum.TENANT);
+        // second attempt but with REPOSITORY scope
+        createConfigInStore("key_2", "value_2", "description_2", ScopeEnum.REPOSITORY);
+        final GlobalConfig globalConfig2 = globalConfigurationApi.getGlobalConfig("key_2");
+        Assert.assertEquals(globalConfig2.getScope(), ScopeEnum.REPOSITORY);
+    }
+    
     private void createConfigInStore(final String id) throws ApiException
     {
         final String testKey = TEST_KEY_PREFIX + id;
         globalConfigurationApi.setGlobalConfig(testKey, buildGlobalConfig(id));
+    }
+    
+    private void createConfigInStore(final String key, final String value, final String description, final ScopeEnum scope)
+        throws ApiException
+    {
+        globalConfigurationApi.setGlobalConfig(key, buildGlobalConfig(value, description, scope));
     }
     
     private GlobalConfig buildGlobalConfig(final String id)
