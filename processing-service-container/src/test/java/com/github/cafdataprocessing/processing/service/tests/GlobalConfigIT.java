@@ -22,6 +22,7 @@ import com.github.cafdataprocessing.processing.service.client.model.GlobalConfig
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfig.ScopeEnum;
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfigs;
 import com.github.cafdataprocessing.processing.service.client.model.GlobalConfigsEntry;
+import static com.github.cafdataprocessing.processing.service.tests.RepositoryConfigIT.REPOSITORY_API;
 import com.github.cafdataprocessing.processing.service.tests.utils.ApiClientProvider;
 import static org.junit.Assert.*;
 import org.testng.Assert;
@@ -184,6 +185,26 @@ public class GlobalConfigIT
         createConfigInStore("key_2", "value_2", "description_2", ScopeEnum.REPOSITORY);
         final GlobalConfig globalConfig2 = globalConfigurationApi.getGlobalConfig("key_2");
         Assert.assertEquals(globalConfig2.getScope(), ScopeEnum.REPOSITORY);
+    }
+    
+    @Test(description = "Check that we cannot modify the scope, from REPOSITORY to TENANT if a repository configuration is present")
+    public void testScopeCannotBeChanged() throws ApiException
+    {
+        // create the global config
+        createConfigInStore("key_1", "value_1", "description_1", ScopeEnum.REPOSITORY);
+        // create the repository config and then get its value
+        REPOSITORY_API.setRepositoryConfig("tenant_1", "repository_1", "key_1", "repo_description_1");
+
+        //update the global config
+        try {
+            createConfigInStore("key_1", "value_1", "description_1", ScopeEnum.TENANT);
+        } catch (ApiException e) {
+            assertTrue(e.getCode() == 405);
+        }
+
+        final GlobalConfig globablConfig = globalConfigurationApi.getGlobalConfig("key_1");
+        Assert.assertEquals(globablConfig.getScope(), ScopeEnum.REPOSITORY);
+        REPOSITORY_API.deleteRepositoryConfig("tenant_1", "repository_1", "key_1");
     }
     
     private void createConfigInStore(final String id) throws ApiException

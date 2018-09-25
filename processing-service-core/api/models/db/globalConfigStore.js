@@ -19,6 +19,7 @@ const Q = require('q');
 const apiErrorFactory = require('../errors/apiErrorFactory.js');
 const databaseDefinition = require('./databaseConnection.js').definition;
 const globalConfigTableDetails = require('./tables/globalConfig.js');
+const repositoryConfigTableDetails = require('./tables/repositoryConfig.js');
 const logger = require('../../helpers/loggingHelper.js');
 
 module.exports = {
@@ -33,6 +34,11 @@ const tableDefinition = globalConfigTableDetails.definition;
 const globalConfigTable = databaseDefinition.define(globalConfigTableDetails.name,
     tableDefinition,
     { tableName:  globalConfigTableDetails.tableName, timestamps: false });
+
+const repositoryTableDefinition = repositoryConfigTableDetails.definition;
+const repositoryConfigTable = databaseDefinition.define(repositoryConfigTableDetails.name,
+    repositoryTableDefinition,
+    { tableName: repositoryConfigTableDetails.tableName, timestamps: false });
 
 /**
  * Deletes a global config using specified parameter.
@@ -80,9 +86,9 @@ function deleteGlobalConfig(key) {
 function getGlobalConfig(key) {
     var deferredGet = Q.defer();
     globalConfigTable.findOne({
-            attributes: [tableDefinition.default.field, tableDefinition.description.field, tableDefinition.scope.field],
+        attributes: [tableDefinition.default.field, tableDefinition.description.field, tableDefinition.scope.field],
             where: { key: key}
-        })
+    })
         .then(function(findResult) {
             if(findResult===null) {
                 logger.error("Failed to find global config with key '"+ key + "'.");
@@ -93,10 +99,10 @@ function getGlobalConfig(key) {
             // caller is interested in rather than letting these DB implementation properties leak out of this layer
             var retrievedScope;
             switch(findResult.scope){
-                case 0: 
+                case 0:
                     retrievedScope = "TENANT";
                     break;
-                case 1: 
+                case 1:
                     retrievedScope = "REPOSITORY";
                     break;
                 default:
@@ -139,10 +145,10 @@ function getGlobalConfigs() {
                 var retrievedGlobalConfig = retrievedGlobalConfigs[globalConfigIndex];
                 var retrievedScope;
                 switch(retrievedGlobalConfig.scope){
-                    case 0: 
+                    case 0:
                         retrievedScope = "TENANT";
                         break;
-                    case 1: 
+                    case 1:
                         retrievedScope = "REPOSITORY";
                         break;
                     default:
@@ -204,6 +210,69 @@ function setGlobalConfig(key, defaultValue, description) {
 }
 
 /**
+ * This function checks if the global key that we want insert or update is already present in some repository configurations.
+ * It resolves positively if the key is not found, otherwise the promise is rejected.
+ * @param {String} key 
+ */
+function checkRepositoriesExsist(key) {
+    var deferred = Q.defer();
+    repositoryConfigTable.findAndCountAll({
+        where: {
+            key: key
+        }
+    }).then(function (repositoryResult) {
+        logger.info(repositoryResult.count + " repositories found");
+        if (repositoryResult.count > 0) {
+            throw new Error("A repository configuration exists for this key!");
+        } else {
+            deferred.resolve("None of the repositories analyzed contained this key");
+        }
+    }).catch(function (errorResponse) {
+        logger.error("Failure occurred trying to create global config for key '" + key + "': " + errorResponse.toString());
+        deferred.reject(apiErrorFactory.createMethodNotAllowedError("Failure occurred trying to create global config for key '"
+                + key + "': " + errorResponse.toString()));
+    }).done();
+    return deferred.promise;
+}
+
+/**
+ * This function creates or updates a global configuration in the database.
+ * @param {String} key 
+ * @param {String} defaultValue 
+ * @param {String} description 
+ * @param {String} processedScope 
+ */
+function upsertGlobalConfig(key, defaultValue, description, processedScope) {
+    var deferred = Q.defer();
+
+    var setParam = {
+        key: key,
+        default: defaultValue,
+        description: description,
+        scope: processedScope
+    };
+    globalConfigTable.upsert(setParam)
+        .then(function (upsertResult) {
+            if (upsertResult) {
+                logger.info("Created global config in database successfully for key '" + key + "'.");
+                deferred.resolve("Created global config in database successfully for key '" + key + "'.");
+            }
+            else {
+                logger.info("Updated global config in database successfully for key '" + key + "'.");
+                deferred.resolve("Updated global config in database successfully for key '" + key + "'.");
+            }
+
+        })
+        .catch(function (errorResponse) {
+            logger.error("Failure occurred trying to create global config for key '" + key + "': " + errorResponse.toString());
+            deferred.reject(apiErrorFactory.createDatabaseUnknownError("Failure during creation of global config."));
+        })
+        .done();
+
+    return deferred.promise;
+}
+
+/**
  * Version that allows also the "scope" parameter to be set or updated.
  * 
  * Creates or updates a global config using the provided parameters.
@@ -211,6 +280,7 @@ function setGlobalConfig(key, defaultValue, description) {
  * then it will be added as a new entry. Otherwise the global config with this key value will be updated.
  * @param defaultValue {String} the default to set on the global config.
  * @param description {String} the description to set on the global config.
+ * @param scope {String} it may be TENANT or REPOSITORY, the second allows the creation of custom repository configurations
  * @returns {*|d.promise|Function|promise|a|h} a promise that will be resolved or rejected based on the result of create/update.
  *  Resolved promise will pass an empty object. Rejected promise will pass an ApiError with type set to DATABASE_UNKNOWN_ERROR.
  */
@@ -228,28 +298,36 @@ function setGlobalConfigWithScope(key, defaultValue, description, scope) {
             break;
         default:
             throw new Error("The scope passed is invalid!");
-            break;
     }
-    var setParam = {
-        key: key,
-        default: defaultValue,
-        description: description,
-        scope: processedScope
-    };
-    globalConfigTable.upsert(setParam)
-        .then(function(upsertResult) {
-            if(upsertResult) {
-                logger.debug("Created global config in database successfully for key '" + key + "'.");
+
+    // if scope passed is "tenant", check if repositories exist using this key
+    if (processedScope === 0) {
+        checkRepositoriesExsist(key).then(
+            function (promise) {
+                logger.info("No repositories found. We can try to update or create the global config.");
+                upsertGlobalConfig(key, defaultValue, description, processedScope).then(
+                    function (promise) {
+                        deferredSet.resolve(promise);
+                    },
+                    function (promise) {
+                        deferredSet.reject(promise);
+                    }
+                );
+            },
+            function (promise) {
+                deferredSet.reject(promise);
+            });
+    } else {
+        upsertGlobalConfig(key, defaultValue, description, processedScope).then(
+            function (promise) {
+                deferredSet.resolve(promise);
+            },
+            function (promise) {
+                deferredSet.reject(promise);
             }
-            else {
-                logger.debug("Updated global config in database successfully for key '" + key+"'.");
-            }
-            deferredSet.resolve({});
-        })
-        .catch(function(errorResponse) {
-            logger.error("Failure occurred trying to create global config for key '"+key+"': " + errorResponse.toString());
-            deferredSet.reject(apiErrorFactory.createDatabaseUnknownError('Failure during creation of global config.'));
-        })
-        .done();
+        );
+    }
+
     return deferredSet.promise;
 }
+
