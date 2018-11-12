@@ -241,7 +241,7 @@
                             <alias>corepolicy-dbinstaller</alias>
                             <name>policy/dbinstaller</name>
                             <build>
-                                <from>cafapi/opensuse-jre8:1.2</from>
+                                <from>cafapi/opensuse-jre8:1</from>
                                 <tags>
                                     <tag>temporary-item-please-remove</tag>
                                 </tags>
