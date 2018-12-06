@@ -76,7 +76,7 @@
         <caf.container.databases.name>${dockerDataProcessingOrg}data-processing-databases${dockerProjectVersion}</caf.container.databases.name>
         <caf.container.policy.admin.name>cafdataprocessing/policy-admin-elasticsearch:1.0.0</caf.container.policy.admin.name>
         <caf.container.processing.service.name>${dockerDataProcessingOrg}processing-service${dockerProjectVersion}</caf.container.processing.service.name>
-        <caf.corepolicy.version>1.2.0-SNAPSHOT</caf.corepolicy.version>
+        <caf.corepolicy.version>1.2.0-165</caf.corepolicy.version>
         <caf.worker.policy.version>1.4.0-60</caf.worker.policy.version>
         <copyrightYear>2018</copyrightYear>
         <copyrightNotice>Copyright ${project.inceptionYear}-${copyrightYear} Micro Focus or one of its affiliates.</copyrightNotice>
