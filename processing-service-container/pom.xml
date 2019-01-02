@@ -330,7 +330,7 @@
                             <alias>processing-service</alias>
                             <name>${caf.container.processing.service.name}</name>
                             <build>
-                                <from>cafapi/opensuse-nodejs6:1</from>
+                                <from>cafapi/opensuse-nodejs8:1</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>
