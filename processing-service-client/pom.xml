@@ -35,7 +35,7 @@
     <groupId>com.github.cafdataprocessing</groupId>
     <artifactId>processing-service-client</artifactId>
     <description>Built as an example only - consumers should generate their own client tailored as required.</description>
-    <version>1.6.0-1</version>
+    <version>1.7.0-SNAPSHOT</version>
 
     <inceptionYear>2017</inceptionYear>
 
