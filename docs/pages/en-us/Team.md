@@ -5,16 +5,16 @@ header: The Data Processing Team
 
 team_members:
 
-    - name: Adam Rogan
-      email: adam.pau.rogan@microfocus.com
-      avatar: /assets/img/Team/AdamRogan.jpg
+    - name: Dermot Hardy
+      email: dermot.hardy@microfocus.com
+      avatar: /assets/img/Team/DermotHardy.jpg
       social:
         - title: GitHub
           icon: hpe-social-github
-          url: https://github.houston.softwaregrp.net/adam-pau-rogan
+          url: https://github.houston.softwaregrp.net/dermot-hardy
         - title: Email
           icon: hpe-social-email
-          url: mailto:adam.pau.rogan@microfocus.com
+          url: mailto:dermot.hardy@microfocus.com
           
     - name: Anthony McGreevy
       email: anthony.mcgreevy@microfocus.com
@@ -27,37 +27,69 @@ team_members:
           icon: hpe-social-email
           url: mailto:anthony.mcgreevy@microfocus.com
 
-    - name: Christopher Comac
-      email: christopher.jam.comac@microfocus.com
-      avatar: /assets/img/Team/Christopher.jpg
+    - name: Kusuma Ghosh Dastidar
+      email: vgkusuma@microfocus.com
+      avatar: /assets/img/Team/KusumaGhoshDastidar.jpg
       social:
         - title: GitHub
           icon: hpe-social-github
-          url: https://github.houston.softwaregrp.net/christopher-jam-comac
+          url: https://github.houston.softwaregrp.net/vgkusuma
         - title: Email
           icon: hpe-social-email
-          url: mailto:christopher.jam.comac@microfocus.com
+          url: mailto:vgkusuma@microfocus.com
           
-    - name: Michael McAlynn
-      email: michael.mcalynn@microfocus.com
-      avatar: /assets/img/Team/Michael.jpg
+    - name: Andy Reid
+      email: andrew.reid@microfocus.com
+      avatar: /assets/img/Team/AndyReid.jpg
       social:
         - title: GitHub
           icon: hpe-social-github
-          url: https://github.houston.softwaregrp.net/michael-mcalynn
+          url: https://github.houston.softwaregrp.net/andrew-reid
         - title: Email
           icon: hpe-social-email
-          url: mailto:michael.mcalynn@microfocus.com
+          url: mailto:andrew.reid@microfocus.com
     
-    - name: Philip Crooks
-      email: philip.crooks@microfocus.com
-      avatar: /assets/img/Team/PhilipCrooks.jpg
+    - name: Thilagavathi Santhoshkumar
+      email: thilagavathi.santhoshkumar@microfocus.com
+      avatar: /assets/img/Team/ThilagavathiSanthoshkumar.jpg
       social:
         - title: GitHub
           icon: hpe-social-github
-          url: https://github.houston.softwaregrp.net/philip-crooks
+          url: https://github.houston.softwaregrp.net/thilagavathi-santhoshkumar
         - title: Email
           icon: hpe-social-email
-          url: mailto:philip-crooks@microfocus.com
-
+          url: mailto:thilagavathi.santhoshkumar@microfocus.com
+          
+    - name: Rahul Kulkarni
+      email: rahul.kulkarni@microfocus.com
+      avatar: /assets/img/Team/RahulKulkarni.jpg
+      social:
+        - title: GitHub
+          icon: hpe-social-github
+          url: https://github.houston.softwaregrp.net/rahul-kulkarni
+        - title: Email
+          icon: hpe-social-email
+          url: mailto:rahul.kulkarni@microfocus.com
+                    
+    - name: Gaana Vishwnath
+      email: gaana.vishwnath@microfocus.com
+      avatar: /assets/img/Team/GaanaVishwnath.jpg
+      social:
+        - title: GitHub
+          icon: hpe-social-github
+          url: https://github.houston.softwaregrp.net/Gaana-Vishwnath
+        - title: Email
+          icon: hpe-social-email
+          url: mailto:gaana.vishwnath@microfocus.com
+                              
+    - name: Rory Torney
+      email: rory.torney@microfocus.com
+      avatar: /assets/img/Team/RoryTorney.jpg
+      social:
+        - title: GitHub
+          icon: hpe-social-github
+          url: https://github.houston.softwaregrp.net/Rory-Torney
+        - title: Email
+          icon: hpe-social-email
+          url: mailto:rory.torney@microfocus.com
 ---
